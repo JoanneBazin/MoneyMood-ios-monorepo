@@ -1,8 +1,0 @@
-../backend
-../shared/src
-../shared/node_modules
-node_modules
-.env.local
-src/tests/
-src/**/*.test.ts
-src/**/*.spec.ts

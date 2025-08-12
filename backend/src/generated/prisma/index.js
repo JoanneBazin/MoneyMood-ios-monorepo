@@ -194,7 +194,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\Joanne\\Desktop\\CODE\\Projets_portfolio\\CheckYourBudget\\AppliWeb\\check-budget-app\\backend\\src\\generated\\prisma",
+      "value": "C:\\Users\\Joanne\\Desktop\\CODE\\Projets_portfolio\\MoneyMood\\AppliWeb\\MoneyMood-ios-monorepo\\backend\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -219,8 +219,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma",
   "clientVersion": "5.14.0",
@@ -229,7 +228,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {

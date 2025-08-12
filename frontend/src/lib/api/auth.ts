@@ -1,12 +1,11 @@
 import { LoginInput, SignupInput } from "@shared/schemas";
 import { User } from "@shared/types";
 import { getCurrentOnlineStatus } from "../network";
-import { CONFIG } from "@/config/constants";
 
 export const login = async ({ email, password }: LoginInput): Promise<User> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
-  const response = await fetch(`${CONFIG.API_URL}/api/auth/login`, {
+  const response = await fetch(`/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -27,7 +26,7 @@ export const signup = async ({
   password,
 }: SignupInput): Promise<User> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-  const response = await fetch(`${CONFIG.API_URL}/api/auth/signup`, {
+  const response = await fetch(`/api/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -44,7 +43,7 @@ export const signup = async ({
 
 export const logout = async (): Promise<void> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-  const response = await fetch(`${CONFIG.API_URL}/api/auth/logout`, {
+  const response = await fetch(`/api/auth/logout`, {
     method: "POST",
     credentials: "include",
   });
@@ -56,7 +55,7 @@ export const logout = async (): Promise<void> => {
 };
 
 export const fetchSession = async () => {
-  const response = await fetch(`${CONFIG.API_URL}/api/auth/session`, {
+  const response = await fetch(`/api/auth/session`, {
     credentials: "include",
   });
 

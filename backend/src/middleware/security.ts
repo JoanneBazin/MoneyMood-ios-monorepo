@@ -3,22 +3,11 @@ import cors from "cors";
 import helmet from "helmet";
 
 export const setupSecurity = (app: Application) => {
-  const allowedOrigins =
-    process.env.NODE_ENV === "production"
-      ? [process.env.FRONTEND_URL]
-      : ["http://localhost:5173"];
-
   app.use(
     cors({
-      origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
-      },
+      origin:
+        process.env.NODE_ENV === "production" ? true : "http://localhost:5173",
       credentials: true,
-      optionsSuccessStatus: 200,
     })
   );
 

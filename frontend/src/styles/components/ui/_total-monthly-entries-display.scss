@@ -1,0 +1,10 @@
+@use "../../abstracts" as *;
+
+.total-budget {
+  font-family: $font-family-mono;
+  font-weight: $font-weight-semibold;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  @include font-responsive(lg);
+}

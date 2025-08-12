@@ -1,0 +1,42 @@
+@use "../../abstracts" as *;
+
+.empty-data {
+  @include flex-center;
+  gap: $spacing-sm;
+  padding: $spacing-sm;
+  @include font-responsive(xs);
+
+  &__icon {
+    @include icon-size(14px, 20px);
+  }
+}
+
+.data-item {
+  @include flex-between;
+  margin-bottom: $spacing-xxs;
+  @include font-responsive(sm);
+
+  &__name {
+    @include flex-center;
+    font-weight: $font-weight-medium;
+  }
+
+  &__amount {
+    display: flex;
+    gap: 16px;
+
+    &__entry {
+      color: $gray-700;
+      font-family: $font-family-mono;
+    }
+
+    &__update {
+      color: $primary-dark;
+      @include font-responsive(xs);
+
+      &:hover {
+        color: $primary;
+      }
+    }
+  }
+}

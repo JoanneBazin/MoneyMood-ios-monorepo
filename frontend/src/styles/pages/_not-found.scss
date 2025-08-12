@@ -1,0 +1,76 @@
+@use "../abstracts" as *;
+
+.page-404 {
+  @include flex-center;
+  text-align: center;
+  overflow: hidden;
+
+  &__container {
+    max-width: 550px;
+    padding: 2rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  &__number {
+    font-size: clamp(4rem, 15vw, 12rem);
+    font-weight: 900;
+    margin-bottom: $spacing-lg;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+
+    .bounce {
+      display: inline-block;
+      color: $primary;
+      @include bounce;
+    }
+  }
+
+  &__title {
+    margin-bottom: $font-size-base;
+    font-weight: $font-weight-medium;
+    z-index: 10;
+  }
+
+  &__buttons {
+    @include flex-center;
+    gap: $spacing-lg;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    z-index: 10;
+  }
+
+  &__illustration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+
+    .coin {
+      position: absolute;
+      font-size: 2rem;
+      color: $primary;
+      opacity: 0.7;
+      @include fall;
+
+      &-1 {
+        left: 10%;
+        animation-duration: 3s;
+        animation-delay: 0s;
+      }
+      &-2 {
+        left: 50%;
+        animation-duration: 4s;
+        animation-delay: 1s;
+      }
+      &-3 {
+        left: 80%;
+        animation-duration: 3.5s;
+        animation-delay: 2s;
+      }
+    }
+  }
+}

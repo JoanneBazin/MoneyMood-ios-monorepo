@@ -1,0 +1,21 @@
+@use "../abstracts" as *;
+
+.budget-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin: 50px 0;
+
+  &__button {
+    height: 40px;
+    width: 40px;
+    border-radius: $border-radius-sm;
+    background: $primary;
+    font-size: 28px;
+    @include flex-center;
+  }
+
+  &__text {
+    @include font-responsive(sm);
+  }
+}

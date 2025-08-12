@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+  binaryTargets = ["native", "rhel-openssl-3.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id  String  @id @default(cuid())
+  email String  @unique
+  password  String
+  name  String
+  createdAt DateTime  @default(now())
+
+  sessions  Session[]
+  fixedIncomes FixedIncome[]
+  fixedCharges FixedCharge[]
+  monthlyBudgets  MonthlyBudget[]
+}
+
+model Session {
+  id  String  @id @default(cuid())
+  userId  String
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FixedIncome {
+  id  String  @id @default(cuid())
+  name String
+  amount  Decimal @db.Decimal(10, 2)
+  userId  String
+  createdAt DateTime  @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FixedCharge {
+  id  String  @id @default(cuid())
+  name String
+  amount  Decimal @db.Decimal(10, 2)
+  userId  String
+  createdAt DateTime  @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MonthlyBudget {
+  id  String  @id @default(cuid())
+  month Int
+  year  Int
+  isCurrent Boolean @default(false)
+  remainingBudget Decimal @db.Decimal(10, 2)
+  weeklyBudget  Decimal @db.Decimal(10, 2)
+  numberOfWeeks Int
+  userId  String
+  createdAt DateTime  @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  incomes MonthlyIncome[]
+  charges  MonthlyCharge[]
+  expenses  WeeklyExpense[]
+
+  @@unique([userId, month, year])
+  @@index([userId, month, year])
+}
+
+model MonthlyIncome {
+  id  String  @id @default(cuid())
+  name String
+  amount  Decimal @db.Decimal(10, 2)
+  monthlyBudgetId  String
+  createdAt DateTime  @default(now())
+
+  monthlyBudget  MonthlyBudget  @relation(fields: [monthlyBudgetId], references: [id], onDelete: Cascade)
+}
+
+model MonthlyCharge {
+  id  String  @id @default(cuid())
+  name String
+  amount  Decimal @db.Decimal(10, 2)
+  monthlyBudgetId  String
+  createdAt DateTime  @default(now())
+
+  monthlyBudget  MonthlyBudget  @relation(fields: [monthlyBudgetId], references: [id], onDelete: Cascade)
+}
+
+model WeeklyExpense {
+  id  String  @id @default(cuid())
+  name String
+  amount  Decimal @db.Decimal(10, 2)
+  weekNumber  Int
+  category  String?
+  monthlyBudgetId  String
+  createdAt DateTime  @default(now())
+
+  monthlyBudget  MonthlyBudget  @relation(fields: [monthlyBudgetId], references: [id], onDelete: Cascade)
+}

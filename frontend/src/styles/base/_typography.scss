@@ -1,0 +1,47 @@
+@use "../abstracts" as *;
+
+:root {
+  font-family: $font-family-primary;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  font-size: 16px;
+}
+
+body {
+  color: $black;
+  line-height: 1.5;
+}
+
+h1 {
+  font-family: $font-family-secondary;
+  font-weight: $font-weight-light;
+  text-align: center;
+  margin: 0;
+}
+
+h2 {
+  font-weight: $font-weight-medium;
+  margin: 0;
+  @include font-responsive(sm);
+}
+
+p {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: $black;
+}

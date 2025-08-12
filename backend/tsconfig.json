@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "types": ["node", "jest"],
+    "paths": {
+      "@shared/*": ["../shared/dist/*"]
+    }
+  },
+  "include": ["src/**/*", "src/api", "src/generated/**/*"],
+  "files": ["src/types/express.d.ts"]
+}

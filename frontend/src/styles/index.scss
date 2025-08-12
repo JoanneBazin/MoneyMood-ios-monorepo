@@ -1,0 +1,75 @@
+@use "abstracts" as *;
+
+@use "base";
+@use "layout";
+@use "components";
+@use "pages";
+@use "utilities";
+
+.add-btn {
+  padding: $spacing-xxs $spacing-md;
+  border: 1px solid $gray-500;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xl;
+  color: $primary-dark;
+  width: fit-content;
+
+  &:hover {
+    background: $primary-light;
+    color: $white;
+  }
+}
+
+.delete-btn {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-light;
+  width: fit-content;
+  color: $error;
+  @include font-responsive(lg);
+}
+
+.form-error {
+  color: $error;
+  margin-top: 5px;
+  @include font-responsive(xxs);
+}
+.req-error {
+  color: $error;
+  @include font-responsive(xs);
+}
+.req-info {
+  color: $gray-700;
+  @include font-responsive(xs);
+}
+
+.primary-btn {
+  @include button-variant($primary, $primary-light, $black);
+  padding: $spacing-xs $spacing-lg;
+  margin: $spacing-sm 0;
+  width: fit-content;
+  align-self: flex-end;
+}
+
+.secondary-btn {
+  @include button-variant($white, $gray-100, $black);
+  border: 1px solid $gray-500;
+  padding: $spacing-xs $spacing-lg;
+  margin: $spacing-sm $spacing-xs;
+  width: fit-content;
+  align-self: flex-end;
+}
+
+.picker-input {
+  font-weight: $font-weight-medium;
+  text-align: center;
+  padding: $spacing-xxs 0;
+}
+
+.auth-form {
+  @include flex-center;
+  gap: $spacing-md;
+  width: 45%;
+  & > div {
+    width: 100%;
+  }
+}

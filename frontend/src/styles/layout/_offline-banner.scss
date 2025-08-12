@@ -1,0 +1,15 @@
+@use "../abstracts" as *;
+
+.offline-banner {
+  @include flex-center;
+  padding: $spacing-xs;
+  background: $gray-100;
+  width: 100%;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-xs;
+  @include font-responsive(xs);
+
+  &__icon {
+    @include icon-size(14px, 18px);
+  }
+}

@@ -1,0 +1,14 @@
+@use "../../abstracts" as *;
+
+.back-arrow {
+  position: absolute;
+  left: 8px;
+  top: 15px;
+  border-radius: 50px;
+  @include flex-center;
+  z-index: 110;
+
+  &__icon {
+    @include icon-size(35px, 40px);
+  }
+}

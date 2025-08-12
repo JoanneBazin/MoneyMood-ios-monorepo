@@ -1,0 +1,27 @@
+@use "../abstracts" as *;
+
+// Margin
+
+.my-md {
+  margin: $spacing-md 0;
+}
+.my-xl {
+  margin: $spacing-xl 0;
+}
+.my-2xl {
+  margin: $spacing-2xl 0;
+}
+
+.mb-xs {
+  margin-bottom: $spacing-xs;
+}
+
+.mr-xxs {
+  margin-right: $spacing-xxs;
+}
+
+// Padding
+
+.p-xxs {
+  padding: $spacing-xxs;
+}

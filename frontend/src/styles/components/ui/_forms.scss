@@ -1,0 +1,55 @@
+@use "../../abstracts" as *;
+
+.input-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-2xl;
+  margin-bottom: $spacing-sm;
+  @include tablet-up {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40%;
+
+    &__amount {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: end;
+
+      input::placeholder {
+        @include font-responsive(xxs);
+      }
+    }
+  }
+}
+
+.delete-item {
+  display: flex;
+  align-items: center;
+  margin: $spacing-sm 0;
+  gap: $spacing-xs;
+  @include font-responsive(xs);
+
+  &__button {
+    padding: 2px 6px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    @include tablet-up {
+      padding: 6px 12px;
+    }
+
+    &.valid {
+      background: $primary;
+    }
+
+    &.cancel {
+      border-color: $black;
+    }
+  }
+}

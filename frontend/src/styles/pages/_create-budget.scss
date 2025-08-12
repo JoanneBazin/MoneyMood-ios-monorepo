@@ -1,0 +1,35 @@
+@use "../abstracts" as *;
+
+.create-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+
+  &__title {
+    @include flex-center;
+    gap: 8px;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__checkbox {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    margin: $spacing-xs 0;
+
+    &__label {
+      @include flex-center;
+      gap: 4px;
+      @include font-responsive(xs);
+
+      input {
+        width: inherit;
+        padding: inherit;
+        box-shadow: inherit;
+      }
+    }
+    &__span {
+      @include font-responsive(xxs);
+    }
+  }
+}

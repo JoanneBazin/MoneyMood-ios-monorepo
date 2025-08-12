@@ -1,0 +1,36 @@
+@use "../../abstracts" as *;
+
+.budget-options {
+  position: relative;
+  &__icon {
+    @include icon-size(22px, 26px);
+  }
+
+  &__content {
+    position: absolute;
+    right: 0;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: $white;
+    border: 1px solid $gray-200;
+    border-radius: $border-radius-xs;
+    @include padding-responsive(md, md);
+
+    & {
+      @include tablet-up {
+        width: 200px;
+      }
+    }
+
+    & > button:first-of-type {
+      border-bottom: 1px solid $gray-200;
+      padding-bottom: 10px;
+    }
+
+    & > button {
+      @include font-responsive(xs);
+    }
+  }
+}

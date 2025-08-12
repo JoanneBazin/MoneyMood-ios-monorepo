@@ -1,0 +1,35 @@
+@use "../../abstracts" as *;
+
+.history-card {
+  display: grid;
+  grid-template-columns: 45% 35% 20%;
+  align-items: center;
+  box-shadow: $shadow-md;
+  border-radius: $border-radius-sm;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-lg;
+  @include font-responsive(sm);
+
+  &__title {
+    font-family: $font-family-secondary;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__sold {
+    font-weight: $font-weight-medium;
+    display: flex;
+    gap: 6px;
+  }
+
+  &__amount {
+    color: $gray-700;
+    font-family: $font-family-mono;
+    display: flex;
+    gap: 2px;
+  }
+
+  &__read {
+    color: $primary-dark;
+    @include font-responsive(xs);
+  }
+}

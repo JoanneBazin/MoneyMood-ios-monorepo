@@ -1,0 +1,13 @@
+@use "../../abstracts" as *;
+
+.total-data {
+  @include flex-between;
+  @include before-line;
+  padding: $spacing-lg $spacing-sm $spacing-xs $spacing-sm;
+  margin-top: $spacing-xl;
+  @include font-responsive(sm);
+
+  &__amount {
+    color: $gray-700;
+  }
+}

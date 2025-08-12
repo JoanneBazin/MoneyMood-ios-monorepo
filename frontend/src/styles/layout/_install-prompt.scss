@@ -1,0 +1,45 @@
+@use "../abstracts" as *;
+
+.prompt {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: $white;
+  border: 1px solid $gray-500;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-md;
+  padding: $spacing-md;
+  z-index: 1000;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-sm;
+    @include font-responsive(xs);
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+    justify-content: flex-end;
+
+    & > button {
+      @include font-responsive(xs);
+    }
+
+    &__disable {
+      color: $gray-500;
+    }
+
+    &__add {
+      color: $primary-dark;
+      border: 1px solid $primary-dark;
+      padding: $spacing-xxs $spacing-sm;
+
+      &:hover {
+        background-color: $gray-200;
+      }
+    }
+  }
+}

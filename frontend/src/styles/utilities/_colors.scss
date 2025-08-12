@@ -1,0 +1,13 @@
+@use "../abstracts" as *;
+
+.primary {
+  color: $primary;
+}
+
+.red-error {
+  color: $error;
+}
+
+.gray-500 {
+  color: $gray-500;
+}

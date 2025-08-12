@@ -1,0 +1,39 @@
+@use "../../abstracts" as *;
+
+.total-card {
+  width: 48%;
+  border: 1px solid $gray-700;
+  border-radius: 16px;
+  cursor: pointer;
+  @include padding-responsive(sm, sm);
+
+  &__text {
+    @include flex-between;
+    font-family: $font-family-secondary;
+
+    @include font-responsive(sm);
+  }
+
+  &__icon {
+    margin-bottom: $spacing-sm;
+    @include tablet-up {
+      margin-bottom: $spacing-lg;
+    }
+
+    & {
+      @include icon-size(24px, 30px);
+    }
+  }
+
+  &.black {
+    background: $black;
+    color: $white;
+    font-weight: 300;
+  }
+
+  &.primary {
+    background: $primary;
+    color: $black;
+    font-weight: 400;
+  }
+}

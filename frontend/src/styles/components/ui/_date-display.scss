@@ -1,0 +1,14 @@
+@use "../../abstracts" as *;
+
+.week-selector {
+  position: absolute;
+  @include flex-center;
+  top: 8px;
+  right: 10px;
+
+  @include font-responsive(xs);
+
+  &__icon {
+    @include icon-size(18px, 26px);
+  }
+}

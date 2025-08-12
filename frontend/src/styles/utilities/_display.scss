@@ -1,0 +1,40 @@
+@use "../abstracts" as *;
+
+.app-container {
+  margin: 0 auto;
+  max-width: 640px;
+  width: 100%;
+  position: relative;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Flex
+
+.flex-between {
+  @include flex-between;
+}
+.flex-center {
+  @include flex-center;
+}
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+.flex-start {
+  display: flex;
+  align-items: flex-start;
+}
+
+.gap-sm {
+  gap: $spacing-sm;
+}

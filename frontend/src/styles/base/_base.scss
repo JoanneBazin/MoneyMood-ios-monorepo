@@ -1,0 +1,60 @@
+@use "../abstracts" as *;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  position: fixed;
+  width: 100%;
+  max-width: 639px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+}
+
+main {
+  padding: 60px 20px 75px 20px;
+  position: relative;
+  background: $white;
+  @include tablet-s {
+    padding: 60px 30px 75px 30px;
+  }
+}
+
+button {
+  @include button-base;
+}
+
+form {
+  display: flex;
+  margin: 10px auto;
+  flex-direction: column;
+}
+
+input {
+  @include input-base;
+}
+
+@media screen and (min-width: $breakpoint-lg) {
+  body {
+    background: $gray-100;
+  }
+
+  main {
+    box-shadow: $shadow-lg;
+    border-radius: $border-radius-md;
+    overflow: hidden;
+    min-height: 70vh;
+  }
+}

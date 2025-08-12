@@ -1,0 +1,44 @@
+@use "../../abstracts" as *;
+
+.collapse {
+  border-radius: $border-radius-md;
+  width: 100%;
+  margin-bottom: $spacing-xs;
+  @include font-responsive(sm);
+
+  & {
+    @include padding-responsive(sm, sm);
+  }
+
+  &.black {
+    background: $black;
+    color: $gray-200;
+
+    button {
+      color: $gray-200;
+    }
+  }
+
+  &.primary {
+    background: $primary;
+    color: $black;
+  }
+
+  &__title {
+    @include flex-between;
+  }
+
+  &__content {
+    @include flex-between;
+    padding-top: 6px;
+    @include font-responsive(xs);
+
+    &__amount.black {
+      color: $gray-700;
+    }
+
+    &__amount.primary {
+      color: $gray-700;
+    }
+  }
+}

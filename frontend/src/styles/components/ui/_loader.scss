@@ -1,0 +1,46 @@
+@use "../../abstracts" as *;
+
+.loader {
+  margin: 20px auto;
+  width: 100%;
+  @include flex-center;
+
+  &__layout {
+    display: inline-block;
+    position: relative;
+    @include icon-size(48px, 54px);
+
+    &::after,
+    &::before {
+      content: "";
+      box-sizing: border-box;
+      border-radius: 50%;
+      border: 2px solid $primary;
+      position: absolute;
+      left: 0;
+      top: 0;
+      @include anim-loader;
+      & {
+        @include icon-size(48px, 58px);
+      }
+    }
+
+    &::after {
+      animation-delay: 1s;
+    }
+  }
+
+  &__datalist {
+    border-radius: $border-radius-rounded;
+    display: block;
+    margin: 15px auto;
+    position: relative;
+    color: $primary;
+    left: -100px;
+    box-sizing: border-box;
+    @include shadow-rolling;
+    & {
+      @include icon-size(6px, 10px);
+    }
+  }
+}

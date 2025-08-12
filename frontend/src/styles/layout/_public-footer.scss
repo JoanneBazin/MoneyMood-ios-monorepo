@@ -1,0 +1,19 @@
+@use "../abstracts" as *;
+
+.public-footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  @include flex-center;
+  color: $gray-700;
+  padding: $spacing-xl 0;
+  border-top: 1px solid $gray-200;
+  @include font-responsive(xxs);
+
+  @include desktop-up {
+    position: absolute;
+    border-radius: 0 0 $border-radius-md $border-radius-md;
+    padding: $spacing-sm 0;
+  }
+}

@@ -1,0 +1,25 @@
+@use "../abstracts" as *;
+
+.date-picker-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  @include font-responsive(sm);
+}
+
+.search-error {
+  @include flex-center;
+  gap: 8px;
+  margin-top: $spacing-md;
+  color: $gray-700;
+
+  &__text {
+    @include font-responsive(sm);
+  }
+}
+
+.selected-budget-card {
+  margin: $spacing-xl 0;
+  padding-bottom: $spacing-xl;
+  @include before-line(bottom);
+}

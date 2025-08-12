@@ -1,0 +1,35 @@
+@use "../../abstracts" as *;
+
+.data-card {
+  position: relative;
+  margin: 0 auto $spacing-lg auto;
+  border: 1px solid $gray-500;
+  border-radius: $border-radius-xl;
+  width: 100%;
+
+  &__title {
+    padding: $spacing-sm $spacing-lg;
+    border-bottom: 1px solid $gray-500;
+    font-weight: $font-weight-semibold;
+    border-radius: 20px 20px 0 0;
+
+    @include padding-responsive(sm, lg);
+
+    & {
+      @include font-responsive(sm);
+    }
+
+    &.black {
+      background: $black;
+      color: $white;
+    }
+
+    &.primary {
+      background: $primary;
+    }
+  }
+
+  &__content {
+    @include padding-responsive(sm, lg);
+  }
+}

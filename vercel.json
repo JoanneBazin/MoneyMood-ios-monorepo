@@ -5,16 +5,9 @@
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": { "distDir": "dist" }
-    },
-    {
-      "src": "backend/package.json",
-      "use": "@vercel/node"
     }
   ],
-  "installCommand": "cd backend && npm install && npm install ../shared",
-  "buildCommand": "cd shared && npm run build && cd ../backend && npm run build && cd ../frontend && npm run build",
-  "routes": [
-    { "src": "/api/(.*)", "dest": "backend/api/[...slug].js" },
-    { "src": "/(.*)", "dest": "frontend/dist/$1" }
-  ]
+
+  "buildCommand": "cd shared && npm run build && cd ../frontend && npm run build",
+  "routes": [{ "src": "/(.*)", "dest": "frontend/dist/$1" }]
 }

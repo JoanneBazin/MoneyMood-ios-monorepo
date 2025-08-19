@@ -11,7 +11,7 @@ import {
   prisma,
 } from "../lib";
 import { calculateRemainingBudget, calculateWeeklyBudget } from "../services";
-import { Prisma } from "../generated/prisma";
+import { Prisma } from "@prisma/client";
 
 export const addMonthlyBudget = async (
   req: Request,

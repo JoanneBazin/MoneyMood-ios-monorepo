@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { LoginInput, SignupInput } from "shared";
+import { LoginInput, SignupInput } from "@moneymood-monorepo/shared";
 
 import {
+  clearSessionCookie,
   createSession,
   hashPassword,
   HttpError,
@@ -34,6 +35,7 @@ export const signup = async (
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -67,6 +69,7 @@ export const login = async (
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -99,7 +102,7 @@ export const logout = async (
         })
         .catch(() => {});
 
-      res.clearCookie("session");
+      clearSessionCookie(res);
       res.json({ message: "Déconnexion réussie" });
     }
   } catch (error) {

@@ -1,5 +1,5 @@
 {
-  "name": "shared",
+  "name": "@moneymood-monorepo/shared",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -35,7 +35,6 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "backend": "file:../backend",
     "zod": "^3.22.4"
   }
 }

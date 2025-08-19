@@ -1,5 +1,8 @@
 import express from "express";
-import { budgetEntrySchema, createBudgetEntrySchema } from "shared";
+import {
+  budgetEntrySchema,
+  createBudgetEntrySchema,
+} from "@moneymood-monorepo/shared";
 import { requireAuth, validateBody } from "../middleware";
 import {
   addFixedIncomes,

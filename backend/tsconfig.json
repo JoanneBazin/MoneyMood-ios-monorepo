@@ -12,9 +12,9 @@
     "baseUrl": ".",
     "types": ["node", "jest"],
     "paths": {
-      "@shared/*": ["../shared/dist/*"]
+      "@shared/*": ["../shared/src/*"]
     }
   },
-  "include": ["src/**/*", "src/api", "src/generated/**/*"],
+  "include": ["src/**/*", "src/generated/**/*"],
   "files": ["src/types/express.d.ts"]
 }

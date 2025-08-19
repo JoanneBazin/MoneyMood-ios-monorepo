@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { HttpError, validateSession } from "../lib";
+import { clearSessionCookie, HttpError, validateSession } from "../lib";
 
 export async function requireAuth(
   req: Request,
@@ -15,9 +15,9 @@ export async function requireAuth(
   const sessionId = req.cookies.session;
 
   if (!sessionId) {
-    console.log(`Erreur: pas de req.cookies.session trouvé`);
-
-    return next(new HttpError(401, "Unauthorized"));
+    console.log(`Erreur: pas de req.cookies.session trouvé --> reset`);
+    clearSessionCookie(res);
+    return next(new HttpError(401, "Session invalide"));
   }
 
   console.log("✅ Session ID trouvé:", sessionId);
@@ -25,8 +25,8 @@ export async function requireAuth(
   const result = await validateSession(sessionId);
 
   if (!result) {
-    console.log(`Erreur: session non validée côté database`);
-    res.clearCookie("session");
+    console.log(`Erreur: session non trouvée ou expirée`);
+    clearSessionCookie(res);
     return next(new HttpError(401, "Session invalide"));
   }
 

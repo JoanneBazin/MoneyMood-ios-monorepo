@@ -19,7 +19,7 @@ export default defineConfig({
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
         name: "MoneyMood",
-        short_name: "MoneyMood",
+        short_name: "Money Mood",
         description: "A simple budget management app",
         theme_color: "#ffffff",
         background_color: "#ffffff",

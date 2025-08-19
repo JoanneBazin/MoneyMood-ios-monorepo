@@ -7,7 +7,7 @@ import {
   expenseEntrySchema,
   queryDateSchema,
   updateCurrentStatusSchema,
-} from "shared";
+} from "@moneymood-monorepo/shared";
 import {
   checkBudgetAccess,
   requireAuth,

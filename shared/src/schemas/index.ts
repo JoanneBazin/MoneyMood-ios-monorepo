@@ -1,11 +1,11 @@
-import { z } from "zod";
+import { z, ZodTypeAny } from "zod";
 import { ArrayValidationResult, ValidationResult } from "./types";
 
 export * from "./auth";
 export * from "./budget";
 
-export const validateWithSchema = <T>(
-  schema: z.ZodSchema<T>,
+export const validateWithSchema = <T extends ZodTypeAny>(
+  schema: T,
   data: unknown
 ): ValidationResult<T> => {
   const result = schema.safeParse(data);
@@ -31,8 +31,8 @@ export const validateWithSchema = <T>(
   };
 };
 
-export const validateArrayWithSchema = <T>(
-  schema: z.ZodSchema<T>,
+export const validateArrayWithSchema = <T extends ZodTypeAny>(
+  schema: T,
   data: unknown[]
 ): ArrayValidationResult<T> => {
   const validateItems: T[] = [];
@@ -66,7 +66,10 @@ export const validateArrayWithSchema = <T>(
   };
 };
 
-export const validateInput = <T>(schema: z.ZodSchema<T>, data: unknown) => {
+export const validateInput = <T extends ZodTypeAny>(
+  schema: T,
+  data: unknown
+) => {
   if (Array.isArray(data)) {
     return validateArrayWithSchema(schema, data);
   }

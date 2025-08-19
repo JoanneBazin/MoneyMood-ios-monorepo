@@ -91,7 +91,7 @@ export const getCurrentMonthlyBudget = async (
     });
 
     if (!currentMonthlyBudget) {
-      return next(new HttpError(404, "Budget mensuel actif non trouvé"));
+      return next(new HttpError(404, "Budget mensuel actif introuvable"));
     }
 
     return res.status(200).json(normalizeDecimalFields(currentMonthlyBudget));
@@ -128,7 +128,7 @@ export const getMonthlyBudget = async (
     });
 
     if (!monthlyBudget) {
-      return next(new HttpError(404, "Budget mensuel non trouvé"));
+      return next(new HttpError(404, "Budget mensuel introuvable"));
     }
 
     return res.status(200).json(normalizeDecimalFields(monthlyBudget));
@@ -162,7 +162,7 @@ export const getLastBudgets = async (
     });
 
     if (!history) {
-      return next(new HttpError(404, "Ancien budgets mensuels non trouvés"));
+      return next(new HttpError(404, "Pas d'historique de budgets"));
     }
 
     return res.status(200).json(normalizeDecimalFields(history));
@@ -192,7 +192,7 @@ export const getMonthlyBudgetById = async (
     });
 
     if (!monthlyBudget) {
-      return next(new HttpError(404, "Budget mensuel non trouvé"));
+      return next(new HttpError(404, "Budget mensuel introuvable"));
     }
 
     return res.status(200).json(normalizeDecimalFields(monthlyBudget));

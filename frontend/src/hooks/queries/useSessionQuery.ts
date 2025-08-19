@@ -16,8 +16,6 @@ export const useSessionQuery = () => {
     queryFn: fetchSession,
     enabled: isOnline,
     refetchOnWindowFocus: false,
-    retry: false,
-    staleTime: 7 * 24 * 60 * 60 * 1000,
   });
 
   useEffect(() => {

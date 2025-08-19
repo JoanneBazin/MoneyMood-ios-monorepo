@@ -12,10 +12,8 @@ export const useFixedIncomesQuery = () => {
   const query = useQuery<BudgetEntry[]>({
     queryKey: ["fixedIncomes"],
     queryFn: fetchFixedIncomes,
-    retry: false,
     enabled: isOnline,
     refetchOnWindowFocus: isOnline,
-    staleTime: 7 * 24 * 60 * 60 * 1000,
   });
 
   useEffect(() => {

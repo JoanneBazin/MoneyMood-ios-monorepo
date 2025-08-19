@@ -4,6 +4,7 @@ import {
   UpdateMonthlyEntryProps,
 } from "@/types";
 import { getCurrentOnlineStatus } from "../network";
+import { ApiError } from "../ApiError";
 
 export const addMonthlyEntries = async ({
   type,
@@ -20,8 +21,8 @@ export const addMonthlyEntries = async ({
   });
 
   if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
   const result = await response.json();
@@ -54,8 +55,8 @@ export const updateMonthlyEntry = async ({
   );
 
   if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
   const result = await response.json();
@@ -86,8 +87,8 @@ export const deleteMonthlyEntry = async ({
   );
 
   if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
   const result = await response.json();

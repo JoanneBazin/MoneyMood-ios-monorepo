@@ -4,6 +4,7 @@ import {
   UpdateExpenseProps,
 } from "@/types";
 import { getCurrentOnlineStatus } from "../network";
+import { ApiError } from "../ApiError";
 
 export const addExpenses = async ({ expenses, budgetId }: AddExpensesProps) => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
@@ -16,8 +17,8 @@ export const addExpenses = async ({ expenses, budgetId }: AddExpensesProps) => {
   });
 
   if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
   return response.json();
@@ -40,8 +41,8 @@ export const updateExpense = async ({
   );
 
   if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
   return response.json();
@@ -62,8 +63,8 @@ export const deleteExpense = async ({
   );
 
   if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
   const result = await response.json();

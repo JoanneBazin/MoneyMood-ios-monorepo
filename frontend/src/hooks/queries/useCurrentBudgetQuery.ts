@@ -11,10 +11,8 @@ export const useCurrentBudgetQuery = () => {
   const query = useQuery<MonthlyBudget>({
     queryKey: ["currentBudget"],
     queryFn: fetchCurrentBudget,
-    retry: false,
     enabled: isOnline,
     refetchOnWindowFocus: isOnline,
-    staleTime: 7 * 24 * 60 * 60 * 1000,
   });
 
   useEffect(() => {

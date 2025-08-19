@@ -1,12 +1,23 @@
 import { BudgetEntry, BudgetEntryForm } from "@shared/schemas";
 import { getCurrentOnlineStatus } from "../network";
+import { ApiError } from "../ApiError";
 
 export const fetchFixedCharges = async () => {
   const response = await fetch(`/api/fixed-charges`, {
     credentials: "include",
   });
 
-  if (!response.ok) throw new Error("Charges fixes indisponibles");
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new ApiError(
+      response.status,
+      data.error || "Charges fixes indisponibles"
+    );
+  }
 
   return response.json();
 };
@@ -22,8 +33,8 @@ export const addFixedCharges = async (charges: BudgetEntryForm[]) => {
   });
 
   if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
   return response.json();
@@ -39,8 +50,8 @@ export const updateFixedCharge = async (charge: BudgetEntry) => {
   });
 
   if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
   return response.json();
@@ -55,11 +66,9 @@ export const deleteFixedCharges = async (chargeId: string) => {
   });
 
   if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
-
-  const result = await response.json();
 
   return {
     chargeId,

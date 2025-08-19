@@ -10,6 +10,7 @@ import { Loader } from "@/components/ui/Loader";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { AnimatedView } from "@/components/ui/AnimatedView";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
+import { ApiError } from "@/lib/ApiError";
 
 export const History = () => {
   const { data: lastBudgets, isPending, error } = useLastBudgetsQuery();
@@ -36,7 +37,9 @@ export const History = () => {
       setSearchedBudget(data);
     } catch (error) {
       setSearchError(
-        error instanceof Error ? error.message : "Erreur lors de la recherche"
+        error instanceof ApiError
+          ? error.message
+          : "Erreur lors de la recherche"
       );
     } finally {
       setIsSearchLoading(false);

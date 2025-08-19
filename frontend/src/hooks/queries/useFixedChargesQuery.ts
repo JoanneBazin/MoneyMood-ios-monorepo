@@ -12,10 +12,8 @@ export const useFixedChargesQuery = () => {
   const query = useQuery<BudgetEntry[]>({
     queryKey: ["fixedCharges"],
     queryFn: fetchFixedCharges,
-    retry: false,
     enabled: isOnline,
     refetchOnWindowFocus: isOnline,
-    staleTime: 7 * 24 * 60 * 60 * 1000,
   });
 
   useEffect(() => {

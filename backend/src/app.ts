@@ -23,7 +23,8 @@ setupSecurity(app);
 app.use(setupCompression);
 
 app.use("/api", generalLimiter);
-app.use("/api/auth", authLimiter);
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/signup", authLimiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/fixed-incomes", fixedIncomes);

@@ -15,11 +15,16 @@ export default defineConfig({
       registerType: "autoUpdate",
       workbox: {
         globPatterns: ["**/*.{js,css,html,png,svg,webp,ico,woff2}"],
+        cleanupOutdatedCaches: true,
       },
-      includeAssets: ["favicon.ico", "apple-touch-icon.png"],
+      includeAssets: [
+        "favicon.ico",
+        "apple-touch-icon.png",
+        "android-chrome-*.png",
+      ],
       manifest: {
         name: "MoneyMood",
-        short_name: "Money Mood",
+        short_name: "MoneyMood",
         description: "A simple budget management app",
         theme_color: "#ffffff",
         background_color: "#ffffff",
@@ -29,23 +34,38 @@ export default defineConfig({
         orientation: "portrait-primary",
         icons: [
           {
-            src: "android-chrome-192x192.png",
+            src: "/android-chrome-192x192.png",
             sizes: "192x192",
             type: "image/png",
-            purpose: "any maskable",
+            purpose: "maskable",
           },
           {
-            src: "android-chrome-512x512.png",
+            src: "/android-chrome-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/android-chrome-512x512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable",
+            purpose: "maskable",
           },
           {
-            src: "apple-touch-icon.png",
+            src: "/android-chrome-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/apple-touch-icon.png",
             sizes: "180x180",
             type: "image/png",
           },
         ],
+      },
+      devOptions: {
+        enabled: false,
       },
     }),
   ],

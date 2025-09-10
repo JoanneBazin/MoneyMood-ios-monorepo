@@ -45,3 +45,14 @@ export interface AnimatedMenuProps {
   menu: string;
   children: React.ReactNode;
 }
+
+export interface SkeletonBoxProps {
+  width: string;
+  height: string;
+}
+
+export interface SkeletonGridProps {
+  columns?: number;
+  gap?: string;
+  children: React.ReactNode;
+}

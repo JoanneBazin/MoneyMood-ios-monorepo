@@ -18,7 +18,7 @@ export const TotalCard = ({ title, totalData, setView }: TotalCardProps) => {
       )}
       <div className="total-card__text">
         <p>{title}</p>
-        <span>€ {totalData}</span>
+        <span>€ {totalData.toFixed(2)}</span>
       </div>
     </div>
   );

@@ -1,0 +1,17 @@
+@use "../abstracts" as *;
+
+.skeleton-box {
+  display: inline-block;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  border-radius: $border-radius-sm;
+
+  @include skeleton-loading;
+}
+
+.skeleton-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}

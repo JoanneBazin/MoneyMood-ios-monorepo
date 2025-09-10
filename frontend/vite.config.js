@@ -80,4 +80,13 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "../shared/dist"),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:4000",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });

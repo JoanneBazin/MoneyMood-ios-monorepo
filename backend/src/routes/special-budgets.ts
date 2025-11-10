@@ -17,7 +17,7 @@ import {
   getAllSpecialBudgets,
   getSpecialBudgetDetails,
   updateSpecialExpense,
-} from "src/controllers";
+} from "../controllers";
 
 const router = express.Router();
 

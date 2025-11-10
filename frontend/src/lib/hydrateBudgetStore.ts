@@ -1,5 +1,5 @@
 import { useBudgetStore } from "@/stores/budgetStore";
-import { getWeeksInMonth } from "./getWeeksInMonth";
+import { getWeeksInMonth } from "./weeks-helpers";
 import { MonthlyBudget } from "@shared/schemas";
 
 export const hydrateBudgetStore = (budget: MonthlyBudget) => {

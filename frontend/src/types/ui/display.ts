@@ -17,6 +17,6 @@ export interface DateDisplayProps {
 }
 
 export interface WeekProps {
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
 }

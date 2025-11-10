@@ -1,7 +1,7 @@
 import { useBudgetStore } from "@/stores/budgetStore";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DateDisplayProps } from "@/types";
-import { getWeeksInMonth } from "@/lib/getWeeksInMonth";
+import { getWeeksInMonth } from "@/lib/weeks-helpers";
 
 export const DateDisplay = ({
   weekIndex,
@@ -27,18 +27,7 @@ export const DateDisplay = ({
       >
         <ChevronLeft className="week-selector__icon" />
       </button>
-      <span>
-        du{" "}
-        {new Date(weeks[weekIndex].start).toLocaleDateString("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-        })}{" "}
-        au{" "}
-        {new Date(weeks[weekIndex].end).toLocaleDateString("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-        })}
-      </span>
+      <span>{`du ${weeks[weekIndex].start} au ${weeks[weekIndex].end}`}</span>
       <button
         onClick={() => setIndex(Math.min(weekIndex + 1, weeks.length - 1))}
         disabled={weekIndex === weeks.length - 1}

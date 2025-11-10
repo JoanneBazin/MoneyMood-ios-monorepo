@@ -25,6 +25,7 @@ import {
   WeeklyExpensesDisplayProps,
 } from "@/types";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { getCurrentWeek } from "@/lib/weeks-helpers";
 
 export const WeeklyExpensesDisplay = ({
   budgetId,
@@ -34,7 +35,7 @@ export const WeeklyExpensesDisplay = ({
   oldDate,
 }: WeeklyExpensesDisplayProps) => {
   const [newExpenses, setNewExpenses] = useState<NewBudgetEntry[]>([]);
-  const [weekIndex, setWeekIndex] = useState(0);
+  const [weekIndex, setWeekIndex] = useState(getCurrentWeek());
   const currentWeekNumber = weekIndex + 1;
   const weeklyExpenses = expenses.filter(
     (expense) => expense.weekNumber === currentWeekNumber

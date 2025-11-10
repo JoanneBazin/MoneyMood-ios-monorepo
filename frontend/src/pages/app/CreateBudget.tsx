@@ -2,16 +2,18 @@ import { useBudgetStore } from "@/stores/budgetStore";
 import { useEffect, useState } from "react";
 import { createMonthlyBudgetSchema, validateWithSchema } from "@shared/schemas";
 import { extractArrayErrors } from "@/lib/extractArrayErrors";
-import { getWeeksInMonth } from "@/lib/getWeeksInMonth";
+import { getWeeksInMonth } from "@/lib/weeks-helpers";
 import { useCreateBudgetMutation } from "@/hooks/queries/mutations";
 import { BudgetDataCard, MonthYearPicker } from "@/components/ui";
 import { AddEntriesForm } from "@/components/forms";
 import { NewBudgetEntry } from "@/types";
 
 export const CreateBudget = () => {
-  const charges = useBudgetStore((s) => s.fixedCharges);
-  const incomes = useBudgetStore((s) => s.fixedIncomes);
-  const setPageTitle = useBudgetStore((s) => s.setPageTitle);
+  const {
+    fixedCharges: charges,
+    fixedIncomes: incomes,
+    setPageTitle,
+  } = useBudgetStore();
   const [month, setMonth] = useState<number | null>(null);
   const [year, setYear] = useState<number | null>(null);
 

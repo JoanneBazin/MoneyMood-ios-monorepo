@@ -4,19 +4,20 @@ import {
   createSpecialExpenseEntrySchema,
   specialExpenseEntrySchema,
 } from "@moneymood-monorepo/shared";
-import { checkBudgetAccess, requireAuth, validateBody } from "../middleware";
+import {
+  checkSpecialBudgetAccess,
+  requireAuth,
+  validateBody,
+} from "../middleware";
 import {
   addSpecialBudget,
+  addSpecialExpenses,
   deleteSpecialBudget,
+  deleteSpecialExpense,
   getAllSpecialBudgets,
   getSpecialBudgetDetails,
-} from "src/controllers/special-budgets";
-import {
-  addSpecialExpenses,
-  deleteSpecialExpense,
   updateSpecialExpense,
-} from "src/controllers/special-expenses";
-import { checkSpecialBudgetAccess } from "src/middleware/checkBudgetAccess";
+} from "src/controllers";
 
 const router = express.Router();
 

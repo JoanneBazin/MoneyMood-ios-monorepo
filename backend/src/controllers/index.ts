@@ -5,3 +5,5 @@ export * from "./monthly-budgets";
 export * from "./monthly-charges";
 export * from "./monthly-expenses";
 export * from "./monthly-incomes";
+export * from "./special-budgets";
+export * from "./special-expenses";

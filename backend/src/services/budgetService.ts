@@ -1,6 +1,7 @@
 import { HttpError, prisma } from "../lib";
 import {
   calculateRemainingBudget,
+  calculateSpecialBudget,
   calculateWeeklyBudget,
 } from "./budgetCalculations";
 
@@ -38,6 +39,37 @@ export const updateMonthlyBudgetRemaining = async (monthlyBudgetId: string) => {
 
   return await prisma.monthlyBudget.update({
     where: { id: monthlyBudgetId },
+    data: { remainingBudget },
+    select: {
+      remainingBudget: true,
+    },
+  });
+};
+
+export const updateSpecialBudgetRemaining = async (specialBudgetId: string) => {
+  const specialBudget = await prisma.specialBudget.findUnique({
+    where: { id: specialBudgetId },
+    select: {
+      totalBudget: true,
+      expenses: {
+        select: {
+          amount: true,
+        },
+      },
+    },
+  });
+
+  if (!specialBudget) {
+    throw new HttpError(404, "Budget mensuel non trouvé");
+  }
+
+  const remainingBudget = calculateSpecialBudget(
+    specialBudget.totalBudget,
+    specialBudget.expenses
+  );
+
+  return await prisma.specialBudget.update({
+    where: { id: specialBudgetId },
     data: { remainingBudget },
     select: {
       remainingBudget: true,

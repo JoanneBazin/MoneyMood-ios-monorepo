@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  expenseEntrySelect,
   getMultipleParamsIds,
   getParamsId,
   HttpError,
@@ -8,39 +7,40 @@ import {
   isPrismaRecordNotFound,
   normalizeDecimalFields,
   prisma,
+  specialExpenseEntrySelect,
 } from "../lib";
-import { updateMonthlyBudgetRemaining } from "../services";
+import { updateSpecialBudgetRemaining } from "../services";
 
-export const addMonthlyExpenses = async (
+export const addSpecialExpenses = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const monthlyBudgetId = getParamsId(req, next);
-  if (!monthlyBudgetId) return;
-
-  const data = req.body;
-  const expensesArray = Array.isArray(data) ? data : [data];
-
   try {
-    const monthlyExpenses = await Promise.all(
+    const specialBudgetId = getParamsId(req, next);
+    if (!specialBudgetId) return;
+
+    const data = req.body;
+    const expensesArray = Array.isArray(data) ? data : [data];
+
+    const specialExpenses = await Promise.all(
       expensesArray.map((expense) =>
         prisma.expense.create({
           data: {
             ...expense,
-            monthlyBudgetId,
+            specialBudgetId,
           },
-          select: expenseEntrySelect,
+          select: specialExpenseEntrySelect,
         })
       )
     );
 
-    const { remainingBudget } = await updateMonthlyBudgetRemaining(
-      monthlyBudgetId
+    const { remainingBudget } = await updateSpecialBudgetRemaining(
+      specialBudgetId
     );
 
     return res.status(201).json({
-      expenses: normalizeDecimalFields(monthlyExpenses),
+      expenses: normalizeDecimalFields(specialExpenses),
       remainingBudget: normalizeDecimalFields(remainingBudget),
     });
   } catch (error) {
@@ -51,16 +51,17 @@ export const addMonthlyExpenses = async (
   }
 };
 
-export const updateMonthlyExpense = async (
+export const updateSpecialExpense = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const params = getMultipleParamsIds(req, ["id", "expenseId"], next);
   if (!params) return;
-  const { id: monthlyBudgetId, expenseId } = params;
 
-  const { name, amount, weekNumber } = req.body;
+  const { id: specialBudgetId, expenseId } = params;
+
+  const { name, amount, category } = req.body;
 
   try {
     const updatedExpense = await prisma.expense.update({
@@ -70,13 +71,13 @@ export const updateMonthlyExpense = async (
       data: {
         name,
         amount,
-        weekNumber,
+        category,
       },
-      select: expenseEntrySelect,
+      select: specialExpenseEntrySelect,
     });
 
-    const { remainingBudget } = await updateMonthlyBudgetRemaining(
-      monthlyBudgetId
+    const { remainingBudget } = await updateSpecialBudgetRemaining(
+      specialBudgetId
     );
 
     return res.status(200).json({
@@ -96,14 +97,14 @@ export const updateMonthlyExpense = async (
   }
 };
 
-export const deleteMonthlyExpense = async (
+export const deleteSpecialExpense = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const params = getMultipleParamsIds(req, ["id", "expenseId"], next);
   if (!params) return;
-  const { id: monthlyBudgetId, expenseId } = params;
+  const { id: specialBudgetId, expenseId } = params;
 
   try {
     await prisma.expense.delete({
@@ -112,8 +113,8 @@ export const deleteMonthlyExpense = async (
       },
     });
 
-    const { remainingBudget } = await updateMonthlyBudgetRemaining(
-      monthlyBudgetId
+    const { remainingBudget } = await updateSpecialBudgetRemaining(
+      specialBudgetId
     );
 
     return res.status(200).json({

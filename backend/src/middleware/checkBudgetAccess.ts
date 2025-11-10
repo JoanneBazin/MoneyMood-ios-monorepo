@@ -25,3 +25,28 @@ export const checkBudgetAccess = async (
     return next(error);
   }
 };
+
+export const checkSpecialBudgetAccess = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = getUserId(req, next);
+  if (!userId) return;
+
+  const specialBudgetId = req.params.id;
+  if (!specialBudgetId) return;
+
+  try {
+    const budget = await prisma.specialBudget.findUnique({
+      where: { id: specialBudgetId },
+      select: { userId: true },
+    });
+    if (!budget || budget.userId !== userId) {
+      return next(new HttpError(403, "Accès interdit à ce budget"));
+    }
+    next();
+  } catch (error) {
+    return next(error);
+  }
+};

@@ -25,6 +25,7 @@ model User {
   fixedIncomes FixedIncome[]
   fixedCharges FixedCharge[]
   monthlyBudgets  MonthlyBudget[]
+  specialBudgets  SpecialBudget[]
 }
 
 model Session {
@@ -71,7 +72,7 @@ model MonthlyBudget {
 
   incomes MonthlyIncome[]
   charges  MonthlyCharge[]
-  expenses  WeeklyExpense[]
+  expenses  Expense[]
 
   @@unique([userId, month, year])
   @@index([userId, month, year])
@@ -97,14 +98,35 @@ model MonthlyCharge {
   monthlyBudget  MonthlyBudget  @relation(fields: [monthlyBudgetId], references: [id], onDelete: Cascade)
 }
 
-model WeeklyExpense {
+model Expense {
   id  String  @id @default(cuid())
   name String
   amount  Decimal @db.Decimal(10, 2)
-  weekNumber  Int
   category  String?
-  monthlyBudgetId  String
   createdAt DateTime  @default(now())
 
-  monthlyBudget  MonthlyBudget  @relation(fields: [monthlyBudgetId], references: [id], onDelete: Cascade)
+  weekNumber  Int?
+  monthlyBudgetId  String?
+  monthlyBudget  MonthlyBudget?  @relation(fields: [monthlyBudgetId], references: [id], onDelete: Cascade)
+
+  specialBudgetId  String?
+  specialBudget  SpecialBudget?  @relation(fields: [specialBudgetId], references: [id], onDelete: Cascade)
+
+  @@map("WeeklyExpense")
+  @@index([monthlyBudgetId])
+  @@index([specialBudgetId])
+}
+
+model SpecialBudget {
+  id  String  @id @default(cuid())
+  name String
+  totalBudget Decimal @db.Decimal(10, 2)
+  remainingBudget Decimal @db.Decimal(10, 2)
+  userId  String
+  createdAt DateTime  @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expenses  Expense[]
+
+  @@index([userId])
 }

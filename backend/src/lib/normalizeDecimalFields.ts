@@ -4,6 +4,11 @@ export const normalizeDecimalFields = (data: any): any => {
   if (Decimal.isDecimal(data)) {
     return data.toNumber();
   }
+
+  if (data instanceof Date) {
+    return data.toLocaleDateString("fr-FR");
+  }
+
   if (Array.isArray(data)) {
     return data.map(normalizeDecimalFields);
   }

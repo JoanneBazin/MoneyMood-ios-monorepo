@@ -10,6 +10,13 @@ export const expenseEntrySelect = {
   amount: true,
   weekNumber: true,
 };
+export const specialExpenseEntrySelect = {
+  id: true,
+  name: true,
+  amount: true,
+  category: true,
+  createdAt: true,
+};
 
 export const monthlyBudgetSelect = {
   id: true,

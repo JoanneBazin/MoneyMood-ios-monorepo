@@ -10,6 +10,16 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "Session" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "FixedIncome" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -36,7 +46,10 @@ CREATE TABLE "MonthlyBudget" (
     "id" TEXT NOT NULL,
     "month" INTEGER NOT NULL,
     "year" INTEGER NOT NULL,
+    "isCurrent" BOOLEAN NOT NULL DEFAULT false,
     "remainingBudget" DECIMAL(10,2) NOT NULL,
+    "weeklyBudget" DECIMAL(10,2) NOT NULL,
+    "numberOfWeeks" INTEGER NOT NULL,
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -86,6 +99,9 @@ CREATE INDEX "MonthlyBudget_userId_month_year_idx" ON "MonthlyBudget"("userId", 
 
 -- CreateIndex
 CREATE UNIQUE INDEX "MonthlyBudget_userId_month_year_key" ON "MonthlyBudget"("userId", "month", "year");
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FixedIncome" ADD CONSTRAINT "FixedIncome_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

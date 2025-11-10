@@ -34,6 +34,24 @@ export const calculateRemainingBudget = (
   return totalIncomes - totalCharges;
 };
 
+export const calculateSpecialBudget = (
+  total: Decimal | number,
+  expenses: { amount: Decimal | number }[]
+): number => {
+  const getAmount = (amount: number | Decimal): number => {
+    return typeof amount === "number" ? amount : amount.toNumber();
+  };
+
+  const totalExpenses = expenses.reduce(
+    (sum: number, expense: { amount: Decimal | number }) =>
+      sum + getAmount(expense.amount),
+    0
+  );
+  const totalBudget = getAmount(total);
+
+  return totalBudget - totalExpenses;
+};
+
 export const calculateWeeklyBudget = (
   remainingBudget: number,
   numberOfWeeks: number

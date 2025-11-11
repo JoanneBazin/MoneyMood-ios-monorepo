@@ -32,14 +32,8 @@ export const getWeeksInMonth = (year: number, month: number): WeekProps[] => {
 
     if (daysInMonth >= 4) {
       weeks.push({
-        start: new Date(weekStart).toLocaleDateString("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-        }),
-        end: new Date(weekEnd).toLocaleDateString("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-        }),
+        start: new Date(weekStart),
+        end: new Date(weekEnd),
       });
     }
 
@@ -51,16 +45,11 @@ export const getWeeksInMonth = (year: number, month: number): WeekProps[] => {
 
 export const getCurrentWeek = () => {
   const weeksInMonth = useBudgetStore((s) => s.weeksInMonth);
-  const currentDay = Number(new Date().toLocaleDateString("fr-FR").slice(0, 2));
+  const currentDay = new Date();
 
   const currentWeekIndex = weeksInMonth.findIndex(
-    (w) =>
-      Number(w.start.slice(0, 2)) <= currentDay &&
-      Number(w.end.slice(0, 2)) >= currentDay
+    (w) => currentDay >= w.start && currentDay <= w.end
   );
 
-  if (!currentWeekIndex || currentWeekIndex === -1) {
-    return 0;
-  }
-  return currentWeekIndex;
+  return currentWeekIndex === -1 ? 0 : currentWeekIndex;
 };

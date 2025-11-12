@@ -9,6 +9,7 @@ import {
   prisma,
   specialExpenseEntrySelect,
 } from "../lib";
+import { updateSpecialBudgetRemaining } from "src/services";
 
 export const addSpecialBudget = async (
   req: Request,
@@ -97,6 +98,52 @@ export const getAllSpecialBudgets = async (
 
     return res.status(200).json(normalizeDecimalFields(specialBudgets));
   } catch (error) {
+    return next(error);
+  }
+};
+
+export const updateSpecialBudget = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = getUserId(req, next);
+  if (!userId) return;
+
+  const specialBudgetId = getParamsId(req, next);
+  if (!specialBudgetId) return;
+
+  try {
+    const { name, totalBudget } = req.body;
+
+    const budget = await prisma.specialBudget.update({
+      where: {
+        id: specialBudgetId,
+        userId,
+      },
+      data: {
+        name,
+        totalBudget,
+      },
+      include: {
+        expenses: {
+          select: specialExpenseEntrySelect,
+        },
+      },
+    });
+    const { remainingBudget } = await updateSpecialBudgetRemaining(budget.id);
+    const updatedBudget = { ...budget, remainingBudget };
+
+    return res.status(200).json(normalizeDecimalFields(updatedBudget));
+  } catch (error) {
+    if (isPrismaRecordNotFound(error)) {
+      return next(
+        new HttpError(
+          404,
+          "Budget non trouvé ou vous n'avez pas les droits d'accès."
+        )
+      );
+    }
     return next(error);
   }
 };

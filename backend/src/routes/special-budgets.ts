@@ -16,6 +16,7 @@ import {
   deleteSpecialExpense,
   getAllSpecialBudgets,
   getSpecialBudgetDetails,
+  updateSpecialBudget,
   updateSpecialExpense,
 } from "../controllers";
 
@@ -30,6 +31,12 @@ router.post(
 );
 router.get("/", requireAuth, getAllSpecialBudgets);
 router.get("/:id", requireAuth, getSpecialBudgetDetails);
+router.put(
+  "/:id",
+  requireAuth,
+  validateBody(createSpecialBudgetSchema),
+  updateSpecialBudget
+);
 router.delete("/:id", requireAuth, deleteSpecialBudget);
 
 // Special Expenses

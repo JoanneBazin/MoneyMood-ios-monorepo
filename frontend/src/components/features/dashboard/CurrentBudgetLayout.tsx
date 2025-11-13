@@ -2,13 +2,13 @@ import { formatDateTitle } from "@/lib/formatDateTitle";
 import { useBudgetStore } from "@/stores/budgetStore";
 import { useEffect, useState } from "react";
 import { MonthlyEntries } from "../budget/MonthlyEntries";
-import { BackArrow, TotalMonthlyEntriesDisplay } from "@/components/ui";
+import { BackArrow, RemainingBudgetDisplay } from "@/components/ui";
 import { WeeklyExpensesDisplay } from "../budget/WeeklyExpensesDisplay";
-import { MonthlyBudget } from "@shared/schemas";
 import { TotalCard } from "@/components/ui/TotalCard";
 import { MonthlyBudgetOptions } from "../budget/MonthlyBudgetOptions";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { AnimatedView } from "@/components/ui/AnimatedView";
+import { MonthlyBudget } from "@/types";
 
 type View = "app" | "charges" | "incomes";
 
@@ -59,8 +59,8 @@ export const CurrentBudgetLayout = ({ budget }: { budget: MonthlyBudget }) => {
   return (
     <section>
       <div className="flex-between">
-        <TotalMonthlyEntriesDisplay
-          type="budget"
+        <RemainingBudgetDisplay
+          type="Total budget"
           total={budget.remainingBudget}
         />
         <MonthlyBudgetOptions

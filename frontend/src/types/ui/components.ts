@@ -1,11 +1,11 @@
-import { BudgetEntry } from "@shared/schemas";
+import { Entry } from "../budget";
 
 export interface BackArrowProps {
   destination?: string;
   onBack?: () => void;
 }
 
-export interface DataListProps<T extends BudgetEntry> {
+export interface DataListProps<T extends Entry> {
   data: T[];
   emptyMessage: string;
   setSelectedEntry?: (entry: T) => void;
@@ -20,7 +20,7 @@ export interface ModalProps {
 }
 
 export interface CollapseProps {
-  data: BudgetEntry[];
+  data: Entry[];
   title: string;
   color: string;
 }
@@ -55,4 +55,9 @@ export interface SkeletonGridProps {
   columns?: number;
   gap?: string;
   children: React.ReactNode;
+}
+
+export interface DeleteModalContentProps {
+  onDelete: () => void;
+  onClose: () => void;
 }

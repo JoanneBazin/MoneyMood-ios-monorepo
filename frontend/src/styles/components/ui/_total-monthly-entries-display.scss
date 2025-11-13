@@ -8,3 +8,12 @@
   gap: $spacing-xs;
   @include font-responsive(lg);
 }
+
+.total-secondary {
+  color: $gray-700;
+  @include font-responsive(sm);
+
+  .total-budget {
+    @include font-responsive(base);
+  }
+}

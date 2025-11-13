@@ -1,4 +1,5 @@
-import { ExpenseEntry, ExpenseEntryForm } from "@shared/schemas";
+import { ExpenseEntryForm } from "@shared/schemas";
+import { ExpenseEntry, UpdateExpenseEntry } from "./entries";
 
 export interface WeeklyExpensesDisplayProps {
   budgetId: string;
@@ -17,7 +18,7 @@ export interface AddExpensesProps {
 }
 
 export interface UpdateExpenseProps {
-  expense: ExpenseEntry;
+  expense: UpdateExpenseEntry;
   budgetId: string;
 }
 export interface DeleteExpenseProps {

@@ -1,42 +1,30 @@
-import { BudgetEntry } from "@shared/schemas";
+import { SpecialBudgetForm } from "@shared/schemas";
+import { BaseEntryForm, UpdateExpenseEntry } from "../budget";
 
 export interface MonthYearPickerProps {
   onChange: (month: number, year: number) => void;
   defaultInput?: boolean;
 }
 
-export interface NewBudgetEntry {
-  id?: string;
-  name: string;
-  amount: number | string;
-}
-
-export interface UpdatedBudgetEntry {
-  id: string;
-  name: string;
-  amount: number | string;
-}
-
-export interface UpdatedExpenseEntry {
-  id: string;
-  name: string;
-  amount: number | string;
-  weekNumber: number;
-  category?: string;
-}
-
 export interface AddEntriesFormProps {
-  initialData?: NewBudgetEntry[];
+  initialData?: BaseEntryForm[];
   errors: Record<string, string>[] | null;
-  onChange: (entries: NewBudgetEntry[]) => void;
+  onChange: (entries: BaseEntryForm[]) => void;
   onResetErrors: () => void;
-  type: string;
+  type: "charge" | "income" | "expense" | "special-expense";
 }
 
-export interface UpdateEntryFormProps<T extends BudgetEntry> {
-  initialData: T;
+export interface UpdateEntryFormProps {
+  initialData: UpdateExpenseEntry;
   validationErrors: Record<string, string> | null;
   genericError: string | null;
-  onSubmit: (entry: T) => void;
-  onDelete: (entry: T) => void;
+  onSubmit: (entry: UpdateExpenseEntry) => void;
+  onDelete: (entryId: string) => void;
+}
+
+export interface ProjectFormProps {
+  onSubmit: (data: SpecialBudgetForm) => void;
+  isPending: boolean;
+  edit: boolean;
+  initialData?: SpecialBudgetForm;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getBudgetById } from "@/lib/api/monthlyBudgets";
 import { formatDateTitle } from "@/lib/formatDateTitle";
-import { Collapse, TotalMonthlyEntriesDisplay } from "@/components/ui";
+import { Collapse, RemainingBudgetDisplay } from "@/components/ui";
 import { WeeklyExpensesDisplay } from "../budget/WeeklyExpensesDisplay";
 import { LastBudgetLayoutProps } from "@/types";
 import { MonthlyBudget } from "@shared/schemas";
@@ -43,8 +43,8 @@ export const LastBudgetLayout = ({ budgetId }: LastBudgetLayoutProps) => {
       {budget ? (
         <>
           <div className="flex-between">
-            <TotalMonthlyEntriesDisplay
-              type={formatDateTitle(budget.year, budget.month)}
+            <RemainingBudgetDisplay
+              type={`Total ${formatDateTitle(budget.year, budget.month)}`}
               total={budget.remainingBudget ?? 0}
             />
             <MonthlyBudgetOptions

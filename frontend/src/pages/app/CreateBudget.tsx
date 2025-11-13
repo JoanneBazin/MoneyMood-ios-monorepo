@@ -1,12 +1,12 @@
 import { useBudgetStore } from "@/stores/budgetStore";
 import { useEffect, useState } from "react";
-import { createMonthlyBudgetSchema, validateWithSchema } from "@shared/schemas";
+import { monthlyBudgetSchema, validateWithSchema } from "@shared/schemas";
 import { extractArrayErrors } from "@/lib/extractArrayErrors";
 import { getWeeksInMonth } from "@/lib/weeks-helpers";
 import { useCreateBudgetMutation } from "@/hooks/queries/mutations";
 import { BudgetDataCard, MonthYearPicker } from "@/components/ui";
 import { AddEntriesForm } from "@/components/forms";
-import { NewBudgetEntry } from "@/types";
+import { BaseEntryForm } from "@/types";
 
 export const CreateBudget = () => {
   const {
@@ -18,9 +18,9 @@ export const CreateBudget = () => {
   const [year, setYear] = useState<number | null>(null);
 
   const [monthlyCharges, setMonthlyCharges] =
-    useState<NewBudgetEntry[]>(charges);
+    useState<BaseEntryForm[]>(charges);
   const [monthlyIncomes, setMonthlyIncomes] =
-    useState<NewBudgetEntry[]>(incomes);
+    useState<BaseEntryForm[]>(incomes);
   const [isCurrent, setIsCurrent] = useState(true);
 
   const [incomesErrors, setIncomesErrors] = useState<
@@ -55,7 +55,7 @@ export const CreateBudget = () => {
       numberOfWeeks: getWeeksInMonth(year, month).length,
     };
 
-    const validation = validateWithSchema(createMonthlyBudgetSchema, newBudget);
+    const validation = validateWithSchema(monthlyBudgetSchema, newBudget);
     if (!validation.success) {
       setIncomesErrors(extractArrayErrors(validation.errors, "incomes"));
       setChargesErrors(extractArrayErrors(validation.errors, "charges"));

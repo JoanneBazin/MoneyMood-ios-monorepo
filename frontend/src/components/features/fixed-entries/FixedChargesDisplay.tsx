@@ -14,9 +14,9 @@ import {
 import { useBudgetStore } from "@/stores/budgetStore";
 import { NewBudgetEntry, UpdatedBudgetEntry } from "@/types";
 import {
+  baseEntrySchema,
   BudgetEntry,
   budgetEntrySchema,
-  createBudgetEntrySchema,
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
@@ -54,10 +54,7 @@ export const FixedChargesDisplay = () => {
   const handleAddCharges = () => {
     setValidationError(null);
 
-    const validation = validateArrayWithSchema(
-      createBudgetEntrySchema,
-      newCharges
-    );
+    const validation = validateArrayWithSchema(baseEntrySchema, newCharges);
 
     if (!validation.success) {
       setValidationError(Object.values(validation.errors));

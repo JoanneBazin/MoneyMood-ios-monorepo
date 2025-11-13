@@ -1,17 +1,21 @@
 import { Check, X } from "lucide-react";
 import { useState } from "react";
-import { UpdateEntryFormProps } from "@/types";
-import { BudgetEntry } from "@shared/schemas";
+import { UpdateEntryFormProps, UpdateExpenseEntry } from "@/types";
 import { ErrorMessage } from "../ui/ErrorMessage";
 
-export const UpdateEntryForm = <T extends BudgetEntry>({
+export const UpdateEntryForm = ({
   initialData,
   validationErrors,
   genericError,
   onSubmit,
   onDelete,
-}: UpdateEntryFormProps<T>) => {
-  const [updatedEntry, setUpdatedEntry] = useState<T>(initialData);
+}: UpdateEntryFormProps) => {
+  const { id, name, amount } = initialData;
+  const [updatedEntry, setUpdatedEntry] = useState<UpdateExpenseEntry>({
+    id,
+    name,
+    amount,
+  });
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   return (
@@ -68,7 +72,7 @@ export const UpdateEntryForm = <T extends BudgetEntry>({
           <p>Supprimer cette entrée ?</p>
           <button
             type="button"
-            onClick={() => onDelete(updatedEntry)}
+            onClick={() => updatedEntry.id && onDelete(updatedEntry.id)}
             className="delete-item__button valid"
           >
             <Check size={16} />

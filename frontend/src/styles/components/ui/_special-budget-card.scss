@@ -1,0 +1,22 @@
+@use "../../abstracts" as *;
+
+.special-budget-card {
+  display: grid;
+  grid-template-columns: 45% 30% 25%;
+  align-items: end;
+  border-radius: $border-radius-xs;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid $primary-dark;
+  margin-bottom: $spacing-lg;
+
+  &__title {
+    font-family: $font-family-secondary;
+    font-weight: $font-weight-semibold;
+    @include font-responsive(sm);
+  }
+
+  &__date {
+    color: $gray-700;
+    @include font-responsive(xs);
+  }
+}

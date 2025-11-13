@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AddEntriesFormProps, NewBudgetEntry } from "@/types";
+import { AddEntriesFormProps, BaseEntryForm } from "@/types";
 
 export const AddEntriesForm = ({
   initialData,
@@ -8,7 +8,7 @@ export const AddEntriesForm = ({
   onResetErrors,
   type,
 }: AddEntriesFormProps) => {
-  const [entries, setEntries] = useState<NewBudgetEntry[]>(initialData || []);
+  const [entries, setEntries] = useState<BaseEntryForm[]>(initialData || []);
 
   useEffect(() => {
     setEntries(initialData || []);
@@ -16,7 +16,7 @@ export const AddEntriesForm = ({
 
   const handleUpdate = (
     index: number,
-    field: keyof NewBudgetEntry,
+    field: keyof BaseEntryForm,
     value: string
   ) => {
     const updatedEntries = entries.map((entry, i) =>

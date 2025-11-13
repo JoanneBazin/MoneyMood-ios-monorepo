@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {
+  baseEntrySchema,
   BudgetEntry,
   budgetEntrySchema,
-  createBudgetEntrySchema,
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
@@ -11,12 +11,7 @@ import {
   useDeleteMonthlyEntriesMutation,
   useUpdateMonthlyEntriesMutation,
 } from "@/hooks/queries/mutations";
-import {
-  BudgetDataCard,
-  DataList,
-  Modal,
-  TotalMonthlyEntriesDisplay,
-} from "@/components/ui";
+import { BudgetDataCard, DataList, Modal } from "@/components/ui";
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import {
   MonthlyEntriesView,
@@ -24,6 +19,7 @@ import {
   UpdatedBudgetEntry,
 } from "@/types";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { RemainingBudgetDisplay } from "@/components/ui/RemainingBudgetDisplay";
 
 export const MonthlyEntries = ({
   type,
@@ -59,10 +55,7 @@ export const MonthlyEntries = ({
   const handleAddEntries = () => {
     setValidationError(null);
 
-    const validation = validateArrayWithSchema(
-      createBudgetEntrySchema,
-      newEntries
-    );
+    const validation = validateArrayWithSchema(baseEntrySchema, newEntries);
 
     if (!validation.success) {
       setValidationError(Object.values(validation.errors));
@@ -128,7 +121,7 @@ export const MonthlyEntries = ({
 
   return (
     <section>
-      <TotalMonthlyEntriesDisplay type={type} total={totalData} />
+      <RemainingBudgetDisplay type={`Total ${type}`} total={totalData} />
 
       {genericAddError && (
         <ErrorMessage message="Une erreur interne est survenue" />

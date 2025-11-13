@@ -1,8 +1,7 @@
 import { ChevronRight, ShoppingBag } from "lucide-react";
-import { DataListProps } from "@/types";
-import { BudgetEntry } from "@shared/schemas";
+import { DataListProps, Entry } from "@/types";
 
-export const DataList = <T extends BudgetEntry>({
+export const DataList = <T extends Entry>({
   data,
   emptyMessage,
   setSelectedEntry,

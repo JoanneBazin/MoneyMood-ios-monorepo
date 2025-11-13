@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import {
-  createExpenseEntrySchema,
-  ExpenseEntry,
   expenseEntrySchema,
+  updateExpenseEntrySchema,
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
@@ -20,8 +19,9 @@ import {
 } from "@/components/ui";
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import {
-  NewBudgetEntry,
-  UpdatedExpenseEntry,
+  BaseEntryForm,
+  ExpenseEntry,
+  UpdateExpenseEntry,
   WeeklyExpensesDisplayProps,
 } from "@/types";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -34,7 +34,7 @@ export const WeeklyExpensesDisplay = ({
   edit = true,
   oldDate,
 }: WeeklyExpensesDisplayProps) => {
-  const [newExpenses, setNewExpenses] = useState<NewBudgetEntry[]>([]);
+  const [newExpenses, setNewExpenses] = useState<BaseEntryForm[]>([]);
   const [weekIndex, setWeekIndex] = useState(getCurrentWeek());
   const currentWeekNumber = weekIndex + 1;
   const weeklyExpenses = expenses.filter(
@@ -77,7 +77,7 @@ export const WeeklyExpensesDisplay = ({
     }));
 
     const validation = validateArrayWithSchema(
-      createExpenseEntrySchema,
+      expenseEntrySchema,
       newWeeklyExpenses
     );
     if (!validation.success) {
@@ -91,11 +91,14 @@ export const WeeklyExpensesDisplay = ({
     );
   };
 
-  const handleUpdateExpense = (updatedExpense: UpdatedExpenseEntry) => {
+  const handleUpdateExpense = (updatedExpense: UpdateExpenseEntry) => {
     setUpdateValidationError(null);
     setGenericUpdateError(null);
 
-    const validation = validateWithSchema(expenseEntrySchema, updatedExpense);
+    const validation = validateWithSchema(
+      updateExpenseEntrySchema,
+      updatedExpense
+    );
 
     if (!validation.success) {
       setUpdateValidationError(validation.errors);
@@ -114,12 +117,12 @@ export const WeeklyExpensesDisplay = ({
     );
   };
 
-  const handleDeleteExpense = (deletedExpense: ExpenseEntry) => {
+  const handleDeleteExpense = (expenseId: string) => {
     setUpdateValidationError(null);
     setGenericDeleteError(null);
 
     deleteExpense.mutate(
-      { expenseId: deletedExpense.id, budgetId },
+      { expenseId: expenseId, budgetId },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>
@@ -154,7 +157,7 @@ export const WeeklyExpensesDisplay = ({
 
         {edit ? (
           <div>
-            <DataList
+            <DataList<ExpenseEntry>
               data={weeklyExpenses}
               setSelectedEntry={setSelectedEntry}
               emptyMessage="Aucune dépense cette semaine"

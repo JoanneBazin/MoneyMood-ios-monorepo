@@ -5,7 +5,7 @@ import {
 } from "@/hooks/queries";
 import { useBudgetStore } from "@/stores/budgetStore";
 import { Outlet } from "react-router-dom";
-import { Bottombar, Header, LoaderScreen, OfflineBanner } from "../components";
+import { Bottombar, Header, OfflineBanner } from "../components";
 import { Banner } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";

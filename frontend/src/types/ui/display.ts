@@ -3,9 +3,10 @@ export interface TotalDataDisplayProps {
   title?: string;
 }
 
-export interface TotalMonthlyEntriesProps {
+export interface RemainingBudgetDisplayProps {
   type: string;
   total: number;
+  base?: boolean;
 }
 
 export interface DateDisplayProps {

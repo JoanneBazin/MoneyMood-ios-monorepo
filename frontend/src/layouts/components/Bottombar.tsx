@@ -1,4 +1,4 @@
-import { CalendarPlus, History, LayoutDashboard } from "lucide-react";
+import { CalendarPlus, History, LayoutDashboard, Sparkles } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 export const Bottombar = () => {
@@ -22,6 +22,15 @@ export const Bottombar = () => {
           >
             <CalendarPlus />
             <p>Nouveau mois</p>
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/app/projects"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            <Sparkles />
+            <p>Projets</p>
           </NavLink>
         </li>
         <li>

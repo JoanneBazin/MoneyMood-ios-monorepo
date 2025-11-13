@@ -53,3 +53,10 @@
     }
   }
 }
+
+.labelled-input {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  max-width: 75%;
+}

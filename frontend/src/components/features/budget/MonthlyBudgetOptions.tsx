@@ -1,5 +1,6 @@
 import { Modal } from "@/components/ui";
 import { AnimatedDropdown } from "@/components/ui/AnimateDropdown";
+import { DeleteModalContent } from "@/components/ui/DeleteModalContent";
 import {
   useDeleteMonthlyBudgetMutation,
   useUpdateBudgetStatusMutation,
@@ -81,20 +82,10 @@ export const MonthlyBudgetOptions = ({
         onClose={() => setIsModalOpen(false)}
         title="Supprimer le budget"
       >
-        <p className="req-info">
-          Voulez-vous supprimer définitivement ce budget ?
-        </p>
-        <div className="flex-end my-md">
-          <button onClick={handleDeleteBudget} className="primary-btn">
-            Supprimer
-          </button>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="secondary-btn"
-          >
-            Annuler
-          </button>
-        </div>
+        <DeleteModalContent
+          onDelete={handleDeleteBudget}
+          onClose={() => setIsModalOpen(false)}
+        />
       </Modal>
     </div>
   );

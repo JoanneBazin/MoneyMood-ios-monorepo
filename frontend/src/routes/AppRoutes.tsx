@@ -12,6 +12,8 @@ import { SignupPage } from "@/pages/public/SignupPage";
 import { HomeRedirect } from "@/components/auth/HomeRedirect";
 import { RequireGuest } from "@/components/auth/RequireGuest";
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { Projects } from "@/pages/app/Projects";
+import { ProjectDetail } from "@/pages/app/ProjectDetail";
 
 export default function AppRoutes() {
   return (
@@ -29,6 +31,10 @@ export default function AppRoutes() {
         <Route path={"/app"} element={<PrivateAppLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="create" element={<CreateBudget />} />
+          <Route path="projects">
+            <Route index element={<Projects />} />
+            <Route path=":id" element={<ProjectDetail />} />
+          </Route>
           <Route path="history" element={<History />} />
         </Route>
 

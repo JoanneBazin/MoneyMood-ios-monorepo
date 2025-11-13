@@ -8,4 +8,5 @@ export { HistoryCard } from "./HistoryCard";
 export { Modal } from "./Modal";
 export { MonthYearPicker } from "./MonthYearPicker";
 export { TotalDataDisplay } from "./TotalDataDisplay";
-export { TotalMonthlyEntriesDisplay } from "./TotalMonthlyEntriesDisplay";
+export { SpecialBudgetCard } from "./SpecialBudgetCard";
+export { RemainingBudgetDisplay } from "./RemainingBudgetDisplay";

@@ -60,7 +60,7 @@ export const updateMonthlyExpense = async (
   if (!params) return;
   const { id: monthlyBudgetId, expenseId } = params;
 
-  const { name, amount, weekNumber } = req.body;
+  const { name, amount } = req.body;
 
   try {
     const updatedExpense = await prisma.expense.update({
@@ -70,7 +70,6 @@ export const updateMonthlyExpense = async (
       data: {
         name,
         amount,
-        weekNumber,
       },
       select: expenseEntrySelect,
     });

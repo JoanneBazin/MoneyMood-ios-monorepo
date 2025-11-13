@@ -56,14 +56,13 @@ export const updateSpecialExpense = async (
   res: Response,
   next: NextFunction
 ) => {
-  const params = getMultipleParamsIds(req, ["id", "expenseId"], next);
-  if (!params) return;
-
-  const { id: specialBudgetId, expenseId } = params;
-
-  const { name, amount, category } = req.body;
-
   try {
+    const params = getMultipleParamsIds(req, ["id", "expenseId"], next);
+    if (!params) return;
+
+    const { id: specialBudgetId, expenseId } = params;
+
+    const { name, amount, category } = req.body;
     const updatedExpense = await prisma.expense.update({
       where: {
         id: expenseId,

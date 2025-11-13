@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
-import { validateInput } from "@moneymood-monorepo/shared";
 import { HttpError } from "../lib";
+import { validateInput } from "@moneymood-monorepo/shared";
 
 export const validateBody = (schema: z.ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {

@@ -1,7 +1,7 @@
 import express from "express";
-import { loginSchema, signupSchema } from "@moneymood-monorepo/shared";
 import { requireAuth, validateBody } from "../middleware";
 import { getSession, login, logout, signup } from "../controllers";
+import { loginSchema, signupSchema } from "@moneymood-monorepo/shared";
 
 const router = express.Router();
 

@@ -1,9 +1,5 @@
 import express from "express";
-import {
-  createSpecialBudgetSchema,
-  createSpecialExpenseEntrySchema,
-  specialExpenseEntrySchema,
-} from "@moneymood-monorepo/shared";
+
 import {
   checkSpecialBudgetAccess,
   requireAuth,
@@ -19,6 +15,11 @@ import {
   updateSpecialBudget,
   updateSpecialExpense,
 } from "../controllers";
+import {
+  specialBudgetSchema,
+  specialExpenseEntrySchema,
+  updateExpenseEntrySchema,
+} from "@moneymood-monorepo/shared";
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ const router = express.Router();
 router.post(
   "/",
   requireAuth,
-  validateBody(createSpecialBudgetSchema),
+  validateBody(specialBudgetSchema),
   addSpecialBudget
 );
 router.get("/", requireAuth, getAllSpecialBudgets);
@@ -34,7 +35,7 @@ router.get("/:id", requireAuth, getSpecialBudgetDetails);
 router.put(
   "/:id",
   requireAuth,
-  validateBody(createSpecialBudgetSchema),
+  validateBody(specialBudgetSchema),
   updateSpecialBudget
 );
 router.delete("/:id", requireAuth, deleteSpecialBudget);
@@ -44,14 +45,14 @@ router.post(
   "/:id/expenses",
   requireAuth,
   checkSpecialBudgetAccess,
-  validateBody(createSpecialExpenseEntrySchema),
+  validateBody(specialExpenseEntrySchema),
   addSpecialExpenses
 );
 router.put(
   "/:id/expenses/:expenseId",
   requireAuth,
   checkSpecialBudgetAccess,
-  validateBody(specialExpenseEntrySchema),
+  validateBody(updateExpenseEntrySchema),
   updateSpecialExpense
 );
 router.delete(

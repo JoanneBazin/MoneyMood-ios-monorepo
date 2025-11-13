@@ -1,8 +1,4 @@
 import express from "express";
-import {
-  budgetEntrySchema,
-  createBudgetEntrySchema,
-} from "@moneymood-monorepo/shared";
 import { requireAuth, validateBody } from "../middleware";
 import {
   addFixedIncomes,
@@ -10,16 +6,12 @@ import {
   getFixedIncomes,
   updateFixedIncome,
 } from "../controllers";
+import { baseEntrySchema, budgetEntrySchema } from "@moneymood-monorepo/shared";
 
 const router = express.Router();
 
 router.get("/", requireAuth, getFixedIncomes);
-router.post(
-  "/",
-  requireAuth,
-  validateBody(createBudgetEntrySchema),
-  addFixedIncomes
-);
+router.post("/", requireAuth, validateBody(baseEntrySchema), addFixedIncomes);
 router.put(
   "/:id",
   requireAuth,

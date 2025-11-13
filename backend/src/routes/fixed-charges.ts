@@ -1,8 +1,4 @@
 import express from "express";
-import {
-  budgetEntrySchema,
-  createBudgetEntrySchema,
-} from "@moneymood-monorepo/shared";
 import { requireAuth, validateBody } from "../middleware";
 import {
   addFixedCharges,
@@ -10,16 +6,12 @@ import {
   getFixedCharges,
   updateFixedCharge,
 } from "../controllers";
+import { baseEntrySchema, budgetEntrySchema } from "@moneymood-monorepo/shared";
 
 const router = express.Router();
 
 router.get("/", requireAuth, getFixedCharges);
-router.post(
-  "/",
-  requireAuth,
-  validateBody(createBudgetEntrySchema),
-  addFixedCharges
-);
+router.post("/", requireAuth, validateBody(baseEntrySchema), addFixedCharges);
 router.put(
   "/:id",
   requireAuth,

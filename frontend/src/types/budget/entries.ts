@@ -11,7 +11,7 @@ export interface ExpenseEntry extends Entry {
 
 export interface SpecialExpenseEntry extends Entry {
   createdAt: string;
-  category?: string;
+  specialCategoryId?: string;
 }
 
 export interface BaseEntryForm {

@@ -45,7 +45,12 @@ export const addSpecialExpenses = async (
     });
   } catch (error) {
     if (isPrismaForeignKeyConstraint(error)) {
-      return next(new HttpError(404, "Référence à un budget inexistant"));
+      return next(
+        new HttpError(
+          404,
+          "Référence à un budget inexistant ou catégorie introuvable"
+        )
+      );
     }
     return next(error);
   }
@@ -62,7 +67,7 @@ export const updateSpecialExpense = async (
 
     const { id: specialBudgetId, expenseId } = params;
 
-    const { name, amount, category } = req.body;
+    const { name, amount } = req.body;
     const updatedExpense = await prisma.expense.update({
       where: {
         id: expenseId,
@@ -70,7 +75,6 @@ export const updateSpecialExpense = async (
       data: {
         name,
         amount,
-        category,
       },
       select: specialExpenseEntrySelect,
     });

@@ -39,12 +39,7 @@ export const updateExpenseEntrySchema = budgetEntrySchema.extend({
 
 export const expenseEntrySchema = baseEntrySchema.extend({
   weekNumber: z.number().min(1).max(5),
-  category: z
-    .string()
-    .min(2, "Le nom de catégorie est trop court")
-    .max(20, "Le nom de catégorie est trop long")
-    .trim()
-    .optional(),
+  specialCategoryId: z.string().optional(),
 });
 
 export const specialExpenseEntrySchema = expenseEntrySchema.omit({
@@ -86,6 +81,18 @@ export const specialBudgetSchema = z.object({
   ),
 });
 
+export const categorySchema = z.object({
+  name: z
+    .string()
+    .min(2, "Le nom de catégorie est trop court")
+    .max(30, "Le nom de catégorie est trop long")
+    .trim(),
+});
+
+export const updateCategorySchema = categorySchema.extend({
+  id: z.string(),
+});
+
 export const queryDateSchema = z.object({
   month: z.coerce.number().min(1).max(12),
   year: z.coerce.number().min(2025),
@@ -102,3 +109,6 @@ export type SpecialExpenseEntryForm = z.infer<typeof specialExpenseEntrySchema>;
 
 export type MonthlyBudgetForm = z.infer<typeof monthlyBudgetSchema>;
 export type SpecialBudgetForm = z.infer<typeof specialBudgetSchema>;
+
+export type CategoryFormProps = z.infer<typeof categorySchema>;
+export type UpdateCategoryFormProps = z.infer<typeof updateCategorySchema>;

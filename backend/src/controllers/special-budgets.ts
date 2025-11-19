@@ -55,7 +55,11 @@ export const getSpecialBudgetDetails = async (
         id,
       },
       include: {
+        categories: {
+          include: { expenses: { select: specialExpenseEntrySelect } },
+        },
         expenses: {
+          where: { specialCategoryId: null },
           select: specialExpenseEntrySelect,
         },
       },

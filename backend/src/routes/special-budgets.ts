@@ -7,18 +7,23 @@ import {
 } from "../middleware";
 import {
   addSpecialBudget,
+  addSpecialCategory,
   addSpecialExpenses,
   deleteSpecialBudget,
+  deleteSpecialCategory,
   deleteSpecialExpense,
   getAllSpecialBudgets,
   getSpecialBudgetDetails,
   updateSpecialBudget,
+  updateSpecialCategoryName,
   updateSpecialExpense,
 } from "../controllers";
 import {
+  categorySchema,
   specialBudgetSchema,
   specialExpenseEntrySchema,
   updateExpenseEntrySchema,
+  updateCategorySchema,
 } from "@moneymood-monorepo/shared";
 
 const router = express.Router();
@@ -39,6 +44,27 @@ router.put(
   updateSpecialBudget
 );
 router.delete("/:id", requireAuth, deleteSpecialBudget);
+
+// Special Categories
+router.post(
+  "/:id/categories",
+  requireAuth,
+  validateBody(categorySchema),
+  addSpecialCategory
+);
+router.patch(
+  "/:id/categories/:categoryId",
+  requireAuth,
+  checkSpecialBudgetAccess,
+  validateBody(updateCategorySchema),
+  updateSpecialCategoryName
+);
+router.delete(
+  "/:id/categories/:categoryId",
+  requireAuth,
+  checkSpecialBudgetAccess,
+  deleteSpecialCategory
+);
 
 // Special Expenses
 router.post(

@@ -14,7 +14,7 @@ export const specialExpenseEntrySelect = {
   id: true,
   name: true,
   amount: true,
-  category: true,
+  specialCategoryId: true,
   createdAt: true,
 };
 

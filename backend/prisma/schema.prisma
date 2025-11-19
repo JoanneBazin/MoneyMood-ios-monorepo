@@ -102,7 +102,6 @@ model Expense {
   id  String  @id @default(cuid())
   name String
   amount  Decimal @db.Decimal(10, 2)
-  category  String?
   createdAt DateTime  @default(now())
 
   weekNumber  Int?
@@ -110,11 +109,14 @@ model Expense {
   monthlyBudget  MonthlyBudget?  @relation(fields: [monthlyBudgetId], references: [id], onDelete: Cascade)
 
   specialBudgetId  String?
+  specialCategoryId  String?
   specialBudget  SpecialBudget?  @relation(fields: [specialBudgetId], references: [id], onDelete: Cascade)
+  specialCategory  SpecialBudgetCategory?  @relation(fields: [specialCategoryId], references: [id], onDelete: SetNull)
 
   @@map("WeeklyExpense")
   @@index([monthlyBudgetId])
   @@index([specialBudgetId])
+  @@index([specialCategoryId])
 }
 
 model SpecialBudget {
@@ -127,6 +129,19 @@ model SpecialBudget {
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   expenses  Expense[]
+  categories  SpecialBudgetCategory[]
 
   @@index([userId])
+}
+
+model SpecialBudgetCategory {
+  id  String  @id @default(cuid())
+  name String
+  specialBudgetId String
+
+  specialBudget  SpecialBudget  @relation(fields: [specialBudgetId], references: [id], onDelete: Cascade)
+  expenses  Expense[]
+  
+
+  @@index([specialBudgetId])
 }

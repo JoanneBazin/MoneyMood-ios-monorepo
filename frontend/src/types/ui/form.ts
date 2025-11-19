@@ -1,4 +1,4 @@
-import { SpecialBudgetForm } from "@shared/schemas";
+import { CategoryFormProps, SpecialBudgetForm } from "@shared/schemas";
 import { BaseEntryForm, UpdateExpenseEntry } from "../budget";
 
 export interface MonthYearPickerProps {
@@ -27,4 +27,13 @@ export interface ProjectFormProps {
   isPending: boolean;
   edit: boolean;
   initialData?: SpecialBudgetForm;
+}
+
+export interface AddCategoryFormProps {
+  validationErrors: Record<string, string> | null;
+  genericError: string | null;
+  onSubmit: (category: CategoryFormProps) => void;
+  onDelete?: () => void;
+  initialData?: string;
+  edit?: boolean;
 }

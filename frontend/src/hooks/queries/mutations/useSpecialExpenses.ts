@@ -8,7 +8,6 @@ import {
   DeleteExpenseProps,
   SpecialBudget,
   UpdateExpenseProps,
-  UpdateSpecialExpensesProps,
 } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -16,17 +15,32 @@ export const useAddSpecialExpenseMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ expenses, budgetId }: AddSpecialExpensesProps) =>
+    mutationFn: ({ expenses, budgetId, categoryId }: AddSpecialExpensesProps) =>
       addSpecialExpenses({ expenses, budgetId }),
     onSuccess: ({ expenses, remainingBudget }, variables) => {
-      queryClient.setQueryData(
-        ["specialBudget", variables.budgetId],
-        (prev: SpecialBudget) => ({
-          ...prev,
-          remainingBudget,
-          expenses: [...prev.expenses, ...expenses],
-        })
-      );
+      if (variables.categoryId) {
+        queryClient.setQueryData(
+          ["specialBudget", variables.budgetId],
+          (prev: SpecialBudget) => ({
+            ...prev,
+            remainingBudget,
+            categories: prev.categories.map((cat) =>
+              cat.id === variables.categoryId
+                ? { ...cat, expenses: [...cat.expenses, ...expenses] }
+                : cat
+            ),
+          })
+        );
+      } else {
+        queryClient.setQueryData(
+          ["specialBudget", variables.budgetId],
+          (prev: SpecialBudget) => ({
+            ...prev,
+            remainingBudget,
+            expenses: [...prev.expenses, ...expenses],
+          })
+        );
+      }
 
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },

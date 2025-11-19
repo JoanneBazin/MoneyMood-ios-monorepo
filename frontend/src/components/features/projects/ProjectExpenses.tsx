@@ -23,6 +23,7 @@ import { useState } from "react";
 export const ProjectExpenses = ({
   budgetId,
   expenses,
+  categoryId,
 }: ProjectExpensesProp) => {
   const [newExpenses, setNewExpenses] = useState<BaseEntryForm[]>([]);
   const [selectedEntry, setSelectedEntry] =
@@ -47,18 +48,31 @@ export const ProjectExpenses = ({
 
   const handleAddExpenses = () => {
     setValidationError(null);
+    let validation;
 
-    const validation = validateArrayWithSchema(
-      specialExpenseEntrySchema,
-      newExpenses
-    );
+    if (categoryId) {
+      const expensesWithCat = newExpenses.map((e) => ({
+        ...e,
+        specialCategoryId: categoryId,
+      }));
+      validation = validateArrayWithSchema(
+        specialExpenseEntrySchema,
+        expensesWithCat
+      );
+    } else {
+      validation = validateArrayWithSchema(
+        specialExpenseEntrySchema,
+        newExpenses
+      );
+    }
+
     if (!validation.success) {
       setValidationError(Object.values(validation.errors));
       return;
     }
 
     addExpenses.mutate(
-      { expenses: validation.data, budgetId },
+      { expenses: validation.data, budgetId, categoryId },
       { onSuccess: () => setNewExpenses([]) }
     );
   };
@@ -110,11 +124,14 @@ export const ProjectExpenses = ({
       {genericAddError && (
         <ErrorMessage message="Une erreur interne est survenue" />
       )}
-      <DataList<SpecialExpenseEntry>
-        data={expenses}
-        setSelectedEntry={setSelectedEntry}
-        emptyMessage="Pas de dépense pour ce budget"
-      />
+      {expenses.length > 0 && (
+        <DataList<SpecialExpenseEntry>
+          data={expenses}
+          setSelectedEntry={setSelectedEntry}
+          emptyMessage="Pas de dépense pour ce budget"
+        />
+      )}
+
       <AddEntriesForm
         initialData={newExpenses}
         errors={validationError}

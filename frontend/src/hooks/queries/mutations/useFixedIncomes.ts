@@ -8,8 +8,6 @@ import { BudgetEntry, BudgetEntryForm } from "@shared/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useAddFixedIncomesMutation = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (incomes: BudgetEntryForm[]) => addFixedIncomes(incomes),
     onSuccess: (incomes) => {
@@ -18,14 +16,11 @@ export const useAddFixedIncomesMutation = () => {
       const updatedIncomes = [...fixedIncomes, ...incomes];
 
       setFixedIncomes(updatedIncomes);
-      queryClient.setQueryData(["fixedIncomes"], updatedIncomes);
     },
   });
 };
 
 export const useUpdateFixedIncomeMutation = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (income: BudgetEntry) => updateFixedIncome(income),
     onSuccess: (updatedIncome) => {
@@ -35,14 +30,11 @@ export const useUpdateFixedIncomeMutation = () => {
       );
 
       setFixedIncomes(updatedIncomes);
-      queryClient.setQueryData(["fixedIncomes"], updatedIncomes);
     },
   });
 };
 
 export const useDeleteFixedIncomeMutation = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (incomeId: string) => deleteFixedIncomes(incomeId),
     onSuccess: ({ incomeId }) => {
@@ -52,7 +44,6 @@ export const useDeleteFixedIncomeMutation = () => {
       );
 
       setFixedIncomes(updatedIncomes);
-      queryClient.setQueryData(["fixedIncomes"], updatedIncomes);
     },
   });
 };

@@ -8,7 +8,6 @@ import { BudgetEntry, BudgetEntryForm } from "@shared/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useAddFixedChargesMutation = () => {
-  const queryClient = useQueryClient();
   const { fixedCharges, setFixedCharges } = useBudgetStore.getState();
 
   return useMutation({
@@ -17,13 +16,11 @@ export const useAddFixedChargesMutation = () => {
       const updatedCharges = [...fixedCharges, ...charges];
 
       setFixedCharges(updatedCharges);
-      queryClient.setQueryData(["fixedCharges"], updatedCharges);
     },
   });
 };
 
 export const useUpdateFixedChargeMutation = () => {
-  const queryClient = useQueryClient();
   const { fixedCharges, setFixedCharges } = useBudgetStore.getState();
 
   return useMutation({
@@ -34,13 +31,11 @@ export const useUpdateFixedChargeMutation = () => {
       );
 
       setFixedCharges(updatedCharges);
-      queryClient.setQueryData(["fixedCharges"], updatedCharges);
     },
   });
 };
 
 export const useDeleteFixedChargeMutation = () => {
-  const queryClient = useQueryClient();
   const { fixedCharges, setFixedCharges } = useBudgetStore.getState();
 
   return useMutation({
@@ -51,7 +46,6 @@ export const useDeleteFixedChargeMutation = () => {
       );
 
       setFixedCharges(updatedCharges);
-      queryClient.setQueryData(["fixedCharges"], updatedCharges);
     },
   });
 };

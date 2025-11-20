@@ -1,8 +1,7 @@
 import { fetchSpecialBudget } from "@/lib/api/specialBudgets";
-import { queryClient } from "@/lib/queryClient";
 import { useBudgetStore } from "@/stores/budgetStore";
 import { SpecialBudget } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export const useBudgetDetailsQuery = (id: string) => {
@@ -20,6 +19,7 @@ export const useBudgetDetailsQuery = (id: string) => {
 };
 
 export const getCategories = (id: string) => {
+  const queryClient = useQueryClient();
   const budget = queryClient.getQueryData([
     "specialBudget",
     id,

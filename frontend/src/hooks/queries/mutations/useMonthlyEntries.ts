@@ -12,7 +12,6 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useAddMonthlyEntriesMutation = () => {
-  const queryClient = useQueryClient();
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
@@ -34,13 +33,11 @@ export const useAddMonthlyEntriesMutation = () => {
       };
 
       setCurrentBudget(updatedBudget);
-      queryClient.setQueryData(["currentBudget"], updatedBudget);
     },
   });
 };
 
 export const useUpdateMonthlyEntriesMutation = () => {
-  const queryClient = useQueryClient();
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
@@ -66,13 +63,11 @@ export const useUpdateMonthlyEntriesMutation = () => {
       };
 
       setCurrentBudget(updatedBudget);
-      queryClient.setQueryData(["currentBudget"], updatedBudget);
     },
   });
 };
 
 export const useDeleteMonthlyEntriesMutation = () => {
-  const queryClient = useQueryClient();
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
@@ -98,7 +93,6 @@ export const useDeleteMonthlyEntriesMutation = () => {
       };
 
       setCurrentBudget(updatedBudget);
-      queryClient.setQueryData(["currentBudget"], updatedBudget);
     },
   });
 };

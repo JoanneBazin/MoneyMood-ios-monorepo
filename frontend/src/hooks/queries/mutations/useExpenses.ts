@@ -12,7 +12,6 @@ import {
 } from "@/types";
 
 export const useAddExpensesMutation = () => {
-  const queryClient = useQueryClient();
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
@@ -27,13 +26,11 @@ export const useAddExpensesMutation = () => {
       };
 
       setCurrentBudget(updatedBudget);
-      queryClient.setQueryData(["currentBudget"], updatedBudget);
     },
   });
 };
 
 export const useUpdateExpenseMutation = () => {
-  const queryClient = useQueryClient();
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
@@ -50,13 +47,11 @@ export const useUpdateExpenseMutation = () => {
         remainingBudget,
       };
       setCurrentBudget(updatedBudget);
-      queryClient.setQueryData(["currentBudget"], updatedBudget);
     },
   });
 };
 
 export const useDeleteExpenseMutation = () => {
-  const queryClient = useQueryClient();
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
@@ -73,7 +68,6 @@ export const useDeleteExpenseMutation = () => {
         remainingBudget,
       };
       setCurrentBudget(updatedBudget);
-      queryClient.setQueryData(["currentBudget"], updatedBudget);
     },
   });
 };

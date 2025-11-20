@@ -21,7 +21,6 @@ export const useCreateBudgetMutation = () => {
     onSuccess: (budget) => {
       if (budget.isCurrent) {
         hydrateBudgetStore(budget);
-        queryClient.setQueryData(["currentBudget"], budget);
       }
       queryClient.invalidateQueries({ queryKey: ["history"] });
       navigate("/app");
@@ -40,11 +39,9 @@ export const useUpdateBudgetStatusMutation = () => {
     onSuccess: (budget) => {
       if (budget.isCurrent) {
         hydrateBudgetStore(budget);
-        queryClient.setQueryData(["currentBudget"], budget);
       } else {
         setCurrentBudget(null);
         setWeeksInMonth([]);
-        queryClient.invalidateQueries({ queryKey: ["currentBudget"] });
       }
 
       queryClient.invalidateQueries({ queryKey: ["history"] });
@@ -67,7 +64,6 @@ export const useDeleteMonthlyBudgetMutation = () => {
       if (currentBudget.id === budgetId) {
         setCurrentBudget(null);
         setWeeksInMonth([]);
-        queryClient.invalidateQueries({ queryKey: ["currentBudget"] });
       } else {
         queryClient.invalidateQueries({ queryKey: ["history"] });
       }

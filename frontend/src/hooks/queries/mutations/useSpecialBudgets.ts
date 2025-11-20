@@ -9,7 +9,6 @@ import {
   deleteSpecialBudget,
   updateSpecialBudget,
 } from "@/lib/api/specialBudgets";
-import { queryClient } from "@/lib/queryClient";
 import {
   AddSpecialCategoryProps,
   SpecialBudget,
@@ -17,9 +16,10 @@ import {
   UpdateSpecialCategoryProps,
 } from "@/types";
 import { SpecialBudgetForm } from "@shared/schemas";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useAddSpecialBudgetMutation = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (newBudget: SpecialBudgetForm) => addSpecialBudget(newBudget),
     onSuccess: () => {
@@ -29,6 +29,8 @@ export const useAddSpecialBudgetMutation = () => {
 };
 
 export const useUpdateSpecialBudgetMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ budget, id }: UpdateSpecialBudgetType) =>
       updateSpecialBudget(budget, id),
@@ -40,6 +42,8 @@ export const useUpdateSpecialBudgetMutation = () => {
 };
 
 export const useDeletepecialBudgetMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (budgetId: string) => deleteSpecialBudget(budgetId),
     onSuccess: () => {
@@ -49,6 +53,8 @@ export const useDeletepecialBudgetMutation = () => {
 };
 
 export const useAddSpecialCategoryMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ category, budgetId }: AddSpecialCategoryProps) =>
       addSpecialCategory(category, budgetId),
@@ -65,6 +71,8 @@ export const useAddSpecialCategoryMutation = () => {
 };
 
 export const useUpdateSpecialCategoryMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ category, budgetId }: UpdateSpecialCategoryProps) =>
       updateSpecialCategory(category, budgetId),
@@ -85,6 +93,8 @@ export const useUpdateSpecialCategoryMutation = () => {
 };
 
 export const useDeleteSpecialCategoryMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ category, budgetId }: UpdateSpecialCategoryProps) =>
       deleteSpecialCategory(category.id, budgetId),
@@ -104,6 +114,8 @@ export const useDeleteSpecialCategoryMutation = () => {
 };
 
 export const useDeleteSpecialCategorOnCascadeyMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ category, budgetId }: UpdateSpecialCategoryProps) =>
       deleteSpecialCategoryOnCascade(category.id, budgetId),

@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-// EXPENSE SCHEMAS
-
 export const baseEntrySchema = z.object({
   name: z
     .string()
@@ -26,22 +24,6 @@ export const baseEntrySchema = z.object({
           )
       )
   ),
-
-  // amount: z.preprocess(
-  //   (val) => {
-  //     if (typeof val === "string") {
-  //       const cleaned = val.trim().replace(/\s+/g, "").replace(",", ".");
-  //       return Math.round(Number(cleaned) * 100) / 100;
-  //     }
-  //     return val;
-  //   },
-  //   z
-  //     .number()
-  //     .refine(
-  //       (val) => !isNaN(val) && val > 0,
-  //       "Veuillez saisir un montant positif valide"
-  //     )
-  // ),
 });
 
 export const baseEntryServerSchema = z.object({
@@ -76,8 +58,6 @@ export const expenseServerSchema = baseEntryServerSchema.extend({
   weekNumber: z.number().min(1).max(5),
 });
 export type ExpenseOutput = z.output<typeof expenseSchema>;
-
-// BUDGET SCHEMAS
 
 export const monthlyBudgetSchema = z.object({
   month: z

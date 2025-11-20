@@ -59,7 +59,6 @@ export const CreateBudget = () => {
     if (!validation.success) {
       setIncomesErrors(extractArrayErrors(validation.errors, "incomes"));
       setChargesErrors(extractArrayErrors(validation.errors, "charges"));
-
       return;
     }
 

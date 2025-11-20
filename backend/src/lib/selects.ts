@@ -18,6 +18,16 @@ export const specialExpenseEntrySelect = {
   createdAt: true,
 };
 
+export const specialCategorySelect = {
+  id: true,
+  name: true,
+  expenses: {
+    select: {
+      ...specialExpenseEntrySelect,
+    },
+  },
+};
+
 export const monthlyBudgetSelect = {
   id: true,
   month: true,
@@ -39,6 +49,25 @@ export const monthlyBudgetSelect = {
   expenses: {
     select: {
       ...expenseEntrySelect,
+    },
+  },
+};
+
+export const specialBudgetSelect = {
+  id: true,
+  name: true,
+  remainingBudget: true,
+  totalBudget: true,
+  createdAt: true,
+  expenses: {
+    where: { specialCategoryId: null },
+    select: {
+      ...specialExpenseEntrySelect,
+    },
+  },
+  categories: {
+    select: {
+      ...specialCategorySelect,
     },
   },
 };

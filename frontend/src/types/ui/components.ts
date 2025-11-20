@@ -60,4 +60,6 @@ export interface SkeletonGridProps {
 export interface DeleteModalContentProps {
   onDelete: () => void;
   onClose: () => void;
+  isPending: boolean;
+  isError: boolean;
 }

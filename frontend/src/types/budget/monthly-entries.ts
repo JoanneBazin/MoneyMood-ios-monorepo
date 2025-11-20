@@ -1,26 +1,38 @@
-import { BudgetEntry, BudgetEntryForm } from "@shared/schemas";
+import { BaseEntryOutput } from "@shared/schemas";
+import { Entry } from "./entries";
+
+export type MonthlyEntryType = "charges" | "incomes";
 
 export interface MonthlyEntriesView {
-  type: string;
-  data: BudgetEntry[];
+  type: MonthlyEntryType;
+  data: Entry[];
   dateTitle: string;
   budgetId: string;
 }
 
-export interface AddMonthlyEntriesProps {
-  type: "charges" | "incomes";
+// Mutations
+
+export interface AddMonthlyEntriesParams {
+  type: MonthlyEntryType;
   budgetId: string;
-  entries: BudgetEntryForm[];
+  entries: BaseEntryOutput[];
 }
 
-export interface UpdateMonthlyEntryProps {
-  type: "charges" | "incomes";
-  budgetId: string;
-  entry: BudgetEntry;
-}
-
-export interface DeleteMonthlyEntryProps {
-  type: "charges" | "incomes";
-  budgetId: string;
+export interface UpdateMonthlyEntryParams {
+  type: MonthlyEntryType;
+  entry: BaseEntryOutput;
   entryId: string;
+  budgetId: string;
+}
+
+export interface DeleteMonthlyEntryParams {
+  type: MonthlyEntryType;
+  entryId: string;
+  budgetId: string;
+}
+
+export interface MonthlyEntryResponse<T> {
+  data: T;
+  weeklyBudget: number;
+  remainingBudget: number;
 }

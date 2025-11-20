@@ -2,10 +2,12 @@ import { specialBudgetSchema, validateWithSchema } from "@shared/schemas";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { ProjectFormProps } from "@/types";
+import { ErrorMessage } from "../ui/ErrorMessage";
 
 export const ProjectForm = ({
   onSubmit,
   isPending,
+  isError,
   edit,
   initialData,
 }: ProjectFormProps) => {
@@ -32,6 +34,7 @@ export const ProjectForm = ({
 
   return (
     <form className="gap-lg">
+      {isError && <ErrorMessage message="Une erreur est survenue" />}
       <div className="labelled-input">
         <label htmlFor="name">Nom du budget</label>
         <input

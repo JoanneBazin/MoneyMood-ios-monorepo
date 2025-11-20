@@ -7,15 +7,10 @@ import {
   useDeleteSpecialExpenseMutation,
   useUpdateSpecialExpenseMutation,
 } from "@/hooks/queries/mutations/useSpecialExpenses";
+import { ProjectExpensesProp, SpecialExpenseEntry } from "@/types";
 import {
   BaseEntryForm,
-  ProjectExpensesProp,
-  SpecialExpenseEntry,
-  UpdateExpenseEntry,
-} from "@/types";
-import {
-  specialExpenseEntrySchema,
-  updateExpenseEntrySchema,
+  specialExpenseSchema,
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
@@ -40,13 +35,8 @@ export const ProjectExpenses = ({
     string,
     string
   > | null>(null);
-  const genericAddError = addExpenses.isError;
-  const [genericUpdateError, setGenericUpdateError] = useState<string | null>(
-    null
-  );
-  const [genericDeleteError, setGenericDeleteError] = useState<string | null>(
-    null
-  );
+  const addRequestError = addExpenses.isError;
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedEntry) {
@@ -56,6 +46,8 @@ export const ProjectExpenses = ({
 
   const handleAddExpenses = () => {
     setValidationError(null);
+    setRequestError(null);
+
     let validation;
 
     if (categoryId) {
@@ -64,14 +56,11 @@ export const ProjectExpenses = ({
         specialCategoryId: categoryId,
       }));
       validation = validateArrayWithSchema(
-        specialExpenseEntrySchema,
+        specialExpenseSchema,
         expensesWithCat
       );
     } else {
-      validation = validateArrayWithSchema(
-        specialExpenseEntrySchema,
-        newExpenses
-      );
+      validation = validateArrayWithSchema(specialExpenseSchema, newExpenses);
     }
 
     if (!validation.success) {
@@ -85,13 +74,16 @@ export const ProjectExpenses = ({
     );
   };
 
-  const handleUpdateExpense = (updatedExpense: UpdateExpenseEntry) => {
+  const handleUpdateExpense = (
+    updatedExpense: BaseEntryForm,
+    expenseId: string
+  ) => {
     setUpdateValidationError(null);
-    setGenericUpdateError(null);
+    setRequestError(null);
 
     const expense = { ...updatedExpense, specialCategoryId: selectedCategory };
 
-    const validation = validateWithSchema(updateExpenseEntrySchema, expense);
+    const validation = validateWithSchema(specialExpenseSchema, expense);
 
     if (!validation.success) {
       setUpdateValidationError(validation.errors);
@@ -99,36 +91,32 @@ export const ProjectExpenses = ({
     }
 
     updateExpense.mutate(
-      { expense: validation.data, budgetId },
+      { expense: validation.data, expenseId, budgetId },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>
-          setGenericUpdateError(
-            "Une erreur est survenue lors de la mise à jour"
-          ),
+          setRequestError("Une erreur est survenue lors de la mise à jour"),
       }
     );
   };
 
   const handleDeleteExpense = (expenseId: string) => {
     setUpdateValidationError(null);
-    setGenericDeleteError(null);
+    setRequestError(null);
 
     deleteExpense.mutate(
-      { expenseId: expenseId, budgetId },
+      { expenseId, budgetId, categoryId },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>
-          setGenericDeleteError(
-            "Une erreur est survenue lors de la suppression"
-          ),
+          setRequestError("Une erreur est survenue lors de la suppression"),
       }
     );
   };
 
   return (
     <div className="my-2xl">
-      {genericAddError && (
+      {addRequestError && (
         <ErrorMessage message="Une erreur interne est survenue" />
       )}
 
@@ -164,7 +152,7 @@ export const ProjectExpenses = ({
           <UpdateEntryForm
             initialData={selectedEntry}
             validationErrors={updateValidationError}
-            genericError={genericUpdateError || genericDeleteError}
+            genericError={requestError}
             onSubmit={handleUpdateExpense}
             onDelete={handleDeleteExpense}
           >

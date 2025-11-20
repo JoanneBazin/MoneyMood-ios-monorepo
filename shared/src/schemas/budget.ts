@@ -1,34 +1,61 @@
 import { z } from "zod";
 
+// EXPENSE SCHEMAS
+
 export const baseEntrySchema = z.object({
-  id: z.string().optional(),
   name: z
     .string()
     .trim()
     .min(1, "Le nom est requis")
     .max(50, "Le nom est trop long"),
 
-  amount: z.preprocess(
-    (val) => {
-      if (typeof val === "string") {
+  amount: z.string().pipe(
+    z
+      .string()
+      .min(1, "Le montant est requis")
+      .transform((val) => {
         const cleaned = val.trim().replace(/\s+/g, "").replace(",", ".");
         return Math.round(Number(cleaned) * 100) / 100;
-      }
-      return val;
-    },
-    z
-      .number()
-      .refine(
-        (val) => !isNaN(val) && val > 0,
-        "Veuillez saisir un montant positif valide"
+      })
+      .pipe(
+        z
+          .number()
+          .refine(
+            (val) => !isNaN(val) && val > 0,
+            "Veuillez saisir un montant positif valide"
+          )
       )
   ),
+
+  // amount: z.preprocess(
+  //   (val) => {
+  //     if (typeof val === "string") {
+  //       const cleaned = val.trim().replace(/\s+/g, "").replace(",", ".");
+  //       return Math.round(Number(cleaned) * 100) / 100;
+  //     }
+  //     return val;
+  //   },
+  //   z
+  //     .number()
+  //     .refine(
+  //       (val) => !isNaN(val) && val > 0,
+  //       "Veuillez saisir un montant positif valide"
+  //     )
+  // ),
 });
 
-export const budgetEntrySchema = baseEntrySchema.extend({
-  id: z.string(),
+export const baseEntryServerSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Le nom est requis")
+    .max(50, "Le nom est trop long"),
+  amount: z.number().positive("Montant positif requis"),
 });
-export const updateExpenseEntrySchema = budgetEntrySchema.extend({
+export type BaseEntryForm = z.input<typeof baseEntrySchema>;
+export type BaseEntryOutput = z.output<typeof baseEntrySchema>;
+
+export const specialExpenseSchema = baseEntrySchema.extend({
   specialCategoryId: z.preprocess((val) => {
     if (typeof val === "string") {
       const cat = val.trim();
@@ -37,15 +64,20 @@ export const updateExpenseEntrySchema = budgetEntrySchema.extend({
     return val;
   }, z.string().nullable().optional()),
 });
+export const specialExpenseServerSchema = baseEntryServerSchema.extend({
+  specialCategoryId: z.string().nullable().optional(),
+});
+export type SpecialExpenseOutput = z.output<typeof specialExpenseSchema>;
 
-export const expenseEntrySchema = baseEntrySchema.extend({
+export const expenseSchema = baseEntrySchema.extend({
   weekNumber: z.number().min(1).max(5),
-  specialCategoryId: z.string().optional(),
 });
+export const expenseServerSchema = baseEntryServerSchema.extend({
+  weekNumber: z.number().min(1).max(5),
+});
+export type ExpenseOutput = z.output<typeof expenseSchema>;
 
-export const specialExpenseEntrySchema = expenseEntrySchema.omit({
-  weekNumber: true,
-});
+// BUDGET SCHEMAS
 
 export const monthlyBudgetSchema = z.object({
   month: z
@@ -55,8 +87,18 @@ export const monthlyBudgetSchema = z.object({
   year: z.number().min(2025, "L'année doit être supérieure ou égale à 2025"),
   isCurrent: z.boolean(),
   numberOfWeeks: z.number().min(4).max(5),
-  incomes: z.array(budgetEntrySchema).default([]),
-  charges: z.array(budgetEntrySchema).default([]),
+  incomes: z.array(baseEntrySchema).default([]),
+  charges: z.array(baseEntrySchema).default([]),
+});
+export type MonthlyBudgetForm = z.infer<typeof monthlyBudgetSchema>;
+
+export const updateCurrentStatusSchema = monthlyBudgetSchema.pick({
+  isCurrent: true,
+});
+
+export const queryDateSchema = z.object({
+  month: z.coerce.number().min(1).max(12),
+  year: z.coerce.number().min(2025),
 });
 
 export const specialBudgetSchema = z.object({
@@ -81,6 +123,7 @@ export const specialBudgetSchema = z.object({
       )
   ),
 });
+export type SpecialBudgetForm = z.infer<typeof specialBudgetSchema>;
 
 export const categorySchema = z.object({
   name: z
@@ -89,27 +132,4 @@ export const categorySchema = z.object({
     .max(30, "Le nom de catégorie est trop long")
     .trim(),
 });
-
-export const updateCategorySchema = categorySchema.extend({
-  id: z.string(),
-});
-
-export const queryDateSchema = z.object({
-  month: z.coerce.number().min(1).max(12),
-  year: z.coerce.number().min(2025),
-});
-
-export const updateCurrentStatusSchema = z.object({
-  isCurrent: z.boolean(),
-});
-
-export type BaseEntry = z.infer<typeof baseEntrySchema>;
-export type BudgetEntryForm = z.infer<typeof budgetEntrySchema>;
-export type ExpenseEntryForm = z.infer<typeof expenseEntrySchema>;
-export type SpecialExpenseEntryForm = z.infer<typeof specialExpenseEntrySchema>;
-
-export type MonthlyBudgetForm = z.infer<typeof monthlyBudgetSchema>;
-export type SpecialBudgetForm = z.infer<typeof specialBudgetSchema>;
-
-export type CategoryFormProps = z.infer<typeof categorySchema>;
-export type UpdateCategoryFormProps = z.infer<typeof updateCategorySchema>;
+export type CategoryEntryForm = z.infer<typeof categorySchema>;

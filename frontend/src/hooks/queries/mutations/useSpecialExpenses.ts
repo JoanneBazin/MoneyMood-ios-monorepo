@@ -4,10 +4,10 @@ import {
   updateSpecialExpense,
 } from "@/lib/api/specialExpenses";
 import {
-  AddSpecialExpensesProps,
-  DeleteExpenseProps,
+  AddSpecialExpensesParams,
+  DeleteSpecialExpenseParams,
   SpecialBudget,
-  UpdateExpenseProps,
+  UpdateSpecialExpensesParams,
 } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -15,9 +15,12 @@ export const useAddSpecialExpenseMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ expenses, budgetId, categoryId }: AddSpecialExpensesProps) =>
-      addSpecialExpenses({ expenses, budgetId }),
-    onSuccess: ({ expenses, remainingBudget }, variables) => {
+    mutationFn: ({
+      expenses,
+      budgetId,
+      categoryId,
+    }: AddSpecialExpensesParams) => addSpecialExpenses(expenses, budgetId),
+    onSuccess: ({ data, remainingBudget }, variables) => {
       if (variables.categoryId) {
         queryClient.setQueryData(
           ["specialBudget", variables.budgetId],
@@ -26,7 +29,7 @@ export const useAddSpecialExpenseMutation = () => {
             remainingBudget,
             categories: prev.categories.map((cat) =>
               cat.id === variables.categoryId
-                ? { ...cat, expenses: [...cat.expenses, ...expenses] }
+                ? { ...cat, expenses: [...cat.expenses, ...data] }
                 : cat
             ),
           })
@@ -37,7 +40,7 @@ export const useAddSpecialExpenseMutation = () => {
           (prev: SpecialBudget) => ({
             ...prev,
             remainingBudget,
-            expenses: [...prev.expenses, ...expenses],
+            expenses: [...prev.expenses, ...data],
           })
         );
       }
@@ -51,9 +54,13 @@ export const useUpdateSpecialExpenseMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ expense, budgetId }: UpdateExpenseProps) =>
-      updateSpecialExpense({ expense, budgetId }),
-    onSuccess: ({ updatedExpense, remainingBudget }, variables) => {
+    mutationFn: ({
+      expense,
+      expenseId,
+      budgetId,
+    }: UpdateSpecialExpensesParams) =>
+      updateSpecialExpense(expense, expenseId, budgetId),
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["specialBudget", variables.budgetId],
       });
@@ -66,17 +73,35 @@ export const useDeleteSpecialExpenseMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ expenseId, budgetId }: DeleteExpenseProps) =>
-      deleteSpecialExpense({ expenseId, budgetId }),
-    onSuccess: ({ expenseId, remainingBudget }, variables) => {
-      queryClient.setQueryData(
-        ["specialBudget", variables.budgetId],
-        (prev: SpecialBudget) => ({
-          ...prev,
-          remainingBudget,
-          expenses: prev.expenses.filter((e) => e.id !== expenseId),
-        })
-      );
+    mutationFn: ({
+      expenseId,
+      budgetId,
+      categoryId,
+    }: DeleteSpecialExpenseParams) => deleteSpecialExpense(expenseId, budgetId),
+    onSuccess: ({ data, remainingBudget }, variables) => {
+      if (variables.categoryId) {
+        queryClient.setQueryData(
+          ["specialBudget", variables.budgetId],
+          (prev: SpecialBudget) => ({
+            ...prev,
+            remainingBudget,
+            categories: prev.categories.map((cat) =>
+              cat.id === variables.categoryId
+                ? cat.expenses.filter((exp) => exp.id !== data.id)
+                : cat
+            ),
+          })
+        );
+      } else {
+        queryClient.setQueryData(
+          ["specialBudget", variables.budgetId],
+          (prev: SpecialBudget) => ({
+            ...prev,
+            remainingBudget,
+            expenses: prev.expenses.filter((e) => e.id !== data.id),
+          })
+        );
+      }
 
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },

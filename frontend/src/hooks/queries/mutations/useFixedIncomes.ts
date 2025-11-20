@@ -4,25 +4,24 @@ import {
   updateFixedIncome,
 } from "@/lib/api/fixedIncomes";
 import { useBudgetStore } from "@/stores/budgetStore";
-import { BudgetEntry, BudgetEntryForm } from "@shared/schemas";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UpdateFixedEntryParams } from "@/types";
+import { BaseEntryOutput } from "@shared/schemas";
+import { useMutation } from "@tanstack/react-query";
 
 export const useAddFixedIncomesMutation = () => {
+  const { fixedIncomes, setFixedIncomes } = useBudgetStore.getState();
   return useMutation({
-    mutationFn: (incomes: BudgetEntryForm[]) => addFixedIncomes(incomes),
+    mutationFn: (incomes: BaseEntryOutput[]) => addFixedIncomes(incomes),
     onSuccess: (incomes) => {
-      const { fixedIncomes, setFixedIncomes } = useBudgetStore.getState();
-
-      const updatedIncomes = [...fixedIncomes, ...incomes];
-
-      setFixedIncomes(updatedIncomes);
+      setFixedIncomes([...fixedIncomes, ...incomes]);
     },
   });
 };
 
 export const useUpdateFixedIncomeMutation = () => {
   return useMutation({
-    mutationFn: (income: BudgetEntry) => updateFixedIncome(income),
+    mutationFn: ({ entry, entryId }: UpdateFixedEntryParams) =>
+      updateFixedIncome(entry, entryId),
     onSuccess: (updatedIncome) => {
       const { fixedIncomes, setFixedIncomes } = useBudgetStore.getState();
       const updatedIncomes = fixedIncomes.map((income) =>
@@ -37,10 +36,10 @@ export const useUpdateFixedIncomeMutation = () => {
 export const useDeleteFixedIncomeMutation = () => {
   return useMutation({
     mutationFn: (incomeId: string) => deleteFixedIncomes(incomeId),
-    onSuccess: ({ incomeId }) => {
+    onSuccess: (result) => {
       const { fixedIncomes, setFixedIncomes } = useBudgetStore.getState();
       const updatedIncomes = fixedIncomes.filter(
-        (income) => income.id !== incomeId
+        (income) => income.id !== result.id
       );
 
       setFixedIncomes(updatedIncomes);

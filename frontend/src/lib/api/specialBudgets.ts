@@ -1,8 +1,11 @@
 import { SpecialBudgetForm } from "@shared/schemas";
 import { ApiError } from "../ApiError";
 import { getCurrentOnlineStatus } from "../network";
+import { SpecialBudget, SpecialBudgetItem } from "@/types";
 
-export const fetchAllSpecialBudgets = async () => {
+export const fetchAllSpecialBudgets = async (): Promise<
+  SpecialBudgetItem[]
+> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/special-budgets`, {
@@ -16,7 +19,9 @@ export const fetchAllSpecialBudgets = async () => {
   return response.json();
 };
 
-export const fetchSpecialBudget = async (id: string) => {
+export const fetchSpecialBudget = async (
+  id: string
+): Promise<SpecialBudget> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/special-budgets/${id}`, {
@@ -30,7 +35,9 @@ export const fetchSpecialBudget = async (id: string) => {
   return response.json();
 };
 
-export const addSpecialBudget = async (newBudget: SpecialBudgetForm) => {
+export const addSpecialBudget = async (
+  newBudget: SpecialBudgetForm
+): Promise<SpecialBudget> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/special-budgets`, {
@@ -51,7 +58,7 @@ export const addSpecialBudget = async (newBudget: SpecialBudgetForm) => {
 export const updateSpecialBudget = async (
   budget: SpecialBudgetForm,
   id: string
-) => {
+): Promise<SpecialBudget> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/special-budgets/${id}`, {
@@ -69,7 +76,9 @@ export const updateSpecialBudget = async (
   return response.json();
 };
 
-export const deleteSpecialBudget = async (id: string) => {
+export const deleteSpecialBudget = async (
+  id: string
+): Promise<{ id: string }> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/special-budgets/${id}`, {

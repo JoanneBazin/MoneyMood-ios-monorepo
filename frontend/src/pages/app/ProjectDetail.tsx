@@ -4,6 +4,7 @@ import { ProjectExpenses } from "@/components/features/projects/ProjectExpenses"
 import { SpecialBudgetOptions } from "@/components/features/projects/SpecialBudgetOptions";
 import { BackArrow, RemainingBudgetDisplay } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { Loader } from "@/components/ui/Loader";
 import { useBudgetDetailsQuery } from "@/hooks/queries";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -21,10 +22,18 @@ export const ProjectDetail = () => {
 
   const updatable = { name: budget.name, totalBudget: budget.totalBudget };
 
+  if (isPending) {
+    return (
+      <section>
+        <Loader type="layout" />
+      </section>
+    );
+  }
   return (
     <section>
       <BackArrow />
 
+      {error && <ErrorMessage message={error.message} />}
       <div className="flex-between">
         <RemainingBudgetDisplay
           type="Budget restant"
@@ -35,13 +44,7 @@ export const ProjectDetail = () => {
           total={budget.totalBudget}
           base={true}
         />
-        <SpecialBudgetOptions
-          budgetId={budget.id}
-          updatableData={updatable}
-          onError={() =>
-            setOptionsError("Une erreur est survenue lors de la mise à jour")
-          }
-        />
+        <SpecialBudgetOptions budgetId={budget.id} updatableData={updatable} />
         {optionsError && <ErrorMessage message={optionsError} />}
       </div>
       <div>

@@ -1,5 +1,9 @@
-import { ExpenseEntryForm } from "@shared/schemas";
-import { ExpenseEntry, UpdateExpenseEntry } from "./entries";
+import {
+  BaseEntryOutput,
+  ExpenseOutput,
+  SpecialExpenseOutput,
+} from "@shared/schemas";
+import { ExpenseEntry } from "./entries";
 
 export interface SpecialExpenseType {
   id: string;
@@ -25,16 +29,42 @@ export interface WeeklyExpensesDisplayProps {
   };
 }
 
-export interface AddExpensesProps {
+// Mutations
+
+export interface AddExpensesParams {
+  expenses: ExpenseOutput[];
   budgetId: string;
-  expenses: ExpenseEntryForm[];
 }
 
-export interface UpdateExpenseProps {
-  expense: UpdateExpenseEntry;
-  budgetId: string;
-}
-export interface DeleteExpenseProps {
+export interface UpdateExpenseParams {
+  expense: BaseEntryOutput;
   expenseId: string;
   budgetId: string;
+}
+export interface DeleteExpenseParams {
+  expenseId: string;
+  budgetId: string;
+}
+
+export interface AddSpecialExpensesParams {
+  expenses: SpecialExpenseOutput[];
+  budgetId: string;
+  categoryId?: string;
+}
+
+export interface UpdateSpecialExpensesParams {
+  expense: SpecialExpenseOutput;
+  expenseId: string;
+  budgetId: string;
+}
+
+export interface DeleteSpecialExpenseParams {
+  expenseId: string;
+  budgetId: string;
+  categoryId?: string;
+}
+
+export interface ExpensesResponse<T> {
+  data: T;
+  remainingBudget: number;
 }

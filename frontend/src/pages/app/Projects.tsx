@@ -21,20 +21,24 @@ export const Projects = () => {
       {isPending && <Loader type="layout" />}
       {error && <ErrorMessage message={error.message} />}
 
-      <div
-        role="button"
-        onClick={() => setIsCreateModalOpen(true)}
-        className="flex-start gap-sm"
-      >
-        <Plus />
-        <p>Créer un budget spécifique</p>
-      </div>
+      {!isPending && !error && (
+        <div>
+          <div
+            role="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex-start gap-sm"
+          >
+            <Plus />
+            <p>Créer un budget spécifique</p>
+          </div>
 
-      {specialBudgets && (
-        <div className="my-md">
-          {specialBudgets.map((budget) => (
-            <SpecialBudgetCard key={budget.id} data={budget} />
-          ))}
+          {specialBudgets && (
+            <div className="my-md">
+              {specialBudgets.map((budget) => (
+                <SpecialBudgetCard key={budget.id} data={budget} />
+              ))}
+            </div>
+          )}
         </div>
       )}
 

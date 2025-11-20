@@ -1,11 +1,12 @@
-import { CategoryFormProps, UpdateCategoryFormProps } from "@shared/schemas";
+import { CategoryEntryForm } from "@shared/schemas";
 import { ApiError } from "../ApiError";
 import { getCurrentOnlineStatus } from "../network";
+import { DeleteSpecialCategoryResponse, SpecialBudgetCategory } from "@/types";
 
 export const addSpecialCategory = async (
-  category: CategoryFormProps,
+  category: CategoryEntryForm,
   budgetId: string
-) => {
+): Promise<SpecialBudgetCategory> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/special-budgets/${budgetId}/categories`, {
@@ -24,13 +25,14 @@ export const addSpecialCategory = async (
 };
 
 export const updateSpecialCategory = async (
-  category: UpdateCategoryFormProps,
+  category: CategoryEntryForm,
+  categoryId: string,
   budgetId: string
-) => {
+): Promise<SpecialBudgetCategory> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
-    `/api/special-budgets/${budgetId}/categories/${category.id}`,
+    `/api/special-budgets/${budgetId}/categories/${categoryId}`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -50,7 +52,7 @@ export const updateSpecialCategory = async (
 export const deleteSpecialCategory = async (
   categoryId: string,
   budgetId: string
-) => {
+): Promise<DeleteSpecialCategoryResponse> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
@@ -72,7 +74,7 @@ export const deleteSpecialCategory = async (
 export const deleteSpecialCategoryOnCascade = async (
   categoryId: string,
   budgetId: string
-) => {
+): Promise<{ remainingBudget: number }> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(

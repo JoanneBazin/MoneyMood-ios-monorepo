@@ -1,11 +1,10 @@
 import { ProjectForm } from "@/components/forms";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useAddSpecialBudgetMutation } from "@/hooks/queries/mutations";
 import { SpecialBudgetForm } from "@shared/schemas";
 import { useNavigate } from "react-router-dom";
 
 export const CreateSpecialBudget = () => {
-  const { mutate, isPending, error } = useAddSpecialBudgetMutation();
+  const { mutate, isPending, isError } = useAddSpecialBudgetMutation();
   const navigate = useNavigate();
 
   const handleCreate = (data: SpecialBudgetForm) => {
@@ -17,8 +16,12 @@ export const CreateSpecialBudget = () => {
   };
   return (
     <div>
-      {error && <ErrorMessage message={error.message} />}
-      <ProjectForm onSubmit={handleCreate} isPending={isPending} edit={false} />
+      <ProjectForm
+        onSubmit={handleCreate}
+        isPending={isPending}
+        isError={isError}
+        edit={false}
+      />
     </div>
   );
 };

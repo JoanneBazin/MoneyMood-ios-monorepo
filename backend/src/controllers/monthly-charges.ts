@@ -41,7 +41,7 @@ export const addMonthlyCharges = async (
     );
 
     return res.status(201).json({
-      charges: normalizeDecimalFields(monthlyCharges),
+      data: normalizeDecimalFields(monthlyCharges),
       weeklyBudget: normalizeDecimalFields(weeklyBudget),
       remainingBudget: normalizeDecimalFields(remainingBudget),
     });
@@ -82,7 +82,7 @@ export const updateMonthlyCharge = async (
     );
 
     return res.status(200).json({
-      updatedCharge: normalizeDecimalFields(updatedCharge),
+      data: normalizeDecimalFields(updatedCharge),
       weeklyBudget: normalizeDecimalFields(weeklyBudget),
       remainingBudget: normalizeDecimalFields(remainingBudget),
     });
@@ -109,10 +109,12 @@ export const deleteMonthlyCharge = async (
   const { id: monthlyBudgetId, chargeId } = params;
 
   try {
-    await prisma.monthlyCharge.delete({
+    const deletedEntry = await prisma.monthlyCharge.delete({
       where: {
         id: chargeId,
+        monthlyBudgetId,
       },
+      select: { id: true },
     });
 
     const { weeklyBudget } = await updateWeeklyBudget(monthlyBudgetId);
@@ -121,7 +123,7 @@ export const deleteMonthlyCharge = async (
     );
 
     return res.status(200).json({
-      message: "Charge supprimée avec succès !",
+      data: deletedEntry,
       weeklyBudget: normalizeDecimalFields(weeklyBudget),
       remainingBudget: normalizeDecimalFields(remainingBudget),
     });

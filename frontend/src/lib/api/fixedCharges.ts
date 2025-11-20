@@ -1,14 +1,15 @@
-import { BudgetEntry, BudgetEntryForm } from "@shared/schemas";
+import { BaseEntryOutput } from "@shared/schemas";
 import { getCurrentOnlineStatus } from "../network";
 import { ApiError } from "../ApiError";
+import { Entry } from "@/types";
 
-export const fetchFixedCharges = async () => {
+export const fetchFixedCharges = async (): Promise<Entry[]> => {
   const response = await fetch(`/api/fixed-charges`, {
     credentials: "include",
   });
 
   if (response.status === 404) {
-    return null;
+    return [];
   }
 
   if (!response.ok) {
@@ -22,7 +23,9 @@ export const fetchFixedCharges = async () => {
   return response.json();
 };
 
-export const addFixedCharges = async (charges: BudgetEntryForm[]) => {
+export const addFixedCharges = async (
+  charges: BaseEntryOutput[]
+): Promise<Entry[]> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/fixed-charges`, {
@@ -40,9 +43,12 @@ export const addFixedCharges = async (charges: BudgetEntryForm[]) => {
   return response.json();
 };
 
-export const updateFixedCharge = async (charge: BudgetEntry) => {
+export const updateFixedCharge = async (
+  charge: BaseEntryOutput,
+  chargeId: string
+) => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-  const response = await fetch(`/api/fixed-charges/${charge.id}`, {
+  const response = await fetch(`/api/fixed-charges/${chargeId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -57,7 +63,9 @@ export const updateFixedCharge = async (charge: BudgetEntry) => {
   return response.json();
 };
 
-export const deleteFixedCharges = async (chargeId: string) => {
+export const deleteFixedCharges = async (
+  chargeId: string
+): Promise<{ id: string }> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/fixed-charges/${chargeId}`, {
@@ -70,7 +78,5 @@ export const deleteFixedCharges = async (chargeId: string) => {
     throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
-  return {
-    chargeId,
-  };
+  return response.json();
 };

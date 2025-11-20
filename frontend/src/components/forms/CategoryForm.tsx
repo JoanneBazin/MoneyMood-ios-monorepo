@@ -1,16 +1,17 @@
-import { AddCategoryFormProps } from "@/types";
 import { useState } from "react";
 import { ErrorMessage } from "../ui/ErrorMessage";
 import { X } from "lucide-react";
+import { CategoryFormProps } from "@/types";
 
 export const CategoryForm = ({
   validationErrors,
   genericError,
   onSubmit,
+  isPending,
   onDelete,
   initialData,
   edit = false,
-}: AddCategoryFormProps) => {
+}: CategoryFormProps) => {
   const [category, setCategory] = useState({ name: initialData ?? "" });
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -48,6 +49,7 @@ export const CategoryForm = ({
           type="button"
           onClick={() => onSubmit(category)}
           className="primary-btn"
+          disabled={isPending}
         >
           {edit ? "Mettre à jour" : "Créer"}
         </button>

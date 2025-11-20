@@ -4,18 +4,17 @@ import {
   updateFixedCharge,
 } from "@/lib/api/fixedCharges";
 import { useBudgetStore } from "@/stores/budgetStore";
-import { BudgetEntry, BudgetEntryForm } from "@shared/schemas";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UpdateFixedEntryParams } from "@/types";
+import { BaseEntryOutput } from "@shared/schemas";
+import { useMutation } from "@tanstack/react-query";
 
 export const useAddFixedChargesMutation = () => {
   const { fixedCharges, setFixedCharges } = useBudgetStore.getState();
 
   return useMutation({
-    mutationFn: (charges: BudgetEntryForm[]) => addFixedCharges(charges),
+    mutationFn: (charges: BaseEntryOutput[]) => addFixedCharges(charges),
     onSuccess: (charges) => {
-      const updatedCharges = [...fixedCharges, ...charges];
-
-      setFixedCharges(updatedCharges);
+      setFixedCharges([...fixedCharges, ...charges]);
     },
   });
 };
@@ -24,7 +23,8 @@ export const useUpdateFixedChargeMutation = () => {
   const { fixedCharges, setFixedCharges } = useBudgetStore.getState();
 
   return useMutation({
-    mutationFn: (charge: BudgetEntry) => updateFixedCharge(charge),
+    mutationFn: ({ entry, entryId }: UpdateFixedEntryParams) =>
+      updateFixedCharge(entry, entryId),
     onSuccess: (updatedCharge) => {
       const updatedCharges = fixedCharges.map((charge) =>
         charge.id === updatedCharge.id ? updatedCharge : charge
@@ -40,9 +40,9 @@ export const useDeleteFixedChargeMutation = () => {
 
   return useMutation({
     mutationFn: (chargeId: string) => deleteFixedCharges(chargeId),
-    onSuccess: ({ chargeId }) => {
+    onSuccess: (result) => {
       const updatedCharges = fixedCharges.filter(
-        (charge) => charge.id !== chargeId
+        (charge) => charge.id !== result.id
       );
 
       setFixedCharges(updatedCharges);

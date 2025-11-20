@@ -40,7 +40,7 @@ export const addMonthlyExpenses = async (
     );
 
     return res.status(201).json({
-      expenses: normalizeDecimalFields(monthlyExpenses),
+      data: normalizeDecimalFields(monthlyExpenses),
       remainingBudget: normalizeDecimalFields(remainingBudget),
     });
   } catch (error) {
@@ -66,6 +66,7 @@ export const updateMonthlyExpense = async (
     const updatedExpense = await prisma.expense.update({
       where: {
         id: expenseId,
+        monthlyBudgetId,
       },
       data: {
         name,
@@ -79,7 +80,7 @@ export const updateMonthlyExpense = async (
     );
 
     return res.status(200).json({
-      updatedExpense: normalizeDecimalFields(updatedExpense),
+      data: normalizeDecimalFields(updatedExpense),
       remainingBudget: normalizeDecimalFields(remainingBudget),
     });
   } catch (error) {
@@ -105,10 +106,12 @@ export const deleteMonthlyExpense = async (
   const { id: monthlyBudgetId, expenseId } = params;
 
   try {
-    await prisma.expense.delete({
+    const deletedEntry = await prisma.expense.delete({
       where: {
         id: expenseId,
+        monthlyBudgetId,
       },
+      select: { id: true },
     });
 
     const { remainingBudget } = await updateMonthlyBudgetRemaining(
@@ -116,7 +119,7 @@ export const deleteMonthlyExpense = async (
     );
 
     return res.status(200).json({
-      message: "Dépense supprimée avec succès !",
+      data: deletedEntry,
       remainingBudget: normalizeDecimalFields(remainingBudget),
     });
   } catch (error) {

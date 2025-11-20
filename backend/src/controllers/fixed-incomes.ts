@@ -116,14 +116,15 @@ export const deleteFixedIncome = async (
   if (!incomeId) return;
 
   try {
-    await prisma.fixedIncome.delete({
+    const deletedEntry = await prisma.fixedIncome.delete({
       where: {
         id: incomeId,
         userId,
       },
+      select: { id: true },
     });
 
-    return res.status(200).json({ message: "Revenu supprimé avec succès !" });
+    return res.status(200).json(deletedEntry);
   } catch (error) {
     if (isPrismaRecordNotFound(error)) {
       return next(

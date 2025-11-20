@@ -10,10 +10,11 @@ import {
   updateSpecialBudget,
 } from "@/lib/api/specialBudgets";
 import {
-  AddSpecialCategoryProps,
+  AddSpecialCategoryParams,
+  DeleteSpecialCategoryParams,
   SpecialBudget,
-  UpdateSpecialBudgetType,
-  UpdateSpecialCategoryProps,
+  UpdateSpecialBudgetParams,
+  UpdateSpecialCategoryParams,
 } from "@/types";
 import { SpecialBudgetForm } from "@shared/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -22,7 +23,8 @@ export const useAddSpecialBudgetMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (newBudget: SpecialBudgetForm) => addSpecialBudget(newBudget),
-    onSuccess: () => {
+    onSuccess: (newBudget) => {
+      queryClient.setQueryData(["specialBudget", newBudget.id], newBudget);
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
@@ -32,21 +34,25 @@ export const useUpdateSpecialBudgetMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ budget, id }: UpdateSpecialBudgetType) =>
-      updateSpecialBudget(budget, id),
-    onSuccess: (updatedBudget: SpecialBudgetForm, variables) => {
-      queryClient.setQueryData(["specialBudget", variables.id], updatedBudget);
+    mutationFn: ({ budget, budgetId }: UpdateSpecialBudgetParams) =>
+      updateSpecialBudget(budget, budgetId),
+    onSuccess: (updatedBudget, variables) => {
+      queryClient.setQueryData(
+        ["specialBudget", variables.budgetId],
+        updatedBudget
+      );
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
 };
 
-export const useDeletepecialBudgetMutation = () => {
+export const useDeleteSpecialBudgetMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (budgetId: string) => deleteSpecialBudget(budgetId),
-    onSuccess: () => {
+    onSuccess: (result) => {
+      queryClient.removeQueries({ queryKey: ["specialBudget", result.id] });
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
@@ -56,14 +62,14 @@ export const useAddSpecialCategoryMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ category, budgetId }: AddSpecialCategoryProps) =>
+    mutationFn: ({ category, budgetId }: AddSpecialCategoryParams) =>
       addSpecialCategory(category, budgetId),
     onSuccess: (newCategory, variables) => {
       queryClient.setQueryData(
         ["specialBudget", variables.budgetId],
         (prev: SpecialBudget) => ({
           ...prev,
-          categories: [...prev.categories, { ...newCategory, expenses: [] }],
+          categories: [...prev.categories, { ...newCategory }],
         })
       );
     },
@@ -74,15 +80,19 @@ export const useUpdateSpecialCategoryMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ category, budgetId }: UpdateSpecialCategoryProps) =>
-      updateSpecialCategory(category, budgetId),
+    mutationFn: ({
+      category,
+      categoryId,
+      budgetId,
+    }: UpdateSpecialCategoryParams) =>
+      updateSpecialCategory(category, categoryId, budgetId),
     onSuccess: (updatedCategory, variables) => {
       queryClient.setQueryData(
         ["specialBudget", variables.budgetId],
         (prev: SpecialBudget) => ({
           ...prev,
           categories: prev.categories.map((cat) =>
-            cat.id === variables.category.id
+            cat.id === variables.categoryId
               ? { ...cat, name: updatedCategory.name }
               : cat
           ),
@@ -96,16 +106,16 @@ export const useDeleteSpecialCategoryMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ category, budgetId }: UpdateSpecialCategoryProps) =>
-      deleteSpecialCategory(category.id, budgetId),
-    onSuccess: (updatedCategory, variables) => {
+    mutationFn: ({ categoryId, budgetId }: DeleteSpecialCategoryParams) =>
+      deleteSpecialCategory(categoryId, budgetId),
+    onSuccess: (deletedCategory, variables) => {
       queryClient.setQueryData(
         ["specialBudget", variables.budgetId],
         (prev: SpecialBudget) => ({
           ...prev,
-          expenses: [...prev.expenses, ...updatedCategory.expenses],
+          expenses: [...prev.expenses, ...deletedCategory.expenses],
           categories: prev.categories.filter(
-            (cat) => cat.id !== variables.category.id
+            (cat) => cat.id !== deletedCategory.id
           ),
         })
       );
@@ -117,8 +127,8 @@ export const useDeleteSpecialCategorOnCascadeyMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ category, budgetId }: UpdateSpecialCategoryProps) =>
-      deleteSpecialCategoryOnCascade(category.id, budgetId),
+    mutationFn: ({ categoryId, budgetId }: DeleteSpecialCategoryParams) =>
+      deleteSpecialCategoryOnCascade(categoryId, budgetId),
     onSuccess: (result, variables) => {
       queryClient.setQueryData(
         ["specialBudget", variables.budgetId],
@@ -126,7 +136,7 @@ export const useDeleteSpecialCategorOnCascadeyMutation = () => {
           ...prev,
           remainingBudget: result.remainingBudget,
           categories: prev.categories.filter(
-            (cat) => cat.id !== variables.category.id
+            (cat) => cat.id !== variables.categoryId
           ),
         })
       );

@@ -36,12 +36,7 @@ export const MonthlyBudgetOptions = ({
   };
 
   const handleDeleteBudget = () => {
-    deleteMonthlyBudget.mutate(budgetId, {
-      onError: () => {
-        setIsOptionsOpen(false);
-        onError();
-      },
-    });
+    deleteMonthlyBudget.mutate(budgetId);
   };
 
   return (
@@ -85,6 +80,8 @@ export const MonthlyBudgetOptions = ({
         <DeleteModalContent
           onDelete={handleDeleteBudget}
           onClose={() => setIsModalOpen(false)}
+          isPending={deleteMonthlyBudget.isPending}
+          isError={deleteMonthlyBudget.isError}
         />
       </Modal>
     </div>

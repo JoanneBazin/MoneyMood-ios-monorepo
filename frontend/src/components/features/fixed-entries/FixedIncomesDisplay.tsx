@@ -12,11 +12,10 @@ import {
   useUpdateFixedIncomeMutation,
 } from "@/hooks/queries/mutations";
 import { useBudgetStore } from "@/stores/budgetStore";
-import { NewBudgetEntry, UpdatedBudgetEntry } from "@/types";
+import { Entry } from "@/types";
 import {
+  BaseEntryForm,
   baseEntrySchema,
-  BudgetEntry,
-  budgetEntrySchema,
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
@@ -28,9 +27,9 @@ export const FixedIncomesDisplay = () => {
     (acc, entry) => acc + entry.amount,
     0
   );
-  const [newIncomes, setNewIncomes] = useState<NewBudgetEntry[]>([]);
+  const [newIncomes, setNewIncomes] = useState<BaseEntryForm[]>([]);
 
-  const [selectedEntry, setSelectedEntry] = useState<BudgetEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
 
   const addFixedIncomes = useAddFixedIncomesMutation();
   const updateFixedIncome = useUpdateFixedIncomeMutation();
@@ -43,16 +42,12 @@ export const FixedIncomesDisplay = () => {
     string,
     string
   > | null>(null);
-  const genericAddError = addFixedIncomes.isError;
-  const [genericUpdateError, setGenericUpdateError] = useState<string | null>(
-    null
-  );
-  const [genericDeleteError, setGenericDeleteError] = useState<string | null>(
-    null
-  );
+  const addRequestError = addFixedIncomes.isError;
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   const handleAddIncomes = () => {
     setValidationError(null);
+    setRequestError(null);
 
     const validation = validateArrayWithSchema(baseEntrySchema, newIncomes);
 
@@ -66,39 +61,45 @@ export const FixedIncomesDisplay = () => {
     });
   };
 
-  const handleUpdateIncome = (updatedIncome: UpdatedBudgetEntry) => {
+  const handleUpdateIncome = (
+    updatedIncome: BaseEntryForm,
+    entryId: string
+  ) => {
     setUpdateValidationError(null);
-    setGenericUpdateError(null);
+    setRequestError(null);
 
-    const validation = validateWithSchema(budgetEntrySchema, updatedIncome);
+    const validation = validateWithSchema(baseEntrySchema, updatedIncome);
 
     if (!validation.success) {
       setUpdateValidationError(validation.errors);
       return;
     }
 
-    updateFixedIncome.mutate(validation.data, {
-      onSuccess: () => setSelectedEntry(null),
-      onError: () =>
-        setGenericUpdateError("Une erreur est survenue lors de la mise à jour"),
-    });
+    updateFixedIncome.mutate(
+      { entry: validation.data, entryId },
+      {
+        onSuccess: () => setSelectedEntry(null),
+        onError: () =>
+          setRequestError("Une erreur est survenue lors de la mise à jour"),
+      }
+    );
   };
 
-  const handleDeleteIncome = (deletedIncome: BudgetEntry) => {
+  const handleDeleteIncome = (entryId: string) => {
     setUpdateValidationError(null);
-    setGenericDeleteError(null);
+    setRequestError(null);
 
-    deleteFixedIncome.mutate(deletedIncome.id, {
+    deleteFixedIncome.mutate(entryId, {
       onSuccess: () => setSelectedEntry(null),
       onError: () =>
-        setGenericDeleteError("Une erreur est survenue lors de la suppression"),
+        setRequestError("Une erreur est survenue lors de la suppression"),
     });
   };
 
   return (
     <>
-      {genericAddError && (
-        <ErrorMessage message="Une erreur interne est survenue" />
+      {addRequestError && (
+        <ErrorMessage message="Une erreur est survenue lors de la création" />
       )}
       <BudgetDataCard title="Mes revenus fixes">
         <DataList
@@ -112,7 +113,7 @@ export const FixedIncomesDisplay = () => {
           errors={validationError}
           onChange={setNewIncomes}
           onResetErrors={() => setValidationError(null)}
-          type="income"
+          type="incomes"
         />
         {newIncomes.length > 0 && (
           <button
@@ -135,7 +136,7 @@ export const FixedIncomesDisplay = () => {
             <UpdateEntryForm
               initialData={selectedEntry}
               validationErrors={updateValidationError}
-              genericError={genericUpdateError || genericDeleteError}
+              genericError={requestError}
               onSubmit={handleUpdateIncome}
               onDelete={handleDeleteIncome}
             />

@@ -7,7 +7,7 @@ import {
   isPrismaRecordNotFound,
   normalizeDecimalFields,
   prisma,
-  specialExpenseEntrySelect,
+  specialBudgetSelect,
 } from "../lib";
 import { updateSpecialBudgetRemaining } from "../services";
 
@@ -29,6 +29,7 @@ export const addSpecialBudget = async (
         totalBudget,
         remainingBudget: totalBudget,
       },
+      select: specialBudgetSelect,
     });
 
     return res.status(201).json(normalizeDecimalFields(newBudget));
@@ -54,15 +55,7 @@ export const getSpecialBudgetDetails = async (
         userId,
         id,
       },
-      include: {
-        categories: {
-          include: { expenses: { select: specialExpenseEntrySelect } },
-        },
-        expenses: {
-          where: { specialCategoryId: null },
-          select: specialExpenseEntrySelect,
-        },
-      },
+      select: specialBudgetSelect,
     });
 
     if (!specialBudget) {
@@ -129,11 +122,7 @@ export const updateSpecialBudget = async (
         name,
         totalBudget,
       },
-      include: {
-        expenses: {
-          select: specialExpenseEntrySelect,
-        },
-      },
+      select: specialBudgetSelect,
     });
     const { remainingBudget } = await updateSpecialBudgetRemaining(budget.id);
     const updatedBudget = { ...budget, remainingBudget };
@@ -164,14 +153,15 @@ export const deleteSpecialBudget = async (
   if (!specialBudgetId) return;
 
   try {
-    await prisma.specialBudget.delete({
+    const deletedBudget = await prisma.specialBudget.delete({
       where: {
         id: specialBudgetId,
         userId,
       },
+      select: { id: true },
     });
 
-    return res.status(200).json({ message: "Budget supprimé avec succès !" });
+    return res.status(200).json(deletedBudget);
   } catch (error) {
     if (isPrismaRecordNotFound(error)) {
       return next(

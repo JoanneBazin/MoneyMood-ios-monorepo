@@ -1,17 +1,12 @@
-import {
-  AddSpecialExpensesProps,
-  DeleteExpenseProps,
-  SpecialExpenseType,
-  UpdateSpecialExpenseResponse,
-  UpdateSpecialExpensesProps,
-} from "@/types";
+import { ExpensesResponse, SpecialExpenseEntry } from "@/types";
 import { getCurrentOnlineStatus } from "../network";
 import { ApiError } from "../ApiError";
+import { SpecialExpenseOutput } from "@shared/schemas";
 
-export const addSpecialExpenses = async ({
-  expenses,
-  budgetId,
-}: AddSpecialExpensesProps) => {
+export const addSpecialExpenses = async (
+  expenses: SpecialExpenseOutput[],
+  budgetId: string
+): Promise<ExpensesResponse<SpecialExpenseEntry[]>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/special-budgets/${budgetId}/expenses`, {
@@ -29,14 +24,15 @@ export const addSpecialExpenses = async ({
   return response.json();
 };
 
-export const updateSpecialExpense = async ({
-  expense,
-  budgetId,
-}: UpdateSpecialExpensesProps): Promise<UpdateSpecialExpenseResponse> => {
+export const updateSpecialExpense = async (
+  expense: SpecialExpenseOutput,
+  expenseId: string,
+  budgetId: string
+): Promise<ExpensesResponse<SpecialExpenseEntry>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
-    `/api/special-budgets/${budgetId}/expenses/${expense.id}`,
+    `/api/special-budgets/${budgetId}/expenses/${expenseId}`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -53,10 +49,10 @@ export const updateSpecialExpense = async ({
   return response.json();
 };
 
-export const deleteSpecialExpense = async ({
-  expenseId,
-  budgetId,
-}: DeleteExpenseProps) => {
+export const deleteSpecialExpense = async (
+  expenseId: string,
+  budgetId: string
+): Promise<ExpensesResponse<{ id: string }>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
@@ -72,10 +68,5 @@ export const deleteSpecialExpense = async ({
     throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
-  const result = await response.json();
-
-  return {
-    expenseId,
-    remainingBudget: result.remainingBudget,
-  };
+  return response.json();
 };

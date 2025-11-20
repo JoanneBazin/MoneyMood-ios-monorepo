@@ -6,16 +6,21 @@ import {
   getFixedCharges,
   updateFixedCharge,
 } from "../controllers";
-import { baseEntrySchema, budgetEntrySchema } from "@moneymood-monorepo/shared";
+import { baseEntryServerSchema } from "@moneymood-monorepo/shared";
 
 const router = express.Router();
 
 router.get("/", requireAuth, getFixedCharges);
-router.post("/", requireAuth, validateBody(baseEntrySchema), addFixedCharges);
+router.post(
+  "/",
+  requireAuth,
+  validateBody(baseEntryServerSchema),
+  addFixedCharges
+);
 router.put(
   "/:id",
   requireAuth,
-  validateBody(budgetEntrySchema),
+  validateBody(baseEntryServerSchema),
   updateFixedCharge
 );
 router.delete("/:id", requireAuth, deleteFixedCharge);

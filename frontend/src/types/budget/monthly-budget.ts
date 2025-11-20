@@ -1,3 +1,4 @@
+import { BaseEntryOutput } from "@shared/schemas";
 import { Entry, ExpenseEntry } from "./entries";
 
 export interface MonthlyBudget {
@@ -19,7 +20,14 @@ export interface MonthlyBudgetOptionsProps {
   onError: () => void;
 }
 
-export interface updateMonthlyBudgetProps {
+// Mutations
+
+export interface UpdateMonthlyBudgetParams {
   budgetId: string;
   isCurrent: boolean;
+}
+
+export interface UpdateFixedEntryParams {
+  entry: BaseEntryOutput;
+  entryId: string;
 }

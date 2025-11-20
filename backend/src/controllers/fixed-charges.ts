@@ -116,14 +116,15 @@ export const deleteFixedCharge = async (
   if (!chargeId) return;
 
   try {
-    await prisma.fixedCharge.delete({
+    const deletedEntry = await prisma.fixedCharge.delete({
       where: {
         id: chargeId,
         userId,
       },
+      select: { id: true },
     });
 
-    return res.status(200).json({ message: "Charge supprimée avec succès !" });
+    return res.status(200).json(deletedEntry);
   } catch (error) {
     if (isPrismaRecordNotFound(error)) {
       return next(

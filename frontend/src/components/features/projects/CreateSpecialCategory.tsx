@@ -2,7 +2,7 @@ import { CategoryForm } from "@/components/forms";
 import { Modal } from "@/components/ui";
 import { useAddSpecialCategoryMutation } from "@/hooks/queries/mutations";
 import {
-  CategoryFormProps,
+  CategoryEntryForm,
   categorySchema,
   validateWithSchema,
 } from "@shared/schemas";
@@ -14,12 +14,12 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
     string,
     string
   > | null>(null);
-  const [genericError, setGenericError] = useState<string | null>(null);
+  const [requestError, setRequestError] = useState<string | null>(null);
   const { mutate, isPending } = useAddSpecialCategoryMutation();
 
-  const handleAddCategory = (category: CategoryFormProps) => {
+  const handleAddCategory = (category: CategoryEntryForm) => {
     setValidationError(null);
-    setGenericError(null);
+    setRequestError(null);
 
     const validation = validateWithSchema(categorySchema, category);
 
@@ -33,7 +33,7 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
       {
         onSuccess: () => setIsCreateModalOpen(false),
         onError: () =>
-          setGenericError("Une erreur est survenue lors de la création"),
+          setRequestError("Une erreur est survenue lors de la création"),
       }
     );
   };
@@ -50,8 +50,9 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
         >
           <CategoryForm
             validationErrors={validationError}
-            genericError={genericError}
+            genericError={requestError}
             onSubmit={handleAddCategory}
+            isPending={isPending}
           />
         </Modal>
       )}

@@ -10,7 +10,7 @@ import {
 import { hydrateBudgetStore } from "@/lib/hydrateBudgetStore";
 
 import { useNavigate } from "react-router-dom";
-import { updateMonthlyBudgetProps } from "@/types";
+import { UpdateMonthlyBudgetParams } from "@/types";
 
 export const useCreateBudgetMutation = () => {
   const queryClient = useQueryClient();
@@ -34,8 +34,8 @@ export const useUpdateBudgetStatusMutation = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: ({ budgetId, isCurrent }: updateMonthlyBudgetProps) =>
-      updateMonthlyBudgetStatus({ budgetId, isCurrent }),
+    mutationFn: ({ budgetId, isCurrent }: UpdateMonthlyBudgetParams) =>
+      updateMonthlyBudgetStatus(budgetId, isCurrent),
     onSuccess: (budget) => {
       if (budget.isCurrent) {
         hydrateBudgetStore(budget);
@@ -58,10 +58,10 @@ export const useDeleteMonthlyBudgetMutation = () => {
 
   return useMutation({
     mutationFn: (budgetId: string) => deleteMonthlyBudget(budgetId),
-    onSuccess: (_, budgetId) => {
+    onSuccess: (result) => {
       if (!currentBudget) return;
 
-      if (currentBudget.id === budgetId) {
+      if (currentBudget.id === result.id) {
         setCurrentBudget(null);
         setWeeksInMonth([]);
       } else {

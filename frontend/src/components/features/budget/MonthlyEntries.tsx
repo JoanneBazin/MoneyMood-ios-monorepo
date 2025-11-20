@@ -1,8 +1,7 @@
 import { useState } from "react";
 import {
+  BaseEntryForm,
   baseEntrySchema,
-  BudgetEntry,
-  budgetEntrySchema,
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
@@ -13,11 +12,7 @@ import {
 } from "@/hooks/queries/mutations";
 import { BudgetDataCard, DataList, Modal } from "@/components/ui";
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
-import {
-  MonthlyEntriesView,
-  NewBudgetEntry,
-  UpdatedBudgetEntry,
-} from "@/types";
+import { Entry, MonthlyEntriesView } from "@/types";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { RemainingBudgetDisplay } from "@/components/ui/RemainingBudgetDisplay";
 
@@ -30,8 +25,8 @@ export const MonthlyEntries = ({
   const totalData = data.reduce((acc, entry) => acc + entry.amount, 0);
   const title = type.charAt(0).toUpperCase() + type.slice(1) + " " + dateTitle;
 
-  const [selectedEntry, setSelectedEntry] = useState<BudgetEntry | null>(null);
-  const [newEntries, setNewEntries] = useState<NewBudgetEntry[]>([]);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  const [newEntries, setNewEntries] = useState<BaseEntryForm[]>([]);
 
   const addMonthlyEntries = useAddMonthlyEntriesMutation();
   const updateMonthlyEntry = useUpdateMonthlyEntriesMutation();
@@ -44,13 +39,8 @@ export const MonthlyEntries = ({
     string,
     string
   > | null>(null);
-  const genericAddError = addMonthlyEntries.isError;
-  const [genericUpdateError, setGenericUpdateError] = useState<string | null>(
-    null
-  );
-  const [genericDeleteError, setGenericDeleteError] = useState<string | null>(
-    null
-  );
+  const addRequestError = addMonthlyEntries.isError;
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   const handleAddEntries = () => {
     setValidationError(null);
@@ -72,11 +62,11 @@ export const MonthlyEntries = ({
     );
   };
 
-  const handleUpdateEntry = (updatedEntry: UpdatedBudgetEntry) => {
+  const handleUpdateEntry = (updatedEntry: BaseEntryForm, entryId: string) => {
     setUpdateValidationError(null);
-    setGenericUpdateError(null);
+    setRequestError(null);
 
-    const validation = validateWithSchema(budgetEntrySchema, updatedEntry);
+    const validation = validateWithSchema(baseEntrySchema, updatedEntry);
 
     if (!validation.success) {
       setUpdateValidationError(validation.errors);
@@ -87,34 +77,31 @@ export const MonthlyEntries = ({
       {
         type: type === "charges" ? "charges" : "incomes",
         entry: validation.data,
+        entryId,
         budgetId,
       },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>
-          setGenericUpdateError(
-            "Une erreur est survenue lors de la mise à jour"
-          ),
+          setRequestError("Une erreur est survenue lors de la mise à jour"),
       }
     );
   };
 
-  const handleDeleteEntry = (deletedEntry: BudgetEntry) => {
+  const handleDeleteEntry = (entryId: string) => {
     setUpdateValidationError(null);
-    setGenericDeleteError(null);
+    setRequestError(null);
 
     deleteMonthlyEntry.mutate(
       {
         type: type === "charges" ? "charges" : "incomes",
-        entryId: deletedEntry.id,
+        entryId,
         budgetId,
       },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>
-          setGenericDeleteError(
-            "Une erreur est survenue lors de la suppression"
-          ),
+          setRequestError("Une erreur est survenue lors de la suppression"),
       }
     );
   };
@@ -123,8 +110,8 @@ export const MonthlyEntries = ({
     <section>
       <RemainingBudgetDisplay type={`Total ${type}`} total={totalData} />
 
-      {genericAddError && (
-        <ErrorMessage message="Une erreur interne est survenue" />
+      {addRequestError && (
+        <ErrorMessage message="Une erreur interne est survenue lors de la création" />
       )}
 
       <div className="my-2xl">
@@ -144,7 +131,7 @@ export const MonthlyEntries = ({
             errors={validationError}
             onChange={setNewEntries}
             onResetErrors={() => setValidationError(null)}
-            type="entry"
+            type={type}
           />
           {newEntries.length > 0 && (
             <button
@@ -167,7 +154,7 @@ export const MonthlyEntries = ({
           <UpdateEntryForm
             initialData={selectedEntry}
             validationErrors={updateValidationError}
-            genericError={genericUpdateError || genericDeleteError}
+            genericError={requestError}
             onSubmit={handleUpdateEntry}
             onDelete={handleDeleteEntry}
           />

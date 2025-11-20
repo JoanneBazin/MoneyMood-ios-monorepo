@@ -6,7 +6,11 @@ import {
   useUpdateSpecialCategoryMutation,
 } from "@/hooks/queries/mutations";
 import { ProjectCategorySectionProps } from "@/types";
-import { updateCategorySchema, validateWithSchema } from "@shared/schemas";
+import {
+  CategoryEntryForm,
+  categorySchema,
+  validateWithSchema,
+} from "@shared/schemas";
 import { Pen } from "lucide-react";
 import { useState } from "react";
 
@@ -16,7 +20,7 @@ export const ProjectCategorySection = ({
   children,
 }: ProjectCategorySectionProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [genericError, setGenericError] = useState<string | null>(null);
+  const [requestError, setRequestError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<Record<
     string,
     string
@@ -26,15 +30,11 @@ export const ProjectCategorySection = ({
   const deleteCategory = useDeleteSpecialCategoryMutation();
   const deleteCategoryOnCascade = useDeleteSpecialCategorOnCascadeyMutation();
 
-  const handleUpdateCategory = (categoryName: { name: string }) => {
+  const handleUpdateCategory = (updatedCategory: CategoryEntryForm) => {
     setValidationError(null);
-    setGenericError(null);
-    const updatedCategory = { ...categoryName, id: category.id };
+    setRequestError(null);
 
-    const validation = validateWithSchema(
-      updateCategorySchema,
-      updatedCategory
-    );
+    const validation = validateWithSchema(categorySchema, updatedCategory);
 
     if (!validation.success) {
       setValidationError(validation.errors);
@@ -43,42 +43,43 @@ export const ProjectCategorySection = ({
     updateCategory.mutate(
       {
         category: validation.data,
+        categoryId: category.id,
         budgetId,
       },
       {
         onSuccess: () => setIsEditModalOpen(false),
         onError: () =>
-          setGenericError("Une erreur est survenue lors de la mise à jour"),
+          setRequestError("Une erreur est survenue lors de la mise à jour"),
       }
     );
   };
 
   const handleDeleteCategory = (onCascade: boolean) => {
     setValidationError(null);
-    setGenericError(null);
+    setRequestError(null);
 
     if (onCascade) {
       deleteCategoryOnCascade.mutate(
         {
-          category,
+          categoryId: category.id,
           budgetId,
         },
         {
           onSuccess: () => setIsEditModalOpen(false),
           onError: () =>
-            setGenericError("Une erreur est survenue lors de la mise à jour"),
+            setRequestError("Une erreur est survenue lors de la mise à jour"),
         }
       );
     } else {
       deleteCategory.mutate(
         {
-          category,
+          categoryId: category.id,
           budgetId,
         },
         {
           onSuccess: () => setIsEditModalOpen(false),
           onError: () =>
-            setGenericError("Une erreur est survenue lors de la mise à jour"),
+            setRequestError("Une erreur est survenue lors de la mise à jour"),
         }
       );
     }
@@ -102,7 +103,7 @@ export const ProjectCategorySection = ({
           >
             <CategoryForm
               validationErrors={validationError}
-              genericError={genericError}
+              genericError={requestError}
               onSubmit={handleUpdateCategory}
               onDelete={handleDeleteCategory}
               initialData={category.name}

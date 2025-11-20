@@ -5,34 +5,27 @@ import {
 } from "@/lib/api/monthlyEntries";
 import { useBudgetStore } from "@/stores/budgetStore";
 import {
-  AddMonthlyEntriesProps,
-  DeleteMonthlyEntryProps,
-  UpdateMonthlyEntryProps,
+  AddMonthlyEntriesParams,
+  DeleteMonthlyEntryParams,
+  UpdateMonthlyEntryParams,
 } from "@/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 export const useAddMonthlyEntriesMutation = () => {
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
-    mutationFn: ({ type, entries, budgetId }: AddMonthlyEntriesProps) =>
-      addMonthlyEntries({ type, entries, budgetId }),
-    onSuccess: ({ updated, remainingBudget, weeklyBudget }) => {
+    mutationFn: ({ type, entries, budgetId }: AddMonthlyEntriesParams) =>
+      addMonthlyEntries(type, entries, budgetId),
+    onSuccess: ({ data, remainingBudget, weeklyBudget }, variables) => {
       if (!currentBudget) return;
 
-      const updatedBudget = {
+      setCurrentBudget({
         ...currentBudget,
-        charges: updated.charges
-          ? [...currentBudget.charges, ...updated.charges]
-          : [...currentBudget.charges],
-        incomes: updated.incomes
-          ? [...currentBudget.incomes, ...updated.incomes]
-          : [...currentBudget.incomes],
         remainingBudget,
         weeklyBudget,
-      };
-
-      setCurrentBudget(updatedBudget);
+        [variables.type]: [...currentBudget[variables.type], ...data],
+      });
     },
   });
 };
@@ -41,28 +34,24 @@ export const useUpdateMonthlyEntriesMutation = () => {
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
-    mutationFn: ({ type, entry, budgetId }: UpdateMonthlyEntryProps) =>
-      updateMonthlyEntry({ type, entry, budgetId }),
-    onSuccess: ({ updated, remainingBudget, weeklyBudget }) => {
+    mutationFn: ({
+      type,
+      entry,
+      entryId,
+      budgetId,
+    }: UpdateMonthlyEntryParams) =>
+      updateMonthlyEntry(type, entry, entryId, budgetId),
+    onSuccess: ({ data, remainingBudget, weeklyBudget }, variables) => {
       if (!currentBudget) return;
 
-      const updatedBudget = {
+      setCurrentBudget({
         ...currentBudget,
-        charges: updated.charge
-          ? currentBudget.charges.map((charge) =>
-              charge.id === updated.charge.id ? updated.charge : charge
-            )
-          : currentBudget.charges,
-        incomes: updated.income
-          ? currentBudget.incomes.map((income) =>
-              income.id === updated.income.id ? updated.income : income
-            )
-          : currentBudget.incomes,
         remainingBudget,
         weeklyBudget,
-      };
-
-      setCurrentBudget(updatedBudget);
+        [variables.type]: currentBudget[variables.type].map((d) =>
+          d.id === data.id ? data : d
+        ),
+      });
     },
   });
 };
@@ -71,28 +60,19 @@ export const useDeleteMonthlyEntriesMutation = () => {
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
-    mutationFn: ({ type, entryId, budgetId }: DeleteMonthlyEntryProps) =>
-      deleteMonthlyEntry({ type, entryId, budgetId }),
-    onSuccess: ({ updated, remainingBudget, weeklyBudget }) => {
+    mutationFn: ({ type, entryId, budgetId }: DeleteMonthlyEntryParams) =>
+      deleteMonthlyEntry(type, entryId, budgetId),
+    onSuccess: ({ data, remainingBudget, weeklyBudget }, variables) => {
       if (!currentBudget) return;
 
-      const updatedBudget = {
+      setCurrentBudget({
         ...currentBudget,
-        charges: updated.chargeId
-          ? currentBudget.charges.filter(
-              (entry) => entry.id !== updated.chargeId
-            )
-          : currentBudget.charges,
-        incomes: updated.incomeId
-          ? currentBudget.incomes.filter(
-              (entry) => entry.id !== updated.incomeId
-            )
-          : currentBudget.incomes,
         remainingBudget,
         weeklyBudget,
-      };
-
-      setCurrentBudget(updatedBudget);
+        [variables.type]: currentBudget[variables.type].filter(
+          (d) => d.id !== data.id
+        ),
+      });
     },
   });
 };

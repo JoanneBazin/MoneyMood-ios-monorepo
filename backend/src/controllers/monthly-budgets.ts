@@ -28,7 +28,7 @@ export const addMonthlyBudget = async (
 
   try {
     const monthlyBudget = await prisma.$transaction(
-      async (tx: Prisma.TransactionClient): Promise<any> => {
+      async (tx: Prisma.TransactionClient) => {
         const newBudget = await tx.monthlyBudget.create({
           data: {
             userId,
@@ -254,16 +254,15 @@ export const deleteMonthlyBudget = async (
   if (!monthlyBudgetId) return;
 
   try {
-    await prisma.monthlyBudget.delete({
+    const deletedBudget = await prisma.monthlyBudget.delete({
       where: {
         id: monthlyBudgetId,
         userId,
       },
+      select: { id: true },
     });
 
-    return res
-      .status(200)
-      .json({ message: "Budget mensuel supprimé avec succès !" });
+    return res.status(200).json(deletedBudget);
   } catch (error) {
     if (isPrismaRecordNotFound(error)) {
       return next(

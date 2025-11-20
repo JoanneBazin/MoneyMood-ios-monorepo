@@ -1,5 +1,9 @@
-import { CategoryFormProps, SpecialBudgetForm } from "@shared/schemas";
-import { BaseEntryForm, UpdateExpenseEntry } from "../budget";
+import {
+  BaseEntryForm,
+  CategoryEntryForm,
+  SpecialBudgetForm,
+} from "@shared/schemas";
+import { Entry } from "../budget";
 import React from "react";
 
 export interface MonthYearPickerProps {
@@ -12,14 +16,14 @@ export interface AddEntriesFormProps {
   errors: Record<string, string>[] | null;
   onChange: (entries: BaseEntryForm[]) => void;
   onResetErrors: () => void;
-  type: "charge" | "income" | "expense" | "special-expense";
+  type: "charges" | "incomes" | "expense" | "special-expense";
 }
 
 export interface UpdateEntryFormProps {
-  initialData: UpdateExpenseEntry;
+  initialData: Entry;
   validationErrors: Record<string, string> | null;
   genericError: string | null;
-  onSubmit: (entry: UpdateExpenseEntry) => void;
+  onSubmit: (entry: BaseEntryForm, entryId: string) => void;
   onDelete: (entryId: string) => void;
   children?: React.ReactNode;
 }
@@ -27,14 +31,16 @@ export interface UpdateEntryFormProps {
 export interface ProjectFormProps {
   onSubmit: (data: SpecialBudgetForm) => void;
   isPending: boolean;
+  isError: boolean;
   edit: boolean;
   initialData?: SpecialBudgetForm;
 }
 
-export interface AddCategoryFormProps {
+export interface CategoryFormProps {
   validationErrors: Record<string, string> | null;
   genericError: string | null;
-  onSubmit: (category: CategoryFormProps) => void;
+  onSubmit: (category: CategoryEntryForm) => void;
+  isPending?: boolean;
   onDelete?: (onCascade: boolean) => void;
   initialData?: string;
   edit?: boolean;

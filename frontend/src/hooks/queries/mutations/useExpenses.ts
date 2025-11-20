@@ -1,31 +1,30 @@
 import { useBudgetStore } from "@/stores/budgetStore";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   addExpenses,
   deleteExpense,
   updateExpense,
 } from "@/lib/api/monthlyExpenses";
 import {
-  AddExpensesProps,
-  DeleteExpenseProps,
-  UpdateExpenseProps,
+  AddExpensesParams,
+  DeleteExpenseParams,
+  UpdateExpenseParams,
 } from "@/types";
 
 export const useAddExpensesMutation = () => {
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
-    mutationFn: ({ expenses, budgetId }: AddExpensesProps) =>
-      addExpenses({ expenses, budgetId }),
-    onSuccess: ({ expenses: newExpenses, remainingBudget }) => {
+    mutationFn: ({ expenses, budgetId }: AddExpensesParams) =>
+      addExpenses(expenses, budgetId),
+    onSuccess: ({ data, remainingBudget }) => {
       if (!currentBudget) return;
-      const updatedBudget = {
-        ...currentBudget,
-        expenses: [...currentBudget.expenses, ...newExpenses],
-        remainingBudget,
-      };
 
-      setCurrentBudget(updatedBudget);
+      setCurrentBudget({
+        ...currentBudget,
+        remainingBudget,
+        expenses: [...currentBudget.expenses, ...data],
+      });
     },
   });
 };
@@ -34,19 +33,18 @@ export const useUpdateExpenseMutation = () => {
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
-    mutationFn: ({ expense, budgetId }: UpdateExpenseProps) =>
-      updateExpense({ expense, budgetId }),
-    onSuccess: ({ updatedExpense, remainingBudget }) => {
+    mutationFn: ({ expense, expenseId, budgetId }: UpdateExpenseParams) =>
+      updateExpense(expense, expenseId, budgetId),
+    onSuccess: ({ data, remainingBudget }) => {
       if (!currentBudget) return;
 
-      const updatedBudget = {
+      setCurrentBudget({
         ...currentBudget,
-        expenses: currentBudget.expenses.map((expense) =>
-          expense.id === updatedExpense.id ? updatedExpense : expense
-        ),
         remainingBudget,
-      };
-      setCurrentBudget(updatedBudget);
+        expenses: currentBudget.expenses.map((expense) =>
+          expense.id === data.id ? data : expense
+        ),
+      });
     },
   });
 };
@@ -55,19 +53,18 @@ export const useDeleteExpenseMutation = () => {
   const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
 
   return useMutation({
-    mutationFn: ({ expenseId, budgetId }: DeleteExpenseProps) =>
-      deleteExpense({ expenseId, budgetId }),
-    onSuccess: ({ expenseId, remainingBudget }) => {
+    mutationFn: ({ expenseId, budgetId }: DeleteExpenseParams) =>
+      deleteExpense(expenseId, budgetId),
+    onSuccess: ({ data, remainingBudget }) => {
       if (!currentBudget) return;
 
-      const updatedBudget = {
+      setCurrentBudget({
         ...currentBudget,
-        expenses: currentBudget.expenses.filter(
-          (expense) => expense.id !== expenseId
-        ),
         remainingBudget,
-      };
-      setCurrentBudget(updatedBudget);
+        expenses: currentBudget.expenses.filter(
+          (expense) => expense.id !== data.id
+        ),
+      });
     },
   });
 };

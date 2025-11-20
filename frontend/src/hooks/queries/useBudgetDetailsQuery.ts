@@ -13,7 +13,7 @@ export const useBudgetDetailsQuery = (id: string) => {
   });
 
   useEffect(() => {
-    if (query.data) setPageTitle(query.data?.name);
+    if (query.data) setPageTitle(query.data.name);
   }, [query.data]);
   return query;
 };

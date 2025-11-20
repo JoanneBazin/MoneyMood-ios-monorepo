@@ -12,11 +12,10 @@ import {
   useUpdateFixedChargeMutation,
 } from "@/hooks/queries/mutations";
 import { useBudgetStore } from "@/stores/budgetStore";
-import { NewBudgetEntry, UpdatedBudgetEntry } from "@/types";
+import { Entry } from "@/types";
 import {
+  BaseEntryForm,
   baseEntrySchema,
-  BudgetEntry,
-  budgetEntrySchema,
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
@@ -28,9 +27,9 @@ export const FixedChargesDisplay = () => {
     (acc, entry) => acc + entry.amount,
     0
   );
-  const [newCharges, setNewCharges] = useState<NewBudgetEntry[]>([]);
+  const [newCharges, setNewCharges] = useState<BaseEntryForm[]>([]);
 
-  const [selectedEntry, setSelectedEntry] = useState<BudgetEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
 
   const addFixedCharges = useAddFixedChargesMutation();
   const updateFixedCharge = useUpdateFixedChargeMutation();
@@ -43,16 +42,12 @@ export const FixedChargesDisplay = () => {
     string,
     string
   > | null>(null);
-  const genericAddError = addFixedCharges.isError;
-  const [genericUpdateError, setGenericUpdateError] = useState<string | null>(
-    null
-  );
-  const [genericDeleteError, setGenericDeleteError] = useState<string | null>(
-    null
-  );
+  const addRequestError = addFixedCharges.isError;
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   const handleAddCharges = () => {
     setValidationError(null);
+    setRequestError(null);
 
     const validation = validateArrayWithSchema(baseEntrySchema, newCharges);
 
@@ -66,39 +61,45 @@ export const FixedChargesDisplay = () => {
     });
   };
 
-  const handleUpdateCharge = (updatedCharge: UpdatedBudgetEntry) => {
+  const handleUpdateCharge = (
+    updatedCharge: BaseEntryForm,
+    entryId: string
+  ) => {
     setUpdateValidationError(null);
-    setGenericUpdateError(null);
+    setRequestError(null);
 
-    const validation = validateWithSchema(budgetEntrySchema, updatedCharge);
+    const validation = validateWithSchema(baseEntrySchema, updatedCharge);
 
     if (!validation.success) {
       setUpdateValidationError(validation.errors);
       return;
     }
 
-    updateFixedCharge.mutate(validation.data, {
-      onSuccess: () => setSelectedEntry(null),
-      onError: () =>
-        setGenericUpdateError("Une erreur est survenue lors de la mise à jour"),
-    });
+    updateFixedCharge.mutate(
+      { entry: validation.data, entryId },
+      {
+        onSuccess: () => setSelectedEntry(null),
+        onError: () =>
+          setRequestError("Une erreur est survenue lors de la mise à jour"),
+      }
+    );
   };
 
-  const handleDeleteCharge = (deletedCharge: BudgetEntry) => {
+  const handleDeleteCharge = (entryId: string) => {
     setUpdateValidationError(null);
-    setGenericDeleteError(null);
+    setRequestError(null);
 
-    deleteFixedCharge.mutate(deletedCharge.id, {
+    deleteFixedCharge.mutate(entryId, {
       onSuccess: () => setSelectedEntry(null),
       onError: () =>
-        setGenericDeleteError("Une erreur est survenue lors de la suppression"),
+        setRequestError("Une erreur est survenue lors de la suppression"),
     });
   };
 
   return (
     <>
-      {genericAddError && (
-        <ErrorMessage message="Une erreur interne est survenue" />
+      {addRequestError && (
+        <ErrorMessage message="Une erreur est survenue lors de la création" />
       )}
       <BudgetDataCard title="Mes charges fixes">
         <DataList
@@ -112,7 +113,7 @@ export const FixedChargesDisplay = () => {
           errors={validationError}
           onChange={setNewCharges}
           onResetErrors={() => setValidationError(null)}
-          type="charge"
+          type="charges"
         />
         {newCharges.length > 0 && (
           <button
@@ -135,7 +136,7 @@ export const FixedChargesDisplay = () => {
             <UpdateEntryForm
               initialData={selectedEntry}
               validationErrors={updateValidationError}
-              genericError={genericUpdateError || genericDeleteError}
+              genericError={requestError}
               onSubmit={handleUpdateCharge}
               onDelete={handleDeleteCharge}
             />

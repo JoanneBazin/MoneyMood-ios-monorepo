@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import {
-  expenseEntrySchema,
-  updateExpenseEntrySchema,
+  BaseEntryForm,
+  baseEntrySchema,
+  expenseSchema,
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
@@ -18,12 +19,7 @@ import {
   TotalDataDisplay,
 } from "@/components/ui";
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
-import {
-  BaseEntryForm,
-  ExpenseEntry,
-  UpdateExpenseEntry,
-  WeeklyExpensesDisplayProps,
-} from "@/types";
+import { ExpenseEntry, WeeklyExpensesDisplayProps } from "@/types";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { getCurrentWeek } from "@/lib/weeks-helpers";
 
@@ -56,13 +52,8 @@ export const WeeklyExpensesDisplay = ({
     string,
     string
   > | null>(null);
-  const genericAddError = addExpenses.isError;
-  const [genericUpdateError, setGenericUpdateError] = useState<string | null>(
-    null
-  );
-  const [genericDeleteError, setGenericDeleteError] = useState<string | null>(
-    null
-  );
+  const addRequestError = addExpenses.isError;
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   useEffect(() => {
     setNewExpenses([]);
@@ -70,6 +61,7 @@ export const WeeklyExpensesDisplay = ({
 
   const handleAddExpenses = () => {
     setValidationError(null);
+    setRequestError(null);
 
     const newWeeklyExpenses = newExpenses.map((exp) => ({
       ...exp,
@@ -77,7 +69,7 @@ export const WeeklyExpensesDisplay = ({
     }));
 
     const validation = validateArrayWithSchema(
-      expenseEntrySchema,
+      expenseSchema,
       newWeeklyExpenses
     );
     if (!validation.success) {
@@ -91,51 +83,48 @@ export const WeeklyExpensesDisplay = ({
     );
   };
 
-  const handleUpdateExpense = (updatedExpense: UpdateExpenseEntry) => {
+  const handleUpdateExpense = (
+    updatedExpense: BaseEntryForm,
+    expenseId: string
+  ) => {
     setUpdateValidationError(null);
-    setGenericUpdateError(null);
+    setRequestError(null);
 
-    const validation = validateWithSchema(
-      updateExpenseEntrySchema,
-      updatedExpense
-    );
+    const validation = validateWithSchema(baseEntrySchema, updatedExpense);
 
     if (!validation.success) {
       setUpdateValidationError(validation.errors);
+
       return;
     }
 
     updateExpense.mutate(
-      { expense: validation.data, budgetId },
+      { expense: validation.data, expenseId, budgetId },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>
-          setGenericUpdateError(
-            "Une erreur est survenue lors de la mise à jour"
-          ),
+          setRequestError("Une erreur est survenue lors de la mise à jour"),
       }
     );
   };
 
   const handleDeleteExpense = (expenseId: string) => {
     setUpdateValidationError(null);
-    setGenericDeleteError(null);
+    setRequestError(null);
 
     deleteExpense.mutate(
-      { expenseId: expenseId, budgetId },
+      { expenseId, budgetId },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>
-          setGenericDeleteError(
-            "Une erreur est survenue lors de la suppression"
-          ),
+          setRequestError("Une erreur est survenue lors de la suppression"),
       }
     );
   };
 
   return (
     <>
-      {genericAddError && (
+      {addRequestError && (
         <ErrorMessage message="Une erreur interne est survenue" />
       )}
       <BudgetDataCard title="Dépenses">
@@ -201,7 +190,7 @@ export const WeeklyExpensesDisplay = ({
             <UpdateEntryForm
               initialData={selectedEntry}
               validationErrors={updateValidationError}
-              genericError={genericUpdateError || genericDeleteError}
+              genericError={requestError}
               onSubmit={handleUpdateExpense}
               onDelete={handleDeleteExpense}
             />

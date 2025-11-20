@@ -25,13 +25,11 @@ import {
   updateMonthlyIncome,
 } from "../controllers";
 import {
-  baseEntrySchema,
-  budgetEntrySchema,
-  expenseEntrySchema,
+  baseEntryServerSchema,
   monthlyBudgetSchema,
   queryDateSchema,
   updateCurrentStatusSchema,
-  updateExpenseEntrySchema,
+  expenseServerSchema,
 } from "@moneymood-monorepo/shared";
 
 const router = express.Router();
@@ -60,14 +58,14 @@ router.post(
   "/:id/incomes",
   requireAuth,
   checkBudgetAccess,
-  validateBody(baseEntrySchema),
+  validateBody(baseEntryServerSchema),
   addMonthlyIncomes
 );
 router.put(
   "/:id/incomes/:incomeId",
   requireAuth,
   checkBudgetAccess,
-  validateBody(budgetEntrySchema),
+  validateBody(baseEntryServerSchema),
   updateMonthlyIncome
 );
 router.delete(
@@ -82,14 +80,14 @@ router.post(
   "/:id/charges",
   requireAuth,
   checkBudgetAccess,
-  validateBody(baseEntrySchema),
+  validateBody(baseEntryServerSchema),
   addMonthlyCharges
 );
 router.put(
   "/:id/charges/:chargeId",
   requireAuth,
   checkBudgetAccess,
-  validateBody(budgetEntrySchema),
+  validateBody(baseEntryServerSchema),
   updateMonthlyCharge
 );
 router.delete(
@@ -104,14 +102,14 @@ router.post(
   "/:id/expenses",
   requireAuth,
   checkBudgetAccess,
-  validateBody(expenseEntrySchema),
+  validateBody(expenseServerSchema),
   addMonthlyExpenses
 );
 router.put(
   "/:id/expenses/:expenseId",
   requireAuth,
   checkBudgetAccess,
-  validateBody(updateExpenseEntrySchema),
+  validateBody(baseEntryServerSchema),
   updateMonthlyExpense
 );
 router.delete(

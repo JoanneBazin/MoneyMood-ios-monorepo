@@ -1,14 +1,14 @@
 import { fetchCurrentBudget } from "@/lib/api/monthlyBudgets";
 import { hydrateBudgetStore } from "@/lib/hydrateBudgetStore";
 import { useBudgetStore } from "@/stores/budgetStore";
-import { MonthlyBudget } from "@shared/schemas";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useOfflineStatus } from "../useOfflineStatus";
+import { MonthlyBudget } from "@/types";
 
 export const useCurrentBudgetQuery = () => {
   const { isOnline } = useOfflineStatus();
-  const query = useQuery<MonthlyBudget>({
+  const query = useQuery<MonthlyBudget | null>({
     queryKey: ["currentBudget"],
     queryFn: fetchCurrentBudget,
     enabled: isOnline,

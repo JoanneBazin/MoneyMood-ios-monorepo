@@ -1,27 +1,14 @@
-import {
-  CategoryFormProps,
-  SpecialBudgetForm,
-  SpecialExpenseEntryForm,
-} from "@shared/schemas";
-import { SpecialExpenseEntry, UpdateExpenseEntry } from "./entries";
-import { UpdateCategoryFormProps } from "@moneymood-monorepo/shared";
+import { CategoryEntryForm, SpecialBudgetForm } from "@shared/schemas";
+import { SpecialExpenseEntry } from "./entries";
 
 export interface SpecialBudget {
   id: string;
+  name: string;
   remainingBudget: number;
-  userId: string;
-  createdAt: Date;
-  name: string;
   totalBudget: number;
+  createdAt: string;
   expenses: SpecialExpenseEntry[];
-  categories: SpecialCategoryProps[];
-}
-
-export interface SpecialCategoryProps {
-  id: string;
-  name: string;
-  specialBudgetId: string;
-  expenses: SpecialExpenseEntry[];
+  categories: SpecialBudgetCategory[];
 }
 
 export interface SpecialBudgetItem {
@@ -30,43 +17,11 @@ export interface SpecialBudgetItem {
   createdAt: string;
 }
 
-export interface SpecialBudgetCardProps {
-  data: SpecialBudgetItem;
-}
-
-export interface UpdateSpecialBudgetType {
-  budget: SpecialBudgetForm;
+export interface SpecialBudgetCategory {
   id: string;
-}
-
-export interface SpecialBudgetOptionsProps {
-  budgetId: string;
-  updatableData: SpecialBudgetForm;
-  onError: () => void;
-}
-
-export interface ProjectExpensesProp {
-  budgetId: string;
+  name: string;
+  specialBudgetId: string;
   expenses: SpecialExpenseEntry[];
-  categoryId?: string;
-}
-
-export interface AddSpecialExpensesProps {
-  expenses: SpecialExpenseEntryForm[];
-  budgetId: string;
-  categoryId?: string;
-}
-export interface UpdateSpecialExpensesProps {
-  expense: UpdateExpenseEntry;
-  budgetId: string;
-}
-export interface AddSpecialCategoryProps {
-  category: CategoryFormProps;
-  budgetId: string;
-}
-export interface UpdateSpecialCategoryProps {
-  category: UpdateCategoryFormProps;
-  budgetId: string;
 }
 
 export interface ProjectCategorySectionProps {
@@ -76,4 +31,47 @@ export interface ProjectCategorySectionProps {
   };
   budgetId: string;
   children: React.ReactNode;
+}
+
+export interface SpecialBudgetCardProps {
+  data: SpecialBudgetItem;
+}
+
+export interface SpecialBudgetOptionsProps {
+  budgetId: string;
+  updatableData: SpecialBudgetForm;
+}
+
+export interface ProjectExpensesProp {
+  budgetId: string;
+  expenses: SpecialExpenseEntry[];
+  categoryId?: string;
+}
+
+// Mutations
+
+export interface UpdateSpecialBudgetParams {
+  budget: SpecialBudgetForm;
+  budgetId: string;
+}
+
+export interface AddSpecialCategoryParams {
+  category: CategoryEntryForm;
+  budgetId: string;
+}
+
+export interface UpdateSpecialCategoryParams {
+  category: CategoryEntryForm;
+  categoryId: string;
+  budgetId: string;
+}
+
+export interface DeleteSpecialCategoryParams {
+  categoryId: string;
+  budgetId: string;
+}
+
+export interface DeleteSpecialCategoryResponse {
+  id: string;
+  expenses: SpecialExpenseEntry[];
 }

@@ -1,15 +1,15 @@
 import { fetchFixedCharges } from "@/lib/api/fixedCharges";
 import { useBudgetStore } from "@/stores/budgetStore";
-import { BudgetEntry } from "@shared/schemas";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useOfflineStatus } from "../useOfflineStatus";
+import { Entry } from "@/types";
 
 export const useFixedChargesQuery = () => {
   const setFixedCharges = useBudgetStore((s) => s.setFixedCharges);
   const { isOnline } = useOfflineStatus();
 
-  const query = useQuery<BudgetEntry[]>({
+  const query = useQuery<Entry[]>({
     queryKey: ["fixedCharges"],
     queryFn: fetchFixedCharges,
     enabled: isOnline,

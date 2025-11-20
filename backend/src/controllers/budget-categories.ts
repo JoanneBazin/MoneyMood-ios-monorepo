@@ -50,6 +50,7 @@ export const addSpecialCategory = async (
           },
         },
       },
+      include: { expenses: { select: specialExpenseEntrySelect } },
     });
 
     return res.status(201).json(newCategory);
@@ -74,6 +75,7 @@ export const updateSpecialCategoryName = async (
     const updatedCategory = await prisma.specialBudgetCategory.update({
       where: { id: categoryId, specialBudgetId },
       data: { name },
+      include: { expenses: { select: specialExpenseEntrySelect } },
     });
 
     return res.status(200).json(updatedCategory);
@@ -103,7 +105,7 @@ export const deleteSpecialCategory = async (
   try {
     const deletedCategory = await prisma.specialBudgetCategory.delete({
       where: { id: categoryId, specialBudgetId },
-      select: { expenses: { select: specialExpenseEntrySelect } },
+      select: { id: true, expenses: { select: specialExpenseEntrySelect } },
     });
 
     return res.status(200).json(deletedCategory);

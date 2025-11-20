@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { AddEntriesFormProps, BaseEntryForm } from "@/types";
+import { AddEntriesFormProps } from "@/types";
+import { BaseEntryForm } from "@shared/schemas";
 
 export const AddEntriesForm = ({
   initialData,

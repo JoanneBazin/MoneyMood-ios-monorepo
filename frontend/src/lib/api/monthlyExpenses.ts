@@ -1,12 +1,13 @@
-import {
-  AddExpensesProps,
-  DeleteExpenseProps,
-  UpdateExpenseProps,
-} from "@/types";
+import { ExpenseEntry, ExpensesResponse } from "@/types";
 import { getCurrentOnlineStatus } from "../network";
 import { ApiError } from "../ApiError";
+import { ExpenseOutput } from "@moneymood-monorepo/shared";
+import { BaseEntryOutput } from "@shared/schemas";
 
-export const addExpenses = async ({ expenses, budgetId }: AddExpensesProps) => {
+export const addExpenses = async (
+  expenses: ExpenseOutput[],
+  budgetId: string
+): Promise<ExpensesResponse<ExpenseEntry[]>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/monthly-budgets/${budgetId}/expenses`, {
@@ -24,14 +25,15 @@ export const addExpenses = async ({ expenses, budgetId }: AddExpensesProps) => {
   return response.json();
 };
 
-export const updateExpense = async ({
-  expense,
-  budgetId,
-}: UpdateExpenseProps) => {
+export const updateExpense = async (
+  expense: BaseEntryOutput,
+  expenseId: string,
+  budgetId: string
+): Promise<ExpensesResponse<ExpenseEntry>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
-    `/api/monthly-budgets/${budgetId}/expenses/${expense.id}`,
+    `/api/monthly-budgets/${budgetId}/expenses/${expenseId}`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -48,10 +50,10 @@ export const updateExpense = async ({
   return response.json();
 };
 
-export const deleteExpense = async ({
-  expenseId,
-  budgetId,
-}: DeleteExpenseProps) => {
+export const deleteExpense = async (
+  expenseId: string,
+  budgetId: string
+): Promise<ExpensesResponse<{ id: string }>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
@@ -67,10 +69,5 @@ export const deleteExpense = async ({
     throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
-  const result = await response.json();
-
-  return {
-    expenseId,
-    remainingBudget: result.remainingBudget,
-  };
+  return response.json();
 };

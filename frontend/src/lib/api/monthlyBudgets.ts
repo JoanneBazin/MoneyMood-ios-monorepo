@@ -1,9 +1,9 @@
-import { updateMonthlyBudgetProps } from "@/types";
+import { LastMonthlyBudget, MonthlyBudget } from "@/types";
 import { MonthlyBudgetForm } from "@shared/schemas";
 import { getCurrentOnlineStatus } from "../network";
 import { ApiError } from "../ApiError";
 
-export const fetchCurrentBudget = async () => {
+export const fetchCurrentBudget = async (): Promise<MonthlyBudget | null> => {
   const response = await fetch(`/api/monthly-budgets/current`, {
     credentials: "include",
   });
@@ -22,10 +22,10 @@ export const fetchCurrentBudget = async () => {
   return response.json();
 };
 
-export const updateMonthlyBudgetStatus = async ({
-  budgetId,
-  isCurrent,
-}: updateMonthlyBudgetProps) => {
+export const updateMonthlyBudgetStatus = async (
+  budgetId: string,
+  isCurrent: boolean
+): Promise<MonthlyBudget> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/monthly-budgets/${budgetId}`, {
@@ -43,7 +43,9 @@ export const updateMonthlyBudgetStatus = async ({
   return response.json();
 };
 
-export const createMonthlyBudget = async (budget: MonthlyBudgetForm) => {
+export const createMonthlyBudget = async (
+  budget: MonthlyBudgetForm
+): Promise<MonthlyBudget> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/monthly-budgets`, {
@@ -61,7 +63,10 @@ export const createMonthlyBudget = async (budget: MonthlyBudgetForm) => {
   return response.json();
 };
 
-export const getBudgetByDate = async (year: number, month: number) => {
+export const getBudgetByDate = async (
+  year: number,
+  month: number
+): Promise<LastMonthlyBudget> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
@@ -78,7 +83,9 @@ export const getBudgetByDate = async (year: number, month: number) => {
   return response.json();
 };
 
-export const getBudgetById = async (budgetId: string) => {
+export const getBudgetById = async (
+  budgetId: string
+): Promise<MonthlyBudget> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/monthly-budgets/${budgetId}`, {
@@ -92,7 +99,7 @@ export const getBudgetById = async (budgetId: string) => {
   return response.json();
 };
 
-export const fetchLastBudgets = async () => {
+export const fetchLastBudgets = async (): Promise<LastMonthlyBudget[]> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/monthly-budgets/history`, {
@@ -106,7 +113,9 @@ export const fetchLastBudgets = async () => {
   return response.json();
 };
 
-export const deleteMonthlyBudget = async (budgetId: string) => {
+export const deleteMonthlyBudget = async (
+  budgetId: string
+): Promise<{ id: string }> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/monthly-budgets/${budgetId}`, {

@@ -1,16 +1,13 @@
-import {
-  AddMonthlyEntriesProps,
-  DeleteMonthlyEntryProps,
-  UpdateMonthlyEntryProps,
-} from "@/types";
+import { Entry, MonthlyEntryResponse, MonthlyEntryType } from "@/types";
 import { getCurrentOnlineStatus } from "../network";
 import { ApiError } from "../ApiError";
+import { BaseEntryOutput } from "@shared/schemas";
 
-export const addMonthlyEntries = async ({
-  type,
-  entries,
-  budgetId,
-}: AddMonthlyEntriesProps) => {
+export const addMonthlyEntries = async (
+  type: MonthlyEntryType,
+  entries: BaseEntryOutput[],
+  budgetId: string
+): Promise<MonthlyEntryResponse<Entry[]>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/monthly-budgets/${budgetId}/${type}`, {
@@ -25,27 +22,19 @@ export const addMonthlyEntries = async ({
     throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
-  const result = await response.json();
-
-  return {
-    updated:
-      type === "charges"
-        ? { charges: result.charges }
-        : { incomes: result.incomes },
-    remainingBudget: result.remainingBudget,
-    weeklyBudget: result.weeklyBudget,
-  };
+  return response.json();
 };
 
-export const updateMonthlyEntry = async ({
-  type,
-  entry,
-  budgetId,
-}: UpdateMonthlyEntryProps) => {
+export const updateMonthlyEntry = async (
+  type: MonthlyEntryType,
+  entry: BaseEntryOutput,
+  entryId: string,
+  budgetId: string
+): Promise<MonthlyEntryResponse<Entry>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
-    `/api/monthly-budgets/${budgetId}/${type}/${entry.id}`,
+    `/api/monthly-budgets/${budgetId}/${type}/${entryId}`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -59,23 +48,14 @@ export const updateMonthlyEntry = async ({
     throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
-  const result = await response.json();
-
-  return {
-    updated:
-      type === "charges"
-        ? { charge: result.updatedCharge }
-        : { income: result.updatedIncome },
-    remainingBudget: result.remainingBudget,
-    weeklyBudget: result.weeklyBudget,
-  };
+  return response.json();
 };
 
-export const deleteMonthlyEntry = async ({
-  type,
-  entryId,
-  budgetId,
-}: DeleteMonthlyEntryProps) => {
+export const deleteMonthlyEntry = async (
+  type: MonthlyEntryType,
+  entryId: string,
+  budgetId: string
+): Promise<MonthlyEntryResponse<{ id: string }>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
@@ -91,11 +71,5 @@ export const deleteMonthlyEntry = async ({
     throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
-  const result = await response.json();
-
-  return {
-    updated: type === "charges" ? { chargeId: entryId } : { incomeId: entryId },
-    remainingBudget: result.remainingBudget,
-    weeklyBudget: result.weeklyBudget,
-  };
+  return response.json();
 };

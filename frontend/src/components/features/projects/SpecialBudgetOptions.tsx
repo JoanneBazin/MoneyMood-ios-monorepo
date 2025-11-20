@@ -3,7 +3,7 @@ import { Modal } from "@/components/ui";
 import { AnimatedDropdown } from "@/components/ui/AnimateDropdown";
 import { DeleteModalContent } from "@/components/ui/DeleteModalContent";
 import {
-  useDeletepecialBudgetMutation,
+  useDeleteSpecialBudgetMutation,
   useUpdateSpecialBudgetMutation,
 } from "@/hooks/queries/mutations";
 import { useClickOutside } from "@/hooks/useClickOutside";
@@ -17,7 +17,6 @@ import { useNavigate } from "react-router-dom";
 export const SpecialBudgetOptions = ({
   budgetId,
   updatableData,
-  onError,
 }: SpecialBudgetOptionsProps) => {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const dropdownRef = useClickOutside(() => setIsOptionsOpen(false));
@@ -26,19 +25,15 @@ export const SpecialBudgetOptions = ({
   >(null);
 
   const updateSpecialBudget = useUpdateSpecialBudgetMutation();
-  const deleteSpecialBudget = useDeletepecialBudgetMutation();
+  const deleteSpecialBudget = useDeleteSpecialBudgetMutation();
   const navigate = useNavigate();
 
   const handleUpdateBudget = (budget: SpecialBudgetForm) => {
     updateSpecialBudget.mutate(
-      { budget, id: budgetId },
+      { budget, budgetId },
       {
         onSuccess: () => {
           setSelectedAction(null);
-        },
-        onError: () => {
-          setIsOptionsOpen(false);
-          onError();
         },
       }
     );
@@ -48,10 +43,6 @@ export const SpecialBudgetOptions = ({
     deleteSpecialBudget.mutate(budgetId, {
       onSuccess: () => {
         navigate("/app/projects");
-      },
-      onError: () => {
-        setIsOptionsOpen(false);
-        onError();
       },
     });
   };
@@ -98,6 +89,7 @@ export const SpecialBudgetOptions = ({
           <ProjectForm
             onSubmit={handleUpdateBudget}
             isPending={updateSpecialBudget.isPending}
+            isError={updateSpecialBudget.isError}
             edit={true}
             initialData={updatableData}
           />
@@ -107,6 +99,8 @@ export const SpecialBudgetOptions = ({
           <DeleteModalContent
             onDelete={handleDeleteBudget}
             onClose={() => setSelectedAction(null)}
+            isPending={deleteSpecialBudget.isPending}
+            isError={deleteSpecialBudget.isError}
           />
         )}
       </Modal>

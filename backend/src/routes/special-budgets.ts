@@ -22,9 +22,7 @@ import {
 import {
   categorySchema,
   specialBudgetSchema,
-  specialExpenseEntrySchema,
-  updateExpenseEntrySchema,
-  updateCategorySchema,
+  specialExpenseServerSchema,
 } from "@moneymood-monorepo/shared";
 
 const router = express.Router();
@@ -57,7 +55,7 @@ router.patch(
   "/:id/categories/:categoryId",
   requireAuth,
   checkSpecialBudgetAccess,
-  validateBody(updateCategorySchema),
+  validateBody(categorySchema),
   updateSpecialCategoryName
 );
 router.delete(
@@ -78,14 +76,14 @@ router.post(
   "/:id/expenses",
   requireAuth,
   checkSpecialBudgetAccess,
-  validateBody(specialExpenseEntrySchema),
+  validateBody(specialExpenseServerSchema),
   addSpecialExpenses
 );
 router.put(
   "/:id/expenses/:expenseId",
   requireAuth,
   checkSpecialBudgetAccess,
-  validateBody(updateExpenseEntrySchema),
+  validateBody(specialExpenseServerSchema),
   updateSpecialExpense
 );
 router.delete(

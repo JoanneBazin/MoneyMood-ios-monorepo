@@ -1,14 +1,15 @@
-import { BudgetEntry, BudgetEntryForm } from "@shared/schemas";
+import { BaseEntryOutput } from "@shared/schemas";
 import { getCurrentOnlineStatus } from "../network";
 import { ApiError } from "../ApiError";
+import { Entry } from "@/types";
 
-export const fetchFixedIncomes = async () => {
+export const fetchFixedIncomes = async (): Promise<Entry[]> => {
   const response = await fetch(`/api/fixed-incomes`, {
     credentials: "include",
   });
 
   if (response.status === 404) {
-    return null;
+    return [];
   }
 
   if (!response.ok) {
@@ -21,7 +22,9 @@ export const fetchFixedIncomes = async () => {
   return response.json();
 };
 
-export const addFixedIncomes = async (incomes: BudgetEntryForm[]) => {
+export const addFixedIncomes = async (
+  incomes: BaseEntryOutput[]
+): Promise<Entry[]> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/fixed-incomes`, {
@@ -39,10 +42,13 @@ export const addFixedIncomes = async (incomes: BudgetEntryForm[]) => {
   return response.json();
 };
 
-export const updateFixedIncome = async (income: BudgetEntry) => {
+export const updateFixedIncome = async (
+  income: BaseEntryOutput,
+  incomeId: string
+) => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
-  const response = await fetch(`/api/fixed-incomes/${income.id}`, {
+  const response = await fetch(`/api/fixed-incomes/${incomeId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -56,7 +62,10 @@ export const updateFixedIncome = async (income: BudgetEntry) => {
 
   return response.json();
 };
-export const deleteFixedIncomes = async (incomeId: string) => {
+
+export const deleteFixedIncomes = async (
+  incomeId: string
+): Promise<{ id: string }> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/fixed-incomes/${incomeId}`, {
@@ -69,7 +78,5 @@ export const deleteFixedIncomes = async (incomeId: string) => {
     throw new ApiError(response.status, data.error || "Echec de la connexion");
   }
 
-  return {
-    incomeId,
-  };
+  return response.json();
 };

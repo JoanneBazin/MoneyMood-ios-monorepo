@@ -5,9 +5,11 @@ import {
   getUserId,
   HttpError,
   isPrismaRecordNotFound,
+  normalizeDecimalFields,
   prisma,
   specialExpenseEntrySelect,
 } from "src/lib";
+import { updateSpecialBudgetRemaining } from "src/services";
 
 export const addSpecialCategory = async (
   req: Request,
@@ -105,6 +107,47 @@ export const deleteSpecialCategory = async (
     });
 
     return res.status(200).json(deletedCategory);
+  } catch (error) {
+    if (isPrismaRecordNotFound(error)) {
+      return next(
+        new HttpError(
+          404,
+          "Budget non trouvé ou vous n'avez pas les droits d'accès."
+        )
+      );
+    }
+    return next(error);
+  }
+};
+
+export const deleteSpecialCategoryOnCascade = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const params = getMultipleParamsIds(req, ["id", "categoryId"], next);
+  if (!params) return;
+
+  const { id: specialBudgetId, categoryId } = params;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.expense.deleteMany({
+        where: { specialBudgetId, specialCategoryId: categoryId },
+      });
+
+      await tx.specialBudgetCategory.delete({
+        where: { id: categoryId, specialBudgetId },
+      });
+    });
+
+    const { remainingBudget } = await updateSpecialBudgetRemaining(
+      specialBudgetId
+    );
+
+    return res
+      .status(200)
+      .json({ remainingBudget: normalizeDecimalFields(remainingBudget) });
   } catch (error) {
     if (isPrismaRecordNotFound(error)) {
       return next(

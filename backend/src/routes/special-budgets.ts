@@ -11,6 +11,7 @@ import {
   addSpecialExpenses,
   deleteSpecialBudget,
   deleteSpecialCategory,
+  deleteSpecialCategoryOnCascade,
   deleteSpecialExpense,
   getAllSpecialBudgets,
   getSpecialBudgetDetails,
@@ -64,6 +65,12 @@ router.delete(
   requireAuth,
   checkSpecialBudgetAccess,
   deleteSpecialCategory
+);
+router.delete(
+  "/:id/categories/:categoryId/cascade",
+  requireAuth,
+  checkSpecialBudgetAccess,
+  deleteSpecialCategoryOnCascade
 );
 
 // Special Expenses

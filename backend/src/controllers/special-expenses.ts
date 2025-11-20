@@ -67,15 +67,12 @@ export const updateSpecialExpense = async (
 
     const { id: specialBudgetId, expenseId } = params;
 
-    const { name, amount } = req.body;
+    const data = req.body;
     const updatedExpense = await prisma.expense.update({
       where: {
         id: expenseId,
       },
-      data: {
-        name,
-        amount,
-      },
+      data,
       select: specialExpenseEntrySelect,
     });
 

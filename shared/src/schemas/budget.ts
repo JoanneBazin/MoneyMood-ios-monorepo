@@ -29,12 +29,13 @@ export const budgetEntrySchema = baseEntrySchema.extend({
   id: z.string(),
 });
 export const updateExpenseEntrySchema = budgetEntrySchema.extend({
-  category: z
-    .string()
-    .min(2, "Le nom de catégorie est trop court")
-    .max(20, "Le nom de catégorie est trop long")
-    .trim()
-    .optional(),
+  specialCategoryId: z.preprocess((val) => {
+    if (typeof val === "string") {
+      const cat = val.trim();
+      return cat === "" ? null : cat;
+    }
+    return val;
+  }, z.string().nullable().optional()),
 });
 
 export const expenseEntrySchema = baseEntrySchema.extend({

@@ -42,6 +42,13 @@ form {
   flex-direction: column;
 }
 
+select {
+  padding: $spacing-xs $spacing-xs;
+  border-radius: $border-radius-sm;
+  font-family: $font-family-primary;
+  @include font-responsive(xs);
+}
+
 input {
   @include input-base;
 }

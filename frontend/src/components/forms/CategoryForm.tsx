@@ -1,7 +1,7 @@
 import { AddCategoryFormProps } from "@/types";
 import { useState } from "react";
 import { ErrorMessage } from "../ui/ErrorMessage";
-import { Check, X } from "lucide-react";
+import { X } from "lucide-react";
 
 export const CategoryForm = ({
   validationErrors,
@@ -32,45 +32,56 @@ export const CategoryForm = ({
           ) : null}
         </div>
       </div>
-      {edit && (
-        <div>
+
+      <div className="flex-end">
+        {edit && (
           <button
             type="button"
-            className="delete-btn"
+            className="secondary-btn"
             onClick={() => setConfirmDelete(true)}
             aria-label="Supprimer cette ligne"
           >
-            x
+            Supprimer
           </button>
-          {confirmDelete && (
-            <div className="delete-item">
-              <p>Supprimer cette entrée ?</p>
-              <button
-                type="button"
-                onClick={onDelete}
-                className="delete-item__button valid"
-              >
-                <Check size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setConfirmDelete(false)}
-                className="delete-item__button cancel"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          )}
+        )}
+        <button
+          type="button"
+          onClick={() => onSubmit(category)}
+          className="primary-btn"
+        >
+          {edit ? "Mettre à jour" : "Créer"}
+        </button>
+      </div>
+      {confirmDelete && onDelete && (
+        <div className="delete-cat-options">
+          <p>Voulez-vous supprimer les dépenses associées ?</p>
+
+          <div className="delete-item flex-end">
+            <button
+              type="button"
+              onClick={() => onDelete(true)}
+              className="delete-item__option primary"
+            >
+              Supprimer tout
+            </button>
+            <button
+              type="button"
+              onClick={() => onDelete(false)}
+              className="delete-item__option secondary"
+            >
+              Uniquement la catégorie
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(false)}
+              className="delete-item__button cancel"
+              aria-label="Annuler"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
       )}
-
-      <button
-        type="button"
-        onClick={() => onSubmit(category)}
-        className="primary-btn"
-      >
-        {edit ? "Mettre à jour" : "Créer"}
-      </button>
     </form>
   );
 };

@@ -68,3 +68,25 @@ export const deleteSpecialCategory = async (
 
   return response.json();
 };
+
+export const deleteSpecialCategoryOnCascade = async (
+  categoryId: string,
+  budgetId: string
+) => {
+  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
+
+  const response = await fetch(
+    `/api/special-budgets/${budgetId}/categories/${categoryId}/cascade`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
+  }
+
+  return response.json();
+};

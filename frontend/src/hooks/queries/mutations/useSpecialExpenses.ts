@@ -54,17 +54,9 @@ export const useUpdateSpecialExpenseMutation = () => {
     mutationFn: ({ expense, budgetId }: UpdateExpenseProps) =>
       updateSpecialExpense({ expense, budgetId }),
     onSuccess: ({ updatedExpense, remainingBudget }, variables) => {
-      queryClient.setQueryData(
-        ["specialBudget", variables.budgetId],
-        (prev: SpecialBudget) => ({
-          ...prev,
-          remainingBudget,
-          expenses: prev.expenses.map((e) =>
-            e.id === updatedExpense.id ? updatedExpense : e
-          ),
-        })
-      );
-
+      queryClient.invalidateQueries({
+        queryKey: ["specialBudget", variables.budgetId],
+      });
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });

@@ -9,6 +9,7 @@ export const UpdateEntryForm = ({
   genericError,
   onSubmit,
   onDelete,
+  children,
 }: UpdateEntryFormProps) => {
   const { id, name, amount } = initialData;
   const [updatedEntry, setUpdatedEntry] = useState<UpdateExpenseEntry>({
@@ -52,23 +53,32 @@ export const UpdateEntryForm = ({
                 }
               />
             </div>
-            <button
-              type="button"
-              className="delete-btn"
-              onClick={() => setConfirmDelete(true)}
-              aria-label="Supprimer cette ligne"
-            >
-              x
-            </button>
           </div>
           {validationErrors && validationErrors.amount ? (
             <p className="form-error">Montant invalide</p>
           ) : null}
         </div>
       </div>
+      {children}
 
+      <div className="flex-end">
+        <button
+          type="button"
+          className="secondary-btn"
+          onClick={() => setConfirmDelete(true)}
+        >
+          Supprimer
+        </button>
+        <button
+          type="button"
+          onClick={() => onSubmit(updatedEntry)}
+          className="primary-btn"
+        >
+          Modifier
+        </button>
+      </div>
       {confirmDelete && (
-        <div className="delete-item">
+        <div className="delete-item flex-end">
           <p>Supprimer cette entrée ?</p>
           <button
             type="button"
@@ -86,13 +96,6 @@ export const UpdateEntryForm = ({
           </button>
         </div>
       )}
-      <button
-        type="button"
-        onClick={() => onSubmit(updatedEntry)}
-        className="primary-btn"
-      >
-        Modifier
-      </button>
     </form>
   );
 };

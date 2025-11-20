@@ -1,5 +1,6 @@
 import { CategoryFormProps, SpecialBudgetForm } from "@shared/schemas";
 import { BaseEntryForm, UpdateExpenseEntry } from "../budget";
+import React from "react";
 
 export interface MonthYearPickerProps {
   onChange: (month: number, year: number) => void;
@@ -20,6 +21,7 @@ export interface UpdateEntryFormProps {
   genericError: string | null;
   onSubmit: (entry: UpdateExpenseEntry) => void;
   onDelete: (entryId: string) => void;
+  children?: React.ReactNode;
 }
 
 export interface ProjectFormProps {
@@ -33,7 +35,13 @@ export interface AddCategoryFormProps {
   validationErrors: Record<string, string> | null;
   genericError: string | null;
   onSubmit: (category: CategoryFormProps) => void;
-  onDelete?: () => void;
+  onDelete?: (onCascade: boolean) => void;
   initialData?: string;
   edit?: boolean;
+}
+
+export interface CategorySelectProps {
+  budgetId: string;
+  selectedCategory: string;
+  setCategory: (catId: string) => void;
 }

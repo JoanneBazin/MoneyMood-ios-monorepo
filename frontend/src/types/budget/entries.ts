@@ -21,5 +21,5 @@ export interface BaseEntryForm {
 
 export interface UpdateExpenseEntry extends BaseEntryForm {
   id: string;
-  category?: string;
+  specialCategoryId?: string | null;
 }

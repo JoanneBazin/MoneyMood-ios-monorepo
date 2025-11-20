@@ -7,7 +7,7 @@ export interface BackArrowProps {
 
 export interface DataListProps<T extends Entry> {
   data: T[];
-  emptyMessage: string;
+  emptyMessage?: string;
   setSelectedEntry?: (entry: T) => void;
   edit?: boolean;
 }

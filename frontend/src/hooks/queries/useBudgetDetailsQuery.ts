@@ -1,4 +1,5 @@
 import { fetchSpecialBudget } from "@/lib/api/specialBudgets";
+import { queryClient } from "@/lib/queryClient";
 import { useBudgetStore } from "@/stores/budgetStore";
 import { SpecialBudget } from "@/types";
 import { useQuery } from "@tanstack/react-query";
@@ -16,4 +17,12 @@ export const useBudgetDetailsQuery = (id: string) => {
     if (query.data) setPageTitle(query.data?.name);
   }, [query.data]);
   return query;
+};
+
+export const getCategories = (id: string) => {
+  const budget = queryClient.getQueryData([
+    "specialBudget",
+    id,
+  ]) as SpecialBudget;
+  return budget.categories.map((cat) => ({ id: cat.id, name: cat.name }));
 };

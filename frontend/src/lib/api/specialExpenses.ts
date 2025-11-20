@@ -1,6 +1,8 @@
 import {
   AddSpecialExpensesProps,
   DeleteExpenseProps,
+  SpecialExpenseType,
+  UpdateSpecialExpenseResponse,
   UpdateSpecialExpensesProps,
 } from "@/types";
 import { getCurrentOnlineStatus } from "../network";
@@ -30,7 +32,7 @@ export const addSpecialExpenses = async ({
 export const updateSpecialExpense = async ({
   expense,
   budgetId,
-}: UpdateSpecialExpensesProps) => {
+}: UpdateSpecialExpensesProps): Promise<UpdateSpecialExpenseResponse> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(

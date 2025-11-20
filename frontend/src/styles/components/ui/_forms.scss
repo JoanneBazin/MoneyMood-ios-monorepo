@@ -36,6 +36,20 @@
   gap: $spacing-xs;
   @include font-responsive(xs);
 
+  &__option {
+    padding: $spacing-xs $spacing-md;
+    @include font-responsive(xxs);
+
+    &.primary {
+      background: $gray-700;
+      color: $white;
+    }
+
+    &.secondary {
+      border: 1px $gray-700 solid;
+    }
+  }
+
   &__button {
     padding: 2px 6px;
     border-radius: 5px;

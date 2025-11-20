@@ -1,0 +1,19 @@
+@use "../abstracts" as *;
+
+.cat-button {
+  margin-top: $spacing-lg;
+  padding: $spacing-xxs $spacing-sm;
+  border: 1px $primary solid;
+  color: $primary-dark;
+}
+
+.cat-title {
+  font-weight: $font-weight-semibold;
+  @include font-responsive(lg);
+}
+
+.delete-cat-options {
+  text-align: end;
+  margin-top: $spacing-sm;
+  @include font-responsive(xs);
+}

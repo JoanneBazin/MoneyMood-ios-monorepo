@@ -38,15 +38,15 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
     );
   };
   return (
-    <div>
-      <button onClick={() => setIsCreateModalOpen(true)}>
+    <div className="flex-end">
+      <button onClick={() => setIsCreateModalOpen(true)} className="cat-button">
         Créer une catégorie
       </button>
       {isCreateModalOpen && (
         <Modal
           isOpen={!!isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
-          title={`Créer une nouvelle catégorie pour ce budget`}
+          title={`Nouvelle catégorie pour ce budget`}
         >
           <CategoryForm
             validationErrors={validationError}

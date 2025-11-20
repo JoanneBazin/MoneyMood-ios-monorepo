@@ -1,4 +1,5 @@
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
+import { CategorySelect } from "@/components/forms/CategorySelect";
 import { DataList, Modal } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import {
@@ -18,7 +19,7 @@ import {
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const ProjectExpenses = ({
   budgetId,
@@ -28,6 +29,7 @@ export const ProjectExpenses = ({
   const [newExpenses, setNewExpenses] = useState<BaseEntryForm[]>([]);
   const [selectedEntry, setSelectedEntry] =
     useState<SpecialExpenseEntry | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const addExpenses = useAddSpecialExpenseMutation();
   const updateExpense = useUpdateSpecialExpenseMutation();
   const deleteExpense = useDeleteSpecialExpenseMutation();
@@ -45,6 +47,12 @@ export const ProjectExpenses = ({
   const [genericDeleteError, setGenericDeleteError] = useState<string | null>(
     null
   );
+
+  useEffect(() => {
+    if (selectedEntry) {
+      setSelectedCategory(selectedEntry.specialCategoryId ?? "");
+    }
+  }, [selectedEntry]);
 
   const handleAddExpenses = () => {
     setValidationError(null);
@@ -81,10 +89,9 @@ export const ProjectExpenses = ({
     setUpdateValidationError(null);
     setGenericUpdateError(null);
 
-    const validation = validateWithSchema(
-      updateExpenseEntrySchema,
-      updatedExpense
-    );
+    const expense = { ...updatedExpense, specialCategoryId: selectedCategory };
+
+    const validation = validateWithSchema(updateExpenseEntrySchema, expense);
 
     if (!validation.success) {
       setUpdateValidationError(validation.errors);
@@ -124,13 +131,11 @@ export const ProjectExpenses = ({
       {genericAddError && (
         <ErrorMessage message="Une erreur interne est survenue" />
       )}
-      {expenses.length > 0 && (
-        <DataList<SpecialExpenseEntry>
-          data={expenses}
-          setSelectedEntry={setSelectedEntry}
-          emptyMessage="Pas de dépense pour ce budget"
-        />
-      )}
+
+      <DataList<SpecialExpenseEntry>
+        data={expenses}
+        setSelectedEntry={setSelectedEntry}
+      />
 
       <AddEntriesForm
         initialData={newExpenses}
@@ -162,7 +167,13 @@ export const ProjectExpenses = ({
             genericError={genericUpdateError || genericDeleteError}
             onSubmit={handleUpdateExpense}
             onDelete={handleDeleteExpense}
-          />
+          >
+            <CategorySelect
+              budgetId={budgetId}
+              selectedCategory={selectedCategory}
+              setCategory={setSelectedCategory}
+            />
+          </UpdateEntryForm>
         </Modal>
       )}
     </div>

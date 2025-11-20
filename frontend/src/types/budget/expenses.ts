@@ -1,6 +1,19 @@
 import { ExpenseEntryForm } from "@shared/schemas";
 import { ExpenseEntry, UpdateExpenseEntry } from "./entries";
 
+export interface SpecialExpenseType {
+  id: string;
+  name: string;
+  amount: number;
+  createdAt: string;
+  specialCategoryId: string | null;
+}
+
+export interface UpdateSpecialExpenseResponse {
+  updatedExpense: SpecialExpenseType;
+  remainingBudget: number;
+}
+
 export interface WeeklyExpensesDisplayProps {
   budgetId: string;
   weeklyBudget: number;

@@ -1,6 +1,7 @@
 import { CategoryForm } from "@/components/forms";
 import { Modal } from "@/components/ui";
 import {
+  useDeleteSpecialCategorOnCascadeyMutation,
   useDeleteSpecialCategoryMutation,
   useUpdateSpecialCategoryMutation,
 } from "@/hooks/queries/mutations";
@@ -23,6 +24,7 @@ export const ProjectCategorySection = ({
 
   const updateCategory = useUpdateSpecialCategoryMutation();
   const deleteCategory = useDeleteSpecialCategoryMutation();
+  const deleteCategoryOnCascade = useDeleteSpecialCategorOnCascadeyMutation();
 
   const handleUpdateCategory = (categoryName: { name: string }) => {
     setValidationError(null);
@@ -51,28 +53,45 @@ export const ProjectCategorySection = ({
     );
   };
 
-  const handleDeleteCategory = () => {
+  const handleDeleteCategory = (onCascade: boolean) => {
     setValidationError(null);
     setGenericError(null);
 
-    deleteCategory.mutate(
-      {
-        category,
-        budgetId,
-      },
-      {
-        onSuccess: () => setIsEditModalOpen(false),
-        onError: () =>
-          setGenericError("Une erreur est survenue lors de la mise à jour"),
-      }
-    );
+    if (onCascade) {
+      deleteCategoryOnCascade.mutate(
+        {
+          category,
+          budgetId,
+        },
+        {
+          onSuccess: () => setIsEditModalOpen(false),
+          onError: () =>
+            setGenericError("Une erreur est survenue lors de la mise à jour"),
+        }
+      );
+    } else {
+      deleteCategory.mutate(
+        {
+          category,
+          budgetId,
+        },
+        {
+          onSuccess: () => setIsEditModalOpen(false),
+          onError: () =>
+            setGenericError("Une erreur est survenue lors de la mise à jour"),
+        }
+      );
+    }
   };
 
   return (
     <div>
       <div className="flex-between">
-        <h3>{category.name}</h3>
-        <button onClick={() => setIsEditModalOpen(true)}>
+        <h2 className="cat-title">{category.name}</h2>
+        <button
+          onClick={() => setIsEditModalOpen(true)}
+          aria-label="Modifier la catégorie"
+        >
           <Pen size={14} />
         </button>
         {isEditModalOpen && (

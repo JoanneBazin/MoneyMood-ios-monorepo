@@ -1,6 +1,7 @@
 import {
   addSpecialCategory,
   deleteSpecialCategory,
+  deleteSpecialCategoryOnCascade,
   updateSpecialCategory,
 } from "@/lib/api/budgetCategories";
 import {
@@ -93,6 +94,25 @@ export const useDeleteSpecialCategoryMutation = () => {
         (prev: SpecialBudget) => ({
           ...prev,
           expenses: [...prev.expenses, ...updatedCategory.expenses],
+          categories: prev.categories.filter(
+            (cat) => cat.id !== variables.category.id
+          ),
+        })
+      );
+    },
+  });
+};
+
+export const useDeleteSpecialCategorOnCascadeyMutation = () => {
+  return useMutation({
+    mutationFn: ({ category, budgetId }: UpdateSpecialCategoryProps) =>
+      deleteSpecialCategoryOnCascade(category.id, budgetId),
+    onSuccess: (result, variables) => {
+      queryClient.setQueryData(
+        ["specialBudget", variables.budgetId],
+        (prev: SpecialBudget) => ({
+          ...prev,
+          remainingBudget: result.remainingBudget,
           categories: prev.categories.filter(
             (cat) => cat.id !== variables.category.id
           ),

@@ -49,9 +49,8 @@ export const ProjectDetail = () => {
       </div>
 
       <div>
-        {budget.expenses.length > 0 && (
-          <ProjectExpenses budgetId={budget.id} expenses={budget.expenses} />
-        )}
+        <ProjectExpenses budgetId={budget.id} expenses={budget.expenses} />
+
         {budget.categories.map((cat) => (
           <ProjectCategorySection
             key={cat.id}

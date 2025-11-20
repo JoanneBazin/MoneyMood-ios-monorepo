@@ -8,8 +8,8 @@ import {
   normalizeDecimalFields,
   prisma,
   specialExpenseEntrySelect,
-} from "src/lib";
-import { updateSpecialBudgetRemaining } from "src/services";
+} from "../lib";
+import { updateSpecialBudgetRemaining } from "../services";
 
 export const addSpecialCategory = async (
   req: Request,

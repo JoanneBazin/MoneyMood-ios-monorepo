@@ -9,7 +9,7 @@ import {
   prisma,
   specialExpenseEntrySelect,
 } from "../lib";
-import { updateSpecialBudgetRemaining } from "src/services";
+import { updateSpecialBudgetRemaining } from "../services";
 
 export const addSpecialBudget = async (
   req: Request,

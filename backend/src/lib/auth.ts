@@ -3,13 +3,16 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { Response } from "express";
 
+const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+
 export function generateSessionToken(): string {
   return crypto.randomBytes(32).toString("hex");
 }
 
 export async function createSession(userId: string): Promise<string> {
   const token = generateSessionToken();
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + THIRTY_DAYS);
 
   await prisma.session.create({
     data: {
@@ -41,6 +44,13 @@ export async function validateSession(sessionId: string) {
       await prisma.session.delete({ where: { id: sessionId } });
     }
     return null;
+  }
+
+  if (session.expiresAt.getTime() - Date.now() < SEVEN_DAYS) {
+    await prisma.session.update({
+      where: { id: sessionId },
+      data: { expiresAt: new Date(Date.now() + THIRTY_DAYS) },
+    });
   }
 
   return { user: session.user, session: session.id };

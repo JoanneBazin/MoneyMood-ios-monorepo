@@ -5,10 +5,6 @@ export interface LastMonthlyBudget {
   remainingBudget: number;
 }
 
-export interface LastBudgetLayoutProps {
-  budgetId: string;
-}
-
 export interface HistoryCardProps {
   data: LastMonthlyBudget;
   onSelect: (budgetId: string) => void;

@@ -3,12 +3,12 @@ import { getBudgetById } from "@/lib/api/monthlyBudgets";
 import { formatDateTitle } from "@/lib/formatDateTitle";
 import { Collapse, RemainingBudgetDisplay } from "@/components/ui";
 import { WeeklyExpensesDisplay } from "../budget/WeeklyExpensesDisplay";
-import { LastBudgetLayoutProps, MonthlyBudget } from "@/types";
+import { MonthlyBudget } from "@/types";
 import { Loader } from "@/components/ui/Loader";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { MonthlyBudgetOptions } from "../budget/MonthlyBudgetOptions";
 
-export const LastBudgetLayout = ({ budgetId }: LastBudgetLayoutProps) => {
+export const LastBudgetLayout = ({ budgetId }: { budgetId: string }) => {
   const [budget, setBudget] = useState<MonthlyBudget>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

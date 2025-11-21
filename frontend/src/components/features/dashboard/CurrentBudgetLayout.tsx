@@ -37,21 +37,12 @@ export const CurrentBudgetLayout = ({ budget }: { budget: MonthlyBudget }) => {
       <>
         <BackArrow onBack={() => setView("app")} />
         <AnimatedView view={view}>
-          {view === "charges" ? (
-            <MonthlyEntries
-              type="charges"
-              data={budget.charges}
-              dateTitle={dateTitle}
-              budgetId={budget.id}
-            />
-          ) : view === "incomes" ? (
-            <MonthlyEntries
-              type="revenus"
-              data={budget.incomes}
-              dateTitle={dateTitle}
-              budgetId={budget.id}
-            />
-          ) : null}
+          <MonthlyEntries
+            type={view}
+            data={budget[view]}
+            dateTitle={dateTitle}
+            budgetId={budget.id}
+          />
         </AnimatedView>
       </>
     );

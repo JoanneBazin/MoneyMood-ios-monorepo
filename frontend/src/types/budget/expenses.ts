@@ -5,19 +5,6 @@ import {
 } from "@shared/schemas";
 import { ExpenseEntry } from "./entries";
 
-export interface SpecialExpenseType {
-  id: string;
-  name: string;
-  amount: number;
-  createdAt: string;
-  specialCategoryId: string | null;
-}
-
-export interface UpdateSpecialExpenseResponse {
-  updatedExpense: SpecialExpenseType;
-  remainingBudget: number;
-}
-
 export interface WeeklyExpensesDisplayProps {
   budgetId: string;
   weeklyBudget: number;
@@ -31,36 +18,30 @@ export interface WeeklyExpensesDisplayProps {
 
 // Mutations
 
+interface BaseExpenseParams {
+  expenseId: string;
+  budgetId: string;
+}
+
 export interface AddExpensesParams {
   expenses: ExpenseOutput[];
   budgetId: string;
 }
-
-export interface UpdateExpenseParams {
-  expense: BaseEntryOutput;
-  expenseId: string;
-  budgetId: string;
-}
-export interface DeleteExpenseParams {
-  expenseId: string;
-  budgetId: string;
-}
-
 export interface AddSpecialExpensesParams {
   expenses: SpecialExpenseOutput[];
   budgetId: string;
   categoryId?: string;
 }
 
-export interface UpdateSpecialExpensesParams {
+export interface UpdateExpenseParams extends BaseExpenseParams {
+  expense: BaseEntryOutput;
+}
+export interface UpdateSpecialExpenseParams extends BaseExpenseParams {
   expense: SpecialExpenseOutput;
-  expenseId: string;
-  budgetId: string;
 }
 
-export interface DeleteSpecialExpenseParams {
-  expenseId: string;
-  budgetId: string;
+export interface DeleteExpenseParams extends BaseExpenseParams {}
+export interface DeleteSpecialExpenseParams extends BaseExpenseParams {
   categoryId?: string;
 }
 

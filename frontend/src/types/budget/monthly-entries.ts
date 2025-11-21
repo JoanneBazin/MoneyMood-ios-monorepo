@@ -12,23 +12,22 @@ export interface MonthlyEntriesView {
 
 // Mutations
 
-export interface AddMonthlyEntriesParams {
+interface BaseMonthlyEntryParams {
   type: MonthlyEntryType;
   budgetId: string;
+}
+
+export interface AddMonthlyEntriesParams extends BaseMonthlyEntryParams {
   entries: BaseEntryOutput[];
 }
 
-export interface UpdateMonthlyEntryParams {
-  type: MonthlyEntryType;
+export interface UpdateMonthlyEntryParams extends BaseMonthlyEntryParams {
   entry: BaseEntryOutput;
   entryId: string;
-  budgetId: string;
 }
 
-export interface DeleteMonthlyEntryParams {
-  type: MonthlyEntryType;
+export interface DeleteMonthlyEntryParams extends BaseMonthlyEntryParams {
   entryId: string;
-  budgetId: string;
 }
 
 export interface MonthlyEntryResponse<T> {

@@ -1,7 +1,7 @@
-import { SpecialBudgetCardProps } from "@/types";
+import { SpecialBudgetItem } from "@/types";
 import { Link } from "react-router-dom";
 
-export const SpecialBudgetCard = ({ data }: SpecialBudgetCardProps) => {
+export const SpecialBudgetCard = ({ data }: { data: SpecialBudgetItem }) => {
   return (
     <Link to={`/app/projects/${data.id}`} className="special-budget-card">
       <p className="special-budget-card__title">{data.name}</p>

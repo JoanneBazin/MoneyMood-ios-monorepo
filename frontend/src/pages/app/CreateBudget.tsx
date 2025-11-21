@@ -1,12 +1,15 @@
 import { useBudgetStore } from "@/stores/budgetStore";
 import { useEffect, useState } from "react";
-import { monthlyBudgetSchema, validateWithSchema } from "@shared/schemas";
+import {
+  BaseEntryForm,
+  monthlyBudgetSchema,
+  validateWithSchema,
+} from "@shared/schemas";
 import { extractArrayErrors } from "@/lib/extractArrayErrors";
 import { getWeeksInMonth } from "@/lib/weeks-helpers";
 import { useCreateBudgetMutation } from "@/hooks/queries/mutations";
 import { BudgetDataCard, MonthYearPicker } from "@/components/ui";
 import { AddEntriesForm } from "@/components/forms";
-import { BaseEntryForm } from "@/types";
 
 export const CreateBudget = () => {
   const {
@@ -17,10 +20,12 @@ export const CreateBudget = () => {
   const [month, setMonth] = useState<number | null>(null);
   const [year, setYear] = useState<number | null>(null);
 
-  const [monthlyCharges, setMonthlyCharges] =
-    useState<BaseEntryForm[]>(charges);
-  const [monthlyIncomes, setMonthlyIncomes] =
-    useState<BaseEntryForm[]>(incomes);
+  const [monthlyCharges, setMonthlyCharges] = useState<BaseEntryForm[]>(
+    charges.map((c) => ({ ...c, amount: c.amount.toString() }))
+  );
+  const [monthlyIncomes, setMonthlyIncomes] = useState<BaseEntryForm[]>(
+    incomes.map((i) => ({ ...i, amount: i.amount.toString() }))
+  );
   const [isCurrent, setIsCurrent] = useState(true);
 
   const [incomesErrors, setIncomesErrors] = useState<
@@ -80,7 +85,7 @@ export const CreateBudget = () => {
           errors={incomesErrors}
           onChange={setMonthlyIncomes}
           onResetErrors={() => setIncomesErrors(null)}
-          type="income"
+          type="incomes"
         />
       </BudgetDataCard>
       <BudgetDataCard title="Charges">
@@ -89,7 +94,7 @@ export const CreateBudget = () => {
           errors={chargesErrors}
           onChange={setMonthlyCharges}
           onResetErrors={() => setChargesErrors(null)}
-          type="charge"
+          type="charges"
         />
       </BudgetDataCard>
 

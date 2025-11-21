@@ -54,7 +54,7 @@ export const MonthlyEntries = ({
 
     addMonthlyEntries.mutate(
       {
-        type: type === "charges" ? "charges" : "incomes",
+        type,
         entries: validation.data,
         budgetId,
       },
@@ -75,7 +75,7 @@ export const MonthlyEntries = ({
 
     updateMonthlyEntry.mutate(
       {
-        type: type === "charges" ? "charges" : "incomes",
+        type,
         entry: validation.data,
         entryId,
         budgetId,
@@ -94,7 +94,7 @@ export const MonthlyEntries = ({
 
     deleteMonthlyEntry.mutate(
       {
-        type: type === "charges" ? "charges" : "incomes",
+        type,
         entryId,
         budgetId,
       },
@@ -108,7 +108,10 @@ export const MonthlyEntries = ({
 
   return (
     <section>
-      <RemainingBudgetDisplay type={`Total ${type}`} total={totalData} />
+      <RemainingBudgetDisplay
+        type={`Total ${type === "charges" ? "charges" : "revenus"}`}
+        total={totalData}
+      />
 
       {addRequestError && (
         <ErrorMessage message="Une erreur interne est survenue lors de la création" />
@@ -149,7 +152,9 @@ export const MonthlyEntries = ({
         <Modal
           isOpen={!!selectedEntry}
           onClose={() => setSelectedEntry(null)}
-          title={`Mettre à jour les ${type}`}
+          title={`Mettre à jour les ${
+            type === "charges" ? "charges" : "revenus"
+          }`}
         >
           <UpdateEntryForm
             initialData={selectedEntry}

@@ -33,10 +33,6 @@ export interface ProjectCategorySectionProps {
   children: React.ReactNode;
 }
 
-export interface SpecialBudgetCardProps {
-  data: SpecialBudgetItem;
-}
-
 export interface SpecialBudgetOptionsProps {
   budgetId: string;
   updatableData: SpecialBudgetForm;
@@ -55,21 +51,22 @@ export interface UpdateSpecialBudgetParams {
   budgetId: string;
 }
 
+interface BaseSpecialCategoryParams {
+  categoryId: string;
+  budgetId: string;
+}
+
 export interface AddSpecialCategoryParams {
   category: CategoryEntryForm;
   budgetId: string;
 }
 
-export interface UpdateSpecialCategoryParams {
+export interface UpdateSpecialCategoryParams extends BaseSpecialCategoryParams {
   category: CategoryEntryForm;
-  categoryId: string;
-  budgetId: string;
 }
 
-export interface DeleteSpecialCategoryParams {
-  categoryId: string;
-  budgetId: string;
-}
+export interface DeleteSpecialCategoryParams
+  extends BaseSpecialCategoryParams {}
 
 export interface DeleteSpecialCategoryResponse {
   id: string;

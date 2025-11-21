@@ -7,7 +7,7 @@ import {
   AddSpecialExpensesParams,
   DeleteSpecialExpenseParams,
   SpecialBudget,
-  UpdateSpecialExpensesParams,
+  UpdateSpecialExpenseParams,
 } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -58,7 +58,7 @@ export const useUpdateSpecialExpenseMutation = () => {
       expense,
       expenseId,
       budgetId,
-    }: UpdateSpecialExpensesParams) =>
+    }: UpdateSpecialExpenseParams) =>
       updateSpecialExpense(expense, expenseId, budgetId),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

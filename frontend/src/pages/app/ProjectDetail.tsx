@@ -6,13 +6,11 @@ import { BackArrow, RemainingBudgetDisplay } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { Loader } from "@/components/ui/Loader";
 import { useBudgetDetailsQuery } from "@/hooks/queries";
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export const ProjectDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [optionsError, setOptionsError] = useState<string | null>(null);
   if (!id) {
     navigate(`/app/projects`);
     return;
@@ -45,7 +43,6 @@ export const ProjectDetail = () => {
           base={true}
         />
         <SpecialBudgetOptions budgetId={budget.id} updatableData={updatable} />
-        {optionsError && <ErrorMessage message={optionsError} />}
       </div>
       <div>
         <CreateSpecialCategory budgetId={budget.id} />

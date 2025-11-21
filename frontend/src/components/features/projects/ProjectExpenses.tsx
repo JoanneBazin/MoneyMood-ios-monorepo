@@ -83,15 +83,27 @@ export const ProjectExpenses = ({
 
     const expense = { ...updatedExpense, specialCategoryId: selectedCategory };
 
-    const validation = validateWithSchema(specialExpenseSchema, expense);
+    const { data, success, errors } = validateWithSchema(
+      specialExpenseSchema,
+      expense
+    );
 
-    if (!validation.success) {
-      setUpdateValidationError(validation.errors);
+    if (!success) {
+      setUpdateValidationError(errors);
+      return;
+    }
+
+    if (
+      data.name === selectedEntry?.name &&
+      data.amount === selectedEntry.amount &&
+      data.specialCategoryId === selectedEntry.specialCategoryId
+    ) {
+      setSelectedEntry(null);
       return;
     }
 
     updateExpense.mutate(
-      { expense: validation.data, expenseId, budgetId },
+      { expense: data, expenseId, budgetId },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>

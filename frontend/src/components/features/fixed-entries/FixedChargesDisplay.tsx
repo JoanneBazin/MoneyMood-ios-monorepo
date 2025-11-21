@@ -68,15 +68,26 @@ export const FixedChargesDisplay = () => {
     setUpdateValidationError(null);
     setRequestError(null);
 
-    const validation = validateWithSchema(baseEntrySchema, updatedCharge);
+    const { data, success, errors } = validateWithSchema(
+      baseEntrySchema,
+      updatedCharge
+    );
 
-    if (!validation.success) {
-      setUpdateValidationError(validation.errors);
+    if (!success) {
+      setUpdateValidationError(errors);
+      return;
+    }
+
+    if (
+      data.name === selectedEntry?.name &&
+      data.amount === selectedEntry.amount
+    ) {
+      setSelectedEntry(null);
       return;
     }
 
     updateFixedCharge.mutate(
-      { entry: validation.data, entryId },
+      { entry: data, entryId },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>

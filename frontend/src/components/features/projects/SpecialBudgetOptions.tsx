@@ -29,6 +29,14 @@ export const SpecialBudgetOptions = ({
   const navigate = useNavigate();
 
   const handleUpdateBudget = (budget: SpecialBudgetForm) => {
+    if (
+      budget.name === updatableData?.name &&
+      budget.totalBudget === updatableData.totalBudget
+    ) {
+      setSelectedAction(null);
+      return;
+    }
+
     updateSpecialBudget.mutate(
       { budget, budgetId },
       {

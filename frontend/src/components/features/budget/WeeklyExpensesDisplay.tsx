@@ -90,16 +90,26 @@ export const WeeklyExpensesDisplay = ({
     setUpdateValidationError(null);
     setRequestError(null);
 
-    const validation = validateWithSchema(baseEntrySchema, updatedExpense);
+    const { data, success, errors } = validateWithSchema(
+      baseEntrySchema,
+      updatedExpense
+    );
 
-    if (!validation.success) {
-      setUpdateValidationError(validation.errors);
+    if (!success) {
+      setUpdateValidationError(errors);
+      return;
+    }
 
+    if (
+      data.name === selectedEntry?.name &&
+      data.amount === selectedEntry.amount
+    ) {
+      setSelectedEntry(null);
       return;
     }
 
     updateExpense.mutate(
-      { expense: validation.data, expenseId, budgetId },
+      { expense: data, expenseId, budgetId },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>

@@ -68,15 +68,26 @@ export const FixedIncomesDisplay = () => {
     setUpdateValidationError(null);
     setRequestError(null);
 
-    const validation = validateWithSchema(baseEntrySchema, updatedIncome);
+    const { data, success, errors } = validateWithSchema(
+      baseEntrySchema,
+      updatedIncome
+    );
 
-    if (!validation.success) {
-      setUpdateValidationError(validation.errors);
+    if (!success) {
+      setUpdateValidationError(errors);
+      return;
+    }
+
+    if (
+      data.name === selectedEntry?.name &&
+      data.amount === selectedEntry.amount
+    ) {
+      setSelectedEntry(null);
       return;
     }
 
     updateFixedIncome.mutate(
-      { entry: validation.data, entryId },
+      { entry: data, entryId },
       {
         onSuccess: () => setSelectedEntry(null),
         onError: () =>

@@ -34,15 +34,24 @@ export const ProjectCategorySection = ({
     setValidationError(null);
     setRequestError(null);
 
-    const validation = validateWithSchema(categorySchema, updatedCategory);
+    const { data, success, errors } = validateWithSchema(
+      categorySchema,
+      updatedCategory
+    );
 
-    if (!validation.success) {
-      setValidationError(validation.errors);
+    if (!success) {
+      setValidationError(errors);
       return;
     }
+
+    if (data.name === category?.name) {
+      setIsEditModalOpen(false);
+      return;
+    }
+
     updateCategory.mutate(
       {
-        category: validation.data,
+        category: data,
         categoryId: category.id,
         budgetId,
       },

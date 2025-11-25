@@ -44,8 +44,6 @@ export const useAddSpecialExpenseMutation = () => {
           })
         );
       }
-
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
 };
@@ -64,7 +62,6 @@ export const useUpdateSpecialExpenseMutation = () => {
       queryClient.invalidateQueries({
         queryKey: ["specialBudget", variables.budgetId],
       });
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
 };
@@ -87,7 +84,10 @@ export const useDeleteSpecialExpenseMutation = () => {
             remainingBudget,
             categories: prev.categories.map((cat) =>
               cat.id === variables.categoryId
-                ? cat.expenses.filter((exp) => exp.id !== data.id)
+                ? {
+                    ...cat,
+                    expenses: cat.expenses.filter((exp) => exp.id !== data.id),
+                  }
                 : cat
             ),
           })
@@ -102,8 +102,6 @@ export const useDeleteSpecialExpenseMutation = () => {
           })
         );
       }
-
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
 };

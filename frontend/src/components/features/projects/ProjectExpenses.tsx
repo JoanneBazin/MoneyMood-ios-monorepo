@@ -1,6 +1,6 @@
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import { CategorySelect } from "@/components/forms/CategorySelect";
-import { DataList, Modal } from "@/components/ui";
+import { DataList, Modal, TotalDataDisplay } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import {
   useAddSpecialExpenseMutation,
@@ -14,7 +14,7 @@ import {
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export const ProjectExpenses = ({
   budgetId,
@@ -37,6 +37,9 @@ export const ProjectExpenses = ({
   > | null>(null);
   const addRequestError = addExpenses.isError;
   const [requestError, setRequestError] = useState<string | null>(null);
+  const totalExpenses = useMemo(() => {
+    return expenses.reduce((acc, curr) => acc + curr.amount, 0);
+  }, [expenses]);
 
   useEffect(() => {
     if (selectedEntry) {
@@ -154,6 +157,8 @@ export const ProjectExpenses = ({
           Enregistrer
         </button>
       )}
+
+      <TotalDataDisplay total={totalExpenses} title="" />
 
       {selectedEntry && (
         <Modal

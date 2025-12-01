@@ -70,6 +70,11 @@ export const monthlyBudgetSchema = z.object({
   incomes: z.array(baseEntrySchema).default([]),
   charges: z.array(baseEntrySchema).default([]),
 });
+
+export const monthlyBudgetServerSchema = monthlyBudgetSchema.extend({
+  incomes: z.array(baseEntryServerSchema).default([]),
+  charges: z.array(baseEntryServerSchema).default([]),
+});
 export type MonthlyBudgetForm = z.infer<typeof monthlyBudgetSchema>;
 
 export const updateCurrentStatusSchema = monthlyBudgetSchema.pick({

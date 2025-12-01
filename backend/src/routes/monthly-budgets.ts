@@ -26,10 +26,10 @@ import {
 } from "../controllers";
 import {
   baseEntryServerSchema,
-  monthlyBudgetSchema,
   queryDateSchema,
   updateCurrentStatusSchema,
   expenseServerSchema,
+  monthlyBudgetServerSchema,
 } from "@moneymood-monorepo/shared";
 
 const router = express.Router();
@@ -38,7 +38,7 @@ const router = express.Router();
 router.post(
   "/",
   requireAuth,
-  validateBody(monthlyBudgetSchema),
+  validateBody(monthlyBudgetServerSchema),
   addMonthlyBudget
 );
 router.get("/", requireAuth, validateQuery(queryDateSchema), getMonthlyBudget);

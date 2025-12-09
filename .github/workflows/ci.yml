@@ -43,6 +43,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build shared package
+        working-directory: ./shared
+        run: npm run build
+
       - name: Sync test DB (Prisma)
         working-directory: ./backend
         run: npm run test:setup:ci

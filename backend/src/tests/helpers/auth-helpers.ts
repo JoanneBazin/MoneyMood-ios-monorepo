@@ -1,13 +1,12 @@
 import request from "supertest";
 import app from "../../app";
 
-export const createTestUser = async (
-  userData = {
-    email: "test@example.com",
+export const createTestUser = async (email = "test@example.com") => {
+  const userData = {
+    email,
     password: "Pass1234",
     name: "Test User",
-  }
-) => {
+  };
   const signupRes = await request(app).post("/api/auth/signup").send(userData);
 
   const cookies = signupRes.headers["set-cookie"];

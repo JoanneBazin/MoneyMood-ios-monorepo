@@ -20,6 +20,7 @@ export const Header = () => {
       <div className="app-header" ref={dropdownRef}>
         <button
           className="app-header__burger-menu"
+          data-testid="nav-menu"
           aria-label="Ouvrir/fermer le menu"
           onClick={() => setIsOpen((prev) => !prev)}
         >
@@ -55,6 +56,7 @@ export const Header = () => {
                       <button
                         onClick={handleLogout}
                         className="gray-500"
+                        data-testid="logout-btn"
                         disabled={isPending}
                       >
                         Déconnexion

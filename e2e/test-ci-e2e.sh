@@ -15,22 +15,28 @@ docker run --name ci-test-postgres \
   -e POSTGRES_USER=test \
   -e POSTGRES_PASSWORD=test \
   -e POSTGRES_DB=test_db \
-  -p 5432:5432 \
+  -p 5433:5432 \
   -d postgres:15
 
 echo "⏳ Waiting for PostgreSQL..."
 sleep 3
 docker exec ci-test-postgres pg_isready -U test -d test_db
 
+echo "📝 Writing test DATABASE_URL..."
+cat > .env.ci-local <<EOF
+DATABASE_URL=postgres://test:test@localhost:5433/test_db
+EOF
+
+
 echo "📦 Loading env variables..."
 export $(cat .env.ci-local | xargs)
 
 echo "🔄 Syncing database..."
-cd ./backend/ && npx prisma db push --force-reset
+cd ../backend/ && npx prisma db push --force-reset
 
 
 echo "🎭 Running Playwright tests..."
-cd ../ && npm run test:e2e --headed --reporter=list --retries=0
+cd ../ && cd ./e2e/ && npx playwright test --headed --reporter=list --retries=0
 
 
 

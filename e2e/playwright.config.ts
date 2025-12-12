@@ -9,7 +9,7 @@ export default defineConfig({
     timeout: 60000,
   },
   retries: isCI ? 2 : 0,
-  workers: 1,
+  workers: isCI ? 2 : 1,
   reporter: [["html"], ["list"]],
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:5173",

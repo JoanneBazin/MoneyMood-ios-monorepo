@@ -8,7 +8,7 @@ export const Banner = () => {
   const avatarLetter = user?.name.split("")[0];
 
   return (
-    <div className="banner">
+    <div className="banner" data-testid="app-banner">
       <div className="banner__avatar">
         <p>{avatarLetter}</p>
       </div>

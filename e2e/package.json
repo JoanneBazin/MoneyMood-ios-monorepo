@@ -1,0 +1,18 @@
+{
+  "name": "@moneymood-monorepo/e2e",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug"
+  },
+  "dependencies": {
+    "@moneymood-monorepo/backend": "*",
+    "@moneymood-monorepo/shared": "*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "typescript": "^5.0.0"
+  }
+}

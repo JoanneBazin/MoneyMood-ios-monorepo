@@ -6,12 +6,12 @@ import {
   TotalDataDisplay,
 } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { useFixedIncomesQuery } from "@/hooks/queries";
 import {
   useAddFixedIncomesMutation,
   useDeleteFixedIncomeMutation,
   useUpdateFixedIncomeMutation,
 } from "@/hooks/queries/mutations";
-import { useBudgetStore } from "@/stores/budgetStore";
 import { Entry } from "@/types";
 import {
   BaseEntryForm,
@@ -22,7 +22,8 @@ import {
 import { useState } from "react";
 
 export const FixedIncomesDisplay = () => {
-  const fixedIncomes = useBudgetStore((s) => s.fixedIncomes);
+  const { data: fixedIncomes = [] } = useFixedIncomesQuery();
+
   const totalIncomes = fixedIncomes.reduce(
     (acc, entry) => acc + entry.amount,
     0
@@ -130,6 +131,7 @@ export const FixedIncomesDisplay = () => {
           <button
             onClick={handleAddIncomes}
             className="primary-btn"
+            data-testid="add-incomes-btn"
             disabled={addFixedIncomes.isPending}
           >
             Enregistrer

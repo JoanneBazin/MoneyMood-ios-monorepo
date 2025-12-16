@@ -12,7 +12,7 @@ export const AddEntriesForm = ({
   const [entries, setEntries] = useState<BaseEntryForm[]>(initialData || []);
 
   useEffect(() => {
-    setEntries(initialData || []);
+    setEntries([...(initialData || [])]);
   }, [initialData]);
 
   const handleUpdate = (
@@ -59,12 +59,14 @@ export const AddEntriesForm = ({
                 aria-label="Nom de la dépense"
                 name="name"
                 className="name-input"
-                data-testid={`${type}-name-input`}
+                data-testid={`${type}-name-input-${index}`}
                 value={entry.name}
                 onChange={(e) => handleUpdate(index, "name", e.target.value)}
               />
               {errors && errors[index] && errors[index].name ? (
-                <p className="form-error">{errors[index].name}</p>
+                <p className="form-error" data-testid="name-input-error">
+                  {errors[index].name}
+                </p>
               ) : null}
             </div>
 
@@ -77,7 +79,7 @@ export const AddEntriesForm = ({
                     placeholder="Montant"
                     aria-label="Montant de la dépense"
                     name="amount"
-                    data-testid={`${type}-amount-input`}
+                    data-testid={`${type}-amount-input-${index}`}
                     value={entry.amount}
                     onChange={(e) =>
                       handleUpdate(index, "amount", e.target.value)
@@ -87,6 +89,7 @@ export const AddEntriesForm = ({
                 <button
                   type="button"
                   className="delete-btn"
+                  data-testid={`${type}-delete-btn-${index}`}
                   onClick={() => removeEntry(index)}
                   aria-label="Supprimer cette ligne"
                 >
@@ -94,7 +97,9 @@ export const AddEntriesForm = ({
                 </button>
               </div>
               {errors && errors[index] && errors[index].amount ? (
-                <p className="form-error">Montant invalide</p>
+                <p className="form-error" data-testid="amount-input-error">
+                  Montant invalide
+                </p>
               ) : null}
             </div>
           </div>

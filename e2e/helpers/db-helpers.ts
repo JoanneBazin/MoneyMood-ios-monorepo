@@ -17,9 +17,7 @@ export const createUserInDB = async (
       password: hashedPassword,
     },
     select: {
-      name: true,
-      email: true,
-      password: true,
+      id: true,
     },
   });
 };
@@ -28,4 +26,122 @@ export const deleteUserFromDB = async (email: string) => {
   await prisma.user.delete({
     where: { email },
   });
+};
+
+export const createMonthlyBudgetInBD = async (
+  userId: string,
+  month = 1,
+  year = 2025,
+  isCurrent = true
+) => {
+  const budget = await prisma.monthlyBudget.create({
+    data: {
+      userId,
+      month,
+      year,
+      isCurrent,
+      remainingBudget: 500,
+      weeklyBudget: 100,
+      numberOfWeeks: 5,
+      incomes: {
+        create: [{ name: "income", amount: 500 }],
+      },
+    },
+  });
+
+  return {
+    ...budget,
+    remainingBudget: Number(budget.remainingBudget),
+    weeklyBudget: Number(budget.weeklyBudget),
+  };
+};
+
+export const deleteAllMonthlyBudgetsInDB = async (userId: string) => {
+  await prisma.monthlyBudget.deleteMany({
+    where: { userId },
+  });
+};
+
+export const deleteAllMonthlyExpensesInDB = async (monthlyBudgetId: string) => {
+  await prisma.expense.deleteMany({
+    where: { monthlyBudgetId },
+  });
+};
+
+export const deleteAllFixedEntriesInDB = async (userId: string) => {
+  await prisma.$transaction([
+    prisma.fixedIncome.deleteMany({
+      where: { userId },
+    }),
+    prisma.fixedCharge.deleteMany({
+      where: { userId },
+    }),
+  ]);
+};
+
+export const createSpecialBudgetInDB = async (userId: string) => {
+  const newBudget = await prisma.specialBudget.create({
+    data: {
+      userId,
+      name: "Common project",
+      totalBudget: 100,
+      remainingBudget: 100,
+    },
+  });
+  return {
+    ...newBudget,
+    totalBudget: Number(newBudget.totalBudget),
+    remainingBudget: Number(newBudget.remainingBudget),
+  };
+};
+
+export const createSpecialExpenseInDB = async (
+  specialBudgetId: string,
+  catId?: string
+) => {
+  const newExpense = await prisma.expense.create({
+    data: {
+      specialBudgetId,
+      name: "Expense",
+      amount: 50,
+      specialCategoryId: catId,
+    },
+    select: {
+      name: true,
+      amount: true,
+    },
+  });
+  return {
+    ...newExpense,
+    amount: Number(newExpense.amount),
+  };
+};
+
+export const deleteAllSpecialBudgetsInDB = async (userId: string) => {
+  await prisma.specialBudget.deleteMany({
+    where: { userId },
+  });
+};
+
+export const createSpecialCategoryInDB = async (specialBudgetId: string) => {
+  return prisma.specialBudgetCategory.create({
+    data: {
+      specialBudgetId,
+      name: "Common category",
+    },
+    select: { name: true, id: true },
+  });
+};
+
+export const cleanSpecialBudgetDataInDb = async (specialBudgetId: string) => {
+  await prisma.$transaction([
+    prisma.specialBudgetCategory.deleteMany({
+      where: {
+        specialBudgetId,
+      },
+    }),
+    prisma.expense.deleteMany({
+      where: { specialBudgetId },
+    }),
+  ]);
 };

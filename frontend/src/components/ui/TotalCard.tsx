@@ -7,6 +7,7 @@ export const TotalCard = ({ title, totalData, setView }: TotalCardProps) => {
   return (
     <div
       className={`total-card ${color}`}
+      data-testid="total-card"
       role="button"
       tabIndex={0}
       onClick={setView}

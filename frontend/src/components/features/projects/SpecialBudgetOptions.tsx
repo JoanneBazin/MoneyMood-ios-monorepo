@@ -60,6 +60,7 @@ export const SpecialBudgetOptions = ({
       <button
         onClick={() => setIsOptionsOpen((prev) => !prev)}
         aria-label="Options du budget"
+        data-testid="special-budget-options"
       >
         <Settings className="budget-options__icon" />
       </button>
@@ -67,7 +68,10 @@ export const SpecialBudgetOptions = ({
         {isOptionsOpen && (
           <AnimatedDropdown menu="options">
             <div className="budget-options__content">
-              <button onClick={() => setSelectedAction("edit")}>
+              <button
+                onClick={() => setSelectedAction("edit")}
+                data-testid="update-special-budget-btn"
+              >
                 <Edit size={14} className="mr-xxs" />
 
                 <span>Modifier le budget</span>
@@ -75,6 +79,7 @@ export const SpecialBudgetOptions = ({
               <button
                 className="red-error"
                 onClick={() => setSelectedAction("delete")}
+                data-testid="delete-special-budget-btn"
               >
                 <Trash size={14} className="mr-xxs" />
                 <span>Supprimer le budget</span>

@@ -5,7 +5,7 @@ export const TotalDataDisplay = ({
   title = "Total",
 }: TotalDataDisplayProps) => {
   return (
-    <div className="total-data">
+    <div className="total-data" data-testid="total-data">
       <p>{title}</p>
       <p className="total-data__amount">
         <span>€</span>

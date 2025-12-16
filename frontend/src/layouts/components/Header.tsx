@@ -48,6 +48,7 @@ export const Header = () => {
                       <NavLink
                         to="/profile"
                         className={({ isActive }) => (isActive ? "active" : "")}
+                        data-testid="profile-nav"
                       >
                         Profil
                       </NavLink>

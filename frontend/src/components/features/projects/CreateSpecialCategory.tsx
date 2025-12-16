@@ -39,7 +39,11 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
   };
   return (
     <div className="flex-end">
-      <button onClick={() => setIsCreateModalOpen(true)} className="cat-button">
+      <button
+        onClick={() => setIsCreateModalOpen(true)}
+        className="cat-button"
+        data-testid="add-special-cat-btn"
+      >
         Créer une catégorie
       </button>
       {isCreateModalOpen && (

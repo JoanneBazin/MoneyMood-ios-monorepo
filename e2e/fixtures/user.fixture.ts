@@ -5,7 +5,7 @@ export * from "@playwright/test";
 
 export const test = baseTest.extend<
   {},
-  { user: { email: string; password: string; name: string } }
+  { user: { email: string; password: string; name: string; id: string } }
 >({
   user: [
     async ({}, use) => {
@@ -17,9 +17,13 @@ export const test = baseTest.extend<
       };
 
       console.log(`🔧 Création user DB pour worker ${workerIndex}`);
-      await createUserInDB(testUser.name, testUser.email, testUser.password);
+      const user = await createUserInDB(
+        testUser.name,
+        testUser.email,
+        testUser.password
+      );
 
-      await use(testUser);
+      await use({ ...testUser, id: user.id });
 
       console.log(`🧹 Suppression user: ${testUser.email}`);
       await deleteUserFromDB(testUser.email);

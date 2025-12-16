@@ -140,6 +140,7 @@ export const MonthlyEntries = ({
             <button
               onClick={handleAddEntries}
               className="primary-btn"
+              data-testid="add-entries-btn"
               disabled={addMonthlyEntries.isPending}
             >
               Enregistrer

@@ -95,12 +95,13 @@ export const ProjectCategorySection = ({
   };
 
   return (
-    <div>
+    <div data-testid="special-cat-section">
       <div className="flex-between">
         <h2 className="cat-title">{category.name}</h2>
         <button
           onClick={() => setIsEditModalOpen(true)}
           aria-label="Modifier la catégorie"
+          data-testid="update-cat-btn"
         >
           <Pen size={14} />
         </button>

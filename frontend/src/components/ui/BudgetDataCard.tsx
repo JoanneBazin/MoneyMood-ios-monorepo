@@ -5,7 +5,7 @@ export const BudgetDataCard = ({
   color = "white",
 }: BudgetDataCardProps) => {
   return (
-    <article className="data-card">
+    <article className="data-card" data-testid="budget-data">
       <div className={`data-card__title ${color}`}>
         <p>{title}</p>
       </div>

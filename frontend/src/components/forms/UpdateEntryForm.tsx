@@ -20,7 +20,7 @@ export const UpdateEntryForm = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   return (
-    <form>
+    <form data-testid="update-item-form">
       {genericError && <ErrorMessage message={genericError} />}
       <div className="input-item">
         <div>
@@ -28,6 +28,7 @@ export const UpdateEntryForm = ({
             type="text"
             placeholder="Nom"
             aria-label="Nom de la dépense"
+            data-testid="update-name-input"
             name="name"
             value={updatedEntry.name}
             onChange={(e) =>
@@ -46,6 +47,7 @@ export const UpdateEntryForm = ({
                 type="number"
                 placeholder="Montant"
                 aria-label="Montant de la dépense"
+                data-testid="update-amount-input"
                 name="amount"
                 value={updatedEntry.amount}
                 onChange={(e) =>
@@ -65,6 +67,7 @@ export const UpdateEntryForm = ({
         <button
           type="button"
           className="secondary-btn"
+          data-testid="delete-btn"
           onClick={() => setConfirmDelete(true)}
         >
           Supprimer
@@ -73,6 +76,7 @@ export const UpdateEntryForm = ({
           type="button"
           onClick={() => onSubmit(updatedEntry, id)}
           className="primary-btn"
+          data-testid="update-btn"
         >
           Modifier
         </button>
@@ -84,6 +88,7 @@ export const UpdateEntryForm = ({
             type="button"
             onClick={() => onDelete(id)}
             className="delete-item__button valid"
+            data-testid="confirm-delete-btn"
           >
             <Check size={16} />
           </button>

@@ -8,7 +8,10 @@ test.describe("Authentication", () => {
       email: "signup-user@test.com",
       password: "Password123",
     };
-    await page.goto("/signup");
+    await page.goto("/");
+    await page.click("[data-testid='signup-btn']");
+    await expect(page).toHaveURL("/signup");
+
     await page.fill('input[name="name"]', signupUser.name);
     await page.fill('input[name="email"]', signupUser.email);
     await page.fill('input[name="password"]', signupUser.password);
@@ -32,7 +35,15 @@ test.describe("Authentication", () => {
     page,
     user,
   }) => {
-    await loginUser(page, user.email, user.password);
+    await page.goto("/");
+    await page.click("[data-testid='login-btn']");
+    await expect(page).toHaveURL("/login");
+
+    await page.fill('input[name="email"]', user.email);
+    await page.fill('input[name="password"]', user.password);
+    await page.click('button[type="submit"]');
+
+    await page.waitForURL("/app");
 
     const storedUser = await getStoredUser(page);
     expect(storedUser).toMatchObject({
@@ -56,5 +67,13 @@ test.describe("Authentication", () => {
 
     const storageData = await getStoredUser(page);
     expect(storageData).toBeNull();
+  });
+
+  test("should redirect to public home when accessing protected page without auth", async ({
+    page,
+  }) => {
+    await page.goto("/app");
+
+    await expect(page).toHaveURL("/");
   });
 });

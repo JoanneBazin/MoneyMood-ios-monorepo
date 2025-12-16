@@ -19,6 +19,7 @@ export const Bottombar = () => {
           <NavLink
             to="/app/create"
             className={({ isActive }) => (isActive ? "active" : "")}
+            data-testid="create-nav"
           >
             <CalendarPlus />
             <p>Nouveau mois</p>
@@ -28,6 +29,7 @@ export const Bottombar = () => {
           <NavLink
             to="/app/projects"
             className={({ isActive }) => (isActive ? "active" : "")}
+            data-testid="projects-nav"
           >
             <Sparkles />
             <p>Projets</p>
@@ -37,6 +39,7 @@ export const Bottombar = () => {
           <NavLink
             to="/app/history"
             className={({ isActive }) => (isActive ? "active" : "")}
+            data-testid="history-nav"
           >
             <History />
             <p>Historique</p>

@@ -11,10 +11,14 @@ export const Home = () => {
         <section className="landing__hero">
           <h2 className="landing__title">Gardez un œil sur vos finances</h2>
           <div className="landing__links">
-            <Link to="/login" className="primary-btn">
+            <Link to="/login" className="primary-btn" data-testid="login-btn">
               Connexion
             </Link>
-            <Link to="/signup" className="secondary-btn">
+            <Link
+              to="/signup"
+              className="secondary-btn"
+              data-testid="signup-btn"
+            >
               Créer un compte
             </Link>
           </div>

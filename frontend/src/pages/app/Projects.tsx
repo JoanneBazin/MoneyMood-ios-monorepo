@@ -27,6 +27,7 @@ export const Projects = () => {
             role="button"
             onClick={() => setIsCreateModalOpen(true)}
             className="flex-start gap-sm"
+            data-testid="create-project-btn"
           >
             <Plus />
             <p>Créer un budget spécifique</p>

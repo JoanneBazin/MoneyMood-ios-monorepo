@@ -6,12 +6,12 @@ import {
   TotalDataDisplay,
 } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { useFixedChargesQuery } from "@/hooks/queries";
 import {
   useAddFixedChargesMutation,
   useDeleteFixedChargeMutation,
   useUpdateFixedChargeMutation,
 } from "@/hooks/queries/mutations";
-import { useBudgetStore } from "@/stores/budgetStore";
 import { Entry } from "@/types";
 import {
   BaseEntryForm,
@@ -22,7 +22,7 @@ import {
 import { useState } from "react";
 
 export const FixedChargesDisplay = () => {
-  const fixedCharges = useBudgetStore((s) => s.fixedCharges);
+  const { data: fixedCharges = [] } = useFixedChargesQuery();
   const totalCharges = fixedCharges.reduce(
     (acc, entry) => acc + entry.amount,
     0
@@ -130,6 +130,7 @@ export const FixedChargesDisplay = () => {
           <button
             onClick={handleAddCharges}
             className="primary-btn"
+            data-testid="add-charges-btn"
             disabled={addFixedCharges.isPending}
           >
             Enregistrer

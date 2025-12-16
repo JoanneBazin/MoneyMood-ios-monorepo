@@ -12,7 +12,7 @@ export const DataList = <T extends Entry>({
       <div className="mb-xs">
         {data.length > 0
           ? data.map((entry, index) => (
-              <div key={index} className="data-item">
+              <div key={index} className="data-item" data-testid="data-item">
                 <div className="data-item__name">
                   <ChevronRight size={16} />
                   <p>{entry.name}</p>
@@ -25,6 +25,7 @@ export const DataList = <T extends Entry>({
                   {setSelectedEntry && edit && (
                     <button
                       className="data-item__amount__update"
+                      data-testid="update-item-btn"
                       onClick={() => setSelectedEntry(entry)}
                     >
                       modifier

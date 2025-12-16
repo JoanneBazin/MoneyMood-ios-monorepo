@@ -10,13 +10,13 @@ import { getWeeksInMonth } from "@/lib/weeks-helpers";
 import { useCreateBudgetMutation } from "@/hooks/queries/mutations";
 import { BudgetDataCard, MonthYearPicker } from "@/components/ui";
 import { AddEntriesForm } from "@/components/forms";
+import { useFixedChargesQuery, useFixedIncomesQuery } from "@/hooks/queries";
 
 export const CreateBudget = () => {
-  const {
-    fixedCharges: charges,
-    fixedIncomes: incomes,
-    setPageTitle,
-  } = useBudgetStore();
+  const { data: charges = [] } = useFixedChargesQuery();
+  const { data: incomes = [] } = useFixedIncomesQuery();
+
+  const { setPageTitle } = useBudgetStore();
   const [month, setMonth] = useState<number | null>(null);
   const [year, setYear] = useState<number | null>(null);
 
@@ -77,7 +77,9 @@ export const CreateBudget = () => {
         <MonthYearPicker onChange={handleDateChange} />
       </div>
       {requestError && (
-        <p className="form-error my-md">{requestError.message}</p>
+        <p className="form-error my-md" data-testid="create-req-error">
+          {requestError.message}
+        </p>
       )}
       <BudgetDataCard title="Revenus">
         <AddEntriesForm

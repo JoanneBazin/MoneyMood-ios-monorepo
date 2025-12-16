@@ -53,7 +53,7 @@ export const addSpecialCategory = async (
       include: { expenses: { select: specialExpenseEntrySelect } },
     });
 
-    return res.status(201).json(newCategory);
+    return res.status(201).json(normalizeDecimalFields(newCategory));
   } catch (error) {
     return next(error);
   }
@@ -78,7 +78,7 @@ export const updateSpecialCategoryName = async (
       include: { expenses: { select: specialExpenseEntrySelect } },
     });
 
-    return res.status(200).json(updatedCategory);
+    return res.status(200).json(normalizeDecimalFields(updatedCategory));
   } catch (error) {
     if (isPrismaRecordNotFound(error)) {
       return next(
@@ -108,7 +108,7 @@ export const deleteSpecialCategory = async (
       select: { id: true, expenses: { select: specialExpenseEntrySelect } },
     });
 
-    return res.status(200).json(deletedCategory);
+    return res.status(200).json(normalizeDecimalFields(deletedCategory));
   } catch (error) {
     if (isPrismaRecordNotFound(error)) {
       return next(

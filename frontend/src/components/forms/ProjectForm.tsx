@@ -33,13 +33,14 @@ export const ProjectForm = ({
   };
 
   return (
-    <form className="gap-lg">
+    <form className="gap-lg" data-testid="project-form">
       {isError && <ErrorMessage message="Une erreur est survenue" />}
       <div className="labelled-input">
         <label htmlFor="name">Nom du budget</label>
         <input
           type="text"
           id="name"
+          name="name"
           value={specialBudget.name}
           onChange={(e) =>
             setSpecialBudget({ ...specialBudget, name: e.target.value })
@@ -56,6 +57,7 @@ export const ProjectForm = ({
           <input
             type="number"
             id="amount"
+            name="amount"
             value={specialBudget.totalBudget}
             onChange={(e) =>
               setSpecialBudget({
@@ -71,7 +73,11 @@ export const ProjectForm = ({
         )}
       </div>
 
-      <button onClick={handleSubmit} className="primary-btn">
+      <button
+        onClick={handleSubmit}
+        className="primary-btn"
+        data-testid={edit ? "edit-project" : "create-project"}
+      >
         {isPending ? <Loader2 /> : edit ? "Mettre à jour" : "Créer"}
       </button>
     </form>

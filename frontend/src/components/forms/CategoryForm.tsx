@@ -16,7 +16,7 @@ export const CategoryForm = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   return (
-    <form>
+    <form data-testid="cat-form">
       {genericError && <ErrorMessage message={genericError} />}
       <div className="input-item">
         <div>
@@ -40,7 +40,7 @@ export const CategoryForm = ({
             type="button"
             className="secondary-btn"
             onClick={() => setConfirmDelete(true)}
-            aria-label="Supprimer cette ligne"
+            data-testid="delete-cat-btn"
           >
             Supprimer
           </button>
@@ -49,6 +49,7 @@ export const CategoryForm = ({
           type="button"
           onClick={() => onSubmit(category)}
           className="primary-btn"
+          data-testid={edit ? "update-cat" : "create-cat"}
           disabled={isPending}
         >
           {edit ? "Mettre à jour" : "Créer"}
@@ -63,6 +64,7 @@ export const CategoryForm = ({
               type="button"
               onClick={() => onDelete(true)}
               className="delete-item__option primary"
+              data-testid="delete-cat-cascade"
             >
               Supprimer tout
             </button>
@@ -70,6 +72,7 @@ export const CategoryForm = ({
               type="button"
               onClick={() => onDelete(false)}
               className="delete-item__option secondary"
+              data-testid="delete-cat-only"
             >
               Uniquement la catégorie
             </button>

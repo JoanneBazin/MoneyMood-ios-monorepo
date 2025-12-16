@@ -5,7 +5,7 @@ import { CollapseProps } from "@/types";
 export const Collapse = ({ data, title, color }: CollapseProps) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className={`collapse ${color}`}>
+    <div className={`collapse ${color}`} data-testid="entries-collapse">
       <div className="collapse__title">
         <p>{title}</p>
         <button

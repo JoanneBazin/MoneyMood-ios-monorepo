@@ -44,6 +44,7 @@ export const MonthlyBudgetOptions = ({
       <button
         onClick={() => setIsOptionsOpen((prev) => !prev)}
         aria-label="Options du budget"
+        data-testid="budget-options-menu"
       >
         <Settings className="budget-options__icon" />
       </button>
@@ -51,7 +52,10 @@ export const MonthlyBudgetOptions = ({
         {isOptionsOpen && (
           <AnimatedDropdown menu="options">
             <div className="budget-options__content">
-              <button onClick={handleUpdateBudget}>
+              <button
+                onClick={handleUpdateBudget}
+                data-testid="update-budget-status"
+              >
                 <CalendarFold size={14} className="mr-xxs" />
 
                 <span>
@@ -62,6 +66,7 @@ export const MonthlyBudgetOptions = ({
               </button>
               <button
                 className="red-error"
+                data-testid="delete-budget-btn"
                 onClick={() => setIsModalOpen(true)}
               >
                 <Trash size={14} className="mr-xxs" />

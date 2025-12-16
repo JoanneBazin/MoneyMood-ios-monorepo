@@ -9,13 +9,17 @@ export const DeleteModalContent = ({
   isError,
 }: DeleteModalContentProps) => {
   return (
-    <div>
+    <div data-testid="delete-modal">
       <p className="req-info">
         Voulez-vous supprimer définitivement ce budget ?
       </p>
       {isError && <ErrorMessage message="Une erreur est survenue" />}
       <div className="flex-end my-md">
-        <button onClick={onDelete} className="primary-btn">
+        <button
+          onClick={onDelete}
+          className="primary-btn"
+          data-testid="confirm-delete-btn"
+        >
           {isPending ? <Loader2 /> : "Supprimer"}
         </button>
         <button onClick={onClose} className="secondary-btn">

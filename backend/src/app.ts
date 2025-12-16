@@ -27,6 +27,10 @@ app.use("/api", generalLimiter);
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/signup", authLimiter);
 
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/fixed-incomes", fixedIncomes);
 app.use("/api/fixed-charges", fixedCharges);

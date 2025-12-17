@@ -23,7 +23,8 @@ export const MonthlyEntries = ({
   budgetId,
 }: MonthlyEntriesView) => {
   const totalData = data.reduce((acc, entry) => acc + entry.amount, 0);
-  const title = type.charAt(0).toUpperCase() + type.slice(1) + " " + dateTitle;
+  const entryTitle = type === "incomes" ? "Revenus" : "Charges";
+  const title = entryTitle + " " + dateTitle;
 
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [newEntries, setNewEntries] = useState<BaseEntryForm[]>([]);

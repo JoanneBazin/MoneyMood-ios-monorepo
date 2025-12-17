@@ -4,7 +4,6 @@ import crypto from "crypto";
 import { Response } from "express";
 
 const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
-const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
 
 export function generateSessionToken(): string {
   return crypto.randomBytes(32).toString("hex");
@@ -39,19 +38,20 @@ export async function validateSession(sessionId: string) {
     },
   });
 
-  if (!session || session.expiresAt < new Date()) {
-    if (session) {
-      await prisma.session.delete({ where: { id: sessionId } });
-    }
+  if (!session) {
     return null;
   }
 
-  if (session.expiresAt.getTime() - Date.now() < SEVEN_DAYS) {
-    await prisma.session.update({
-      where: { id: sessionId },
-      data: { expiresAt: new Date(Date.now() + THIRTY_DAYS) },
-    });
+  if (session.expiresAt < new Date()) {
+    await prisma.session.delete({ where: { id: sessionId } });
+
+    return null;
   }
+
+  await prisma.session.update({
+    where: { id: sessionId },
+    data: { expiresAt: new Date(Date.now() + THIRTY_DAYS) },
+  });
 
   return { user: session.user, session: session.id };
 }

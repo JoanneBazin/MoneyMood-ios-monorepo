@@ -36,7 +36,7 @@ export const signup = async (
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     res.status(201).json(user);
@@ -70,7 +70,7 @@ export const login = async (
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     res.json({ id: user.id, email: user.email, name: user.name });

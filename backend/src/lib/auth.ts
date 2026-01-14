@@ -48,12 +48,17 @@ export async function validateSession(sessionId: string) {
     return null;
   }
 
-  await prisma.session.update({
-    where: { id: sessionId },
-    data: { expiresAt: new Date(Date.now() + THIRTY_DAYS) },
-  });
+  const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const shouldRefresh = session.expiresAt < sevenDaysFromNow;
 
-  return { user: session.user, session: session.id };
+  if (shouldRefresh) {
+    await prisma.session.update({
+      where: { id: sessionId },
+      data: { expiresAt: new Date(Date.now() + THIRTY_DAYS) },
+    });
+  }
+
+  return { user: session.user, session: session.id, shouldRefresh };
 }
 
 export async function hashPassword(password: string): Promise<string> {

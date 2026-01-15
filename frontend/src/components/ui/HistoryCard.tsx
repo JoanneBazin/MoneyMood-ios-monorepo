@@ -1,7 +1,8 @@
 import { formatDateTitle } from "@/lib/formatDateTitle";
 import { HistoryCardProps } from "@/types";
+import { Link } from "react-router-dom";
 
-export const HistoryCard = ({ data, onSelect }: HistoryCardProps) => {
+export const HistoryCard = ({ data }: HistoryCardProps) => {
   const dateTitle = formatDateTitle(data.year, data.month);
   const title = dateTitle.charAt(0).toUpperCase() + dateTitle.slice(1);
   return (
@@ -14,13 +15,13 @@ export const HistoryCard = ({ data, onSelect }: HistoryCardProps) => {
           {data.remainingBudget}
         </p>
       </div>
-      <button
-        onClick={() => onSelect(data.id)}
+      <Link
+        to={`/app/history/${data.id}`}
         className="history-card__read"
         data-testid="history-details-btn"
       >
         consulter
-      </button>
+      </Link>
     </div>
   );
 };

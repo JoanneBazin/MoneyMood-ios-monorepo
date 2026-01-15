@@ -3,36 +3,35 @@ import {
   deleteMonthlyEntry,
   updateMonthlyEntry,
 } from "@/lib/api/monthlyEntries";
-import { useBudgetStore } from "@/stores/budgetStore";
 import {
   AddMonthlyEntriesParams,
   DeleteMonthlyEntryParams,
+  MonthlyBudgetWithWeeks,
   UpdateMonthlyEntryParams,
 } from "@/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useAddMonthlyEntriesMutation = () => {
-  const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ type, entries, budgetId }: AddMonthlyEntriesParams) =>
       addMonthlyEntries(type, entries, budgetId),
     onSuccess: ({ data, remainingBudget, weeklyBudget }, variables) => {
-      if (!currentBudget) return;
-
-      setCurrentBudget({
-        ...currentBudget,
-        remainingBudget,
-        weeklyBudget,
-        [variables.type]: [...currentBudget[variables.type], ...data],
-      });
+      queryClient.setQueryData(
+        ["currentBudget"],
+        (prev: MonthlyBudgetWithWeeks) => ({
+          ...prev,
+          remainingBudget,
+          weeklyBudget,
+          [variables.type]: [...prev[variables.type], ...data],
+        })
+      );
     },
   });
 };
 
 export const useUpdateMonthlyEntriesMutation = () => {
-  const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       type,
@@ -42,37 +41,38 @@ export const useUpdateMonthlyEntriesMutation = () => {
     }: UpdateMonthlyEntryParams) =>
       updateMonthlyEntry(type, entry, entryId, budgetId),
     onSuccess: ({ data, remainingBudget, weeklyBudget }, variables) => {
-      if (!currentBudget) return;
-
-      setCurrentBudget({
-        ...currentBudget,
-        remainingBudget,
-        weeklyBudget,
-        [variables.type]: currentBudget[variables.type].map((d) =>
-          d.id === data.id ? data : d
-        ),
-      });
+      queryClient.setQueryData(
+        ["currentBudget"],
+        (prev: MonthlyBudgetWithWeeks) => ({
+          ...prev,
+          remainingBudget,
+          weeklyBudget,
+          [variables.type]: prev[variables.type].map((d) =>
+            d.id === data.id ? data : d
+          ),
+        })
+      );
     },
   });
 };
 
 export const useDeleteMonthlyEntriesMutation = () => {
-  const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ type, entryId, budgetId }: DeleteMonthlyEntryParams) =>
       deleteMonthlyEntry(type, entryId, budgetId),
     onSuccess: ({ data, remainingBudget, weeklyBudget }, variables) => {
-      if (!currentBudget) return;
-
-      setCurrentBudget({
-        ...currentBudget,
-        remainingBudget,
-        weeklyBudget,
-        [variables.type]: currentBudget[variables.type].filter(
-          (d) => d.id !== data.id
-        ),
-      });
+      queryClient.setQueryData(
+        ["currentBudget"],
+        (prev: MonthlyBudgetWithWeeks) => ({
+          ...prev,
+          remainingBudget,
+          weeklyBudget,
+          [variables.type]: prev[variables.type].filter(
+            (d) => d.id !== data.id
+          ),
+        })
+      );
     },
   });
 };

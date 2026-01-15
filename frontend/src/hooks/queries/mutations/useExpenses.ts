@@ -1,5 +1,4 @@
-import { useBudgetStore } from "@/stores/budgetStore";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   addExpenses,
   deleteExpense,
@@ -8,63 +7,60 @@ import {
 import {
   AddExpensesParams,
   DeleteExpenseParams,
+  MonthlyBudgetWithWeeks,
   UpdateExpenseParams,
 } from "@/types";
 
 export const useAddExpensesMutation = () => {
-  const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ expenses, budgetId }: AddExpensesParams) =>
       addExpenses(expenses, budgetId),
     onSuccess: ({ data, remainingBudget }) => {
-      if (!currentBudget) return;
-
-      setCurrentBudget({
-        ...currentBudget,
-        remainingBudget,
-        expenses: [...currentBudget.expenses, ...data],
-      });
+      queryClient.setQueryData(
+        ["currentBudget"],
+        (prev: MonthlyBudgetWithWeeks) => ({
+          ...prev,
+          remainingBudget,
+          expenses: [...prev.expenses, ...data],
+        })
+      );
     },
   });
 };
 
 export const useUpdateExpenseMutation = () => {
-  const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ expense, expenseId, budgetId }: UpdateExpenseParams) =>
       updateExpense(expense, expenseId, budgetId),
     onSuccess: ({ data, remainingBudget }) => {
-      if (!currentBudget) return;
-
-      setCurrentBudget({
-        ...currentBudget,
-        remainingBudget,
-        expenses: currentBudget.expenses.map((expense) =>
-          expense.id === data.id ? data : expense
-        ),
-      });
+      queryClient.setQueryData(
+        ["currentBudget"],
+        (prev: MonthlyBudgetWithWeeks) => ({
+          ...prev,
+          remainingBudget,
+          expenses: prev.expenses.map((e) => (e.id === data.id ? data : e)),
+        })
+      );
     },
   });
 };
 
 export const useDeleteExpenseMutation = () => {
-  const { currentBudget, setCurrentBudget } = useBudgetStore.getState();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ expenseId, budgetId }: DeleteExpenseParams) =>
       deleteExpense(expenseId, budgetId),
     onSuccess: ({ data, remainingBudget }) => {
-      if (!currentBudget) return;
-
-      setCurrentBudget({
-        ...currentBudget,
-        remainingBudget,
-        expenses: currentBudget.expenses.filter(
-          (expense) => expense.id !== data.id
-        ),
-      });
+      queryClient.setQueryData(
+        ["currentBudget"],
+        (prev: MonthlyBudgetWithWeeks) => ({
+          ...prev,
+          remainingBudget,
+          expenses: prev.expenses.filter((expense) => expense.id !== data.id),
+        })
+      );
     },
   });
 };

@@ -259,7 +259,7 @@ export const deleteMonthlyBudget = async (
         id: monthlyBudgetId,
         userId,
       },
-      select: { id: true },
+      select: { id: true, isCurrent: true },
     });
 
     return res.status(200).json(deletedBudget);

@@ -1,5 +1,6 @@
 import { BaseEntryOutput } from "@shared/schemas";
 import { Entry, ExpenseEntry } from "./entries";
+import { WeekProps } from "../ui";
 
 export interface MonthlyBudget {
   id: string;
@@ -12,6 +13,10 @@ export interface MonthlyBudget {
   incomes: Entry[];
   charges: Entry[];
   expenses: ExpenseEntry[];
+}
+
+export interface MonthlyBudgetWithWeeks extends MonthlyBudget {
+  weeksInMonth: WeekProps[];
 }
 
 export interface MonthlyBudgetOptionsProps {

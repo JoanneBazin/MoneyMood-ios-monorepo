@@ -115,7 +115,7 @@ export const fetchLastBudgets = async (): Promise<LastMonthlyBudget[]> => {
 
 export const deleteMonthlyBudget = async (
   budgetId: string
-): Promise<{ id: string }> => {
+): Promise<{ id: string; isCurrent: boolean }> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/monthly-budgets/${budgetId}`, {

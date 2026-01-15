@@ -40,6 +40,7 @@ export const useUpdateBudgetStatusMutation = () => {
           ...budget,
           weeksInMonth: getWeeksInMonth(budget.year, budget.month),
         });
+        queryClient.removeQueries({ queryKey: ["history", budget.id] });
       } else {
         queryClient.invalidateQueries({ queryKey: ["currentBudget"] });
       }
@@ -56,10 +57,11 @@ export const useDeleteMonthlyBudgetMutation = () => {
 
   return useMutation({
     mutationFn: (budgetId: string) => deleteMonthlyBudget(budgetId),
-    onSuccess: ({ isCurrent }) => {
+    onSuccess: ({ id, isCurrent }) => {
       if (isCurrent) {
         queryClient.invalidateQueries({ queryKey: ["currentBudget"] });
       } else {
+        queryClient.removeQueries({ queryKey: ["history", id] });
         queryClient.invalidateQueries({ queryKey: ["history"] });
         navigate("/app/history");
       }

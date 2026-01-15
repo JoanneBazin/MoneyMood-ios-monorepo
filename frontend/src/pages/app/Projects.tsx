@@ -3,12 +3,12 @@ import { Modal, SpecialBudgetCard } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { Loader } from "@/components/ui/Loader";
 import { useSpecialBudgetsQuery } from "@/hooks/queries";
-import { useBudgetStore } from "@/stores/budgetStore";
+import { useAppStore } from "@/stores/appStore";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Projects = () => {
-  const setPageTitle = useBudgetStore((s) => s.setPageTitle);
+  const setPageTitle = useAppStore((s) => s.setPageTitle);
   const { data: specialBudgets, isPending, error } = useSpecialBudgetsQuery();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 

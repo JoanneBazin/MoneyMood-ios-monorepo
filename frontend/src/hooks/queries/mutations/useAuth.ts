@@ -1,12 +1,12 @@
 import { login, logout, signup } from "@/lib/api/auth";
 import { resetAppState } from "@/lib/resetAppState";
-import { useUserStore } from "@/stores/userStore";
+import { useAppStore } from "@/stores/appStore";
 import { LoginInput, SignupInput } from "@shared/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useLoginMutation = () => {
   const queryClient = useQueryClient();
-  const { setUser } = useUserStore.getState();
+  const { setUser } = useAppStore.getState();
 
   return useMutation({
     mutationFn: ({ email, password }: LoginInput) => login({ email, password }),
@@ -19,7 +19,7 @@ export const useLoginMutation = () => {
 
 export const useSignupMutation = () => {
   const queryClient = useQueryClient();
-  const { setUser } = useUserStore.getState();
+  const { setUser } = useAppStore.getState();
 
   return useMutation({
     mutationFn: ({ name, email, password }: SignupInput) =>

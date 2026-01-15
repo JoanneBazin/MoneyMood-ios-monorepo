@@ -1,9 +1,9 @@
 import { CurrentBudgetLayout } from "@/components/features/dashboard/CurrentBudgetLayout";
-import { useBudgetStore } from "@/stores/budgetStore";
+import { useCurrentBudgetQuery } from "@/hooks/queries";
 import { Link } from "react-router-dom";
 
 export const Dashboard = () => {
-  const currentBudget = useBudgetStore((s) => s.currentBudget);
+  const { data: currentBudget } = useCurrentBudgetQuery();
 
   return currentBudget ? (
     <CurrentBudgetLayout budget={currentBudget} />

@@ -164,8 +164,4 @@ cd ./e2e/
 - [ ] Graphiques de tendances et visualisation des habitudes de dépenses
 - [ ] Catégorisation des dépenses mensuelles
 
-**Technique :**
-
-- [ ] Migration vers une architecture de cache optimisée (TanStack Query)
-
 ---

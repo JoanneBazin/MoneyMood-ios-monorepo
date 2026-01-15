@@ -8,10 +8,6 @@ export const fetchCurrentBudget = async (): Promise<MonthlyBudget | null> => {
     credentials: "include",
   });
 
-  if (response.status === 404) {
-    return null;
-  }
-
   if (!response.ok) {
     const data = await response.json();
     throw new ApiError(
@@ -115,7 +111,7 @@ export const fetchLastBudgets = async (): Promise<LastMonthlyBudget[]> => {
 
 export const deleteMonthlyBudget = async (
   budgetId: string
-): Promise<{ id: string }> => {
+): Promise<{ id: string; isCurrent: boolean }> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(`/api/monthly-budgets/${budgetId}`, {

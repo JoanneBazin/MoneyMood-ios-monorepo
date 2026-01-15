@@ -10,7 +10,6 @@ export const useFixedChargesQuery = () => {
     queryKey: ["fixedCharges"],
     queryFn: fetchFixedCharges,
     enabled: isOnline,
-    refetchOnWindowFocus: isOnline,
   });
 
   return query;

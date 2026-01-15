@@ -14,6 +14,7 @@ import { RequireGuest } from "@/components/auth/RequireGuest";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { Projects } from "@/pages/app/Projects";
 import { ProjectDetail } from "@/pages/app/ProjectDetail";
+import { HistoryDetail } from "@/pages/app/HistoryDetail";
 
 export default function AppRoutes() {
   return (
@@ -35,7 +36,10 @@ export default function AppRoutes() {
             <Route index element={<Projects />} />
             <Route path=":id" element={<ProjectDetail />} />
           </Route>
-          <Route path="history" element={<History />} />
+          <Route path="history">
+            <Route index element={<History />} />
+            <Route path=":id" element={<HistoryDetail />} />
+          </Route>
         </Route>
 
         <Route element={<ProfileLayout />}>

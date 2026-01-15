@@ -10,7 +10,6 @@ export const useFixedIncomesQuery = () => {
     queryKey: ["fixedIncomes"],
     queryFn: fetchFixedIncomes,
     enabled: isOnline,
-    refetchOnWindowFocus: isOnline,
   });
 
   return query;

@@ -1,6 +1,6 @@
 import { Page } from "@playwright/test";
 
-const USER_STORE_KEY = "user-storage";
+const USER_STORE_KEY = "app-storage";
 interface User {
   id: string;
   name: string;

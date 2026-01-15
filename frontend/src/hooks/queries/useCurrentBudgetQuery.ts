@@ -1,31 +1,21 @@
 import { fetchCurrentBudget } from "@/lib/api/monthlyBudgets";
-import { hydrateBudgetStore } from "@/lib/hydrateBudgetStore";
-import { useBudgetStore } from "@/stores/budgetStore";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { useOfflineStatus } from "../useOfflineStatus";
-import { MonthlyBudget } from "@/types";
+import { MonthlyBudget, MonthlyBudgetWithWeeks } from "@/types";
+import { getWeeksInMonth } from "@/lib/weeks-helpers";
 
 export const useCurrentBudgetQuery = () => {
   const { isOnline } = useOfflineStatus();
-  const query = useQuery<MonthlyBudget | null>({
+  return useQuery<MonthlyBudget | null, Error, MonthlyBudgetWithWeeks | null>({
     queryKey: ["currentBudget"],
     queryFn: fetchCurrentBudget,
     enabled: isOnline,
-    refetchOnWindowFocus: isOnline,
+    select: (budget) => {
+      if (!budget) return null;
+      return {
+        ...budget,
+        weeksInMonth: getWeeksInMonth(budget.year, budget.month),
+      };
+    },
   });
-
-  useEffect(() => {
-    if (!isOnline) return;
-
-    if (query.isFetched) {
-      const { setIsBudgetHydrated } = useBudgetStore.getState();
-      if (query.data) {
-        hydrateBudgetStore(query.data);
-      }
-      setIsBudgetHydrated(true);
-    }
-  }, [query.data]);
-
-  return query;
 };

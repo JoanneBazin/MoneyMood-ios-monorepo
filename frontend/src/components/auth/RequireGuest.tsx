@@ -1,8 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useUserStore } from "@/stores/userStore";
+import { useAppStore } from "@/stores/appStore";
 
 export const RequireGuest = () => {
-  const user = useUserStore((s) => s.user);
+  const user = useAppStore((s) => s.user);
 
   return user ? <Navigate to="/app" replace /> : <Outlet />;
 };

@@ -1,4 +1,4 @@
-import { useBudgetStore } from "@/stores/budgetStore";
+import { useCurrentBudgetQuery } from "@/hooks/queries";
 import { WeekProps } from "@/types";
 import {
   addDays,
@@ -44,10 +44,12 @@ export const getWeeksInMonth = (year: number, month: number): WeekProps[] => {
 };
 
 export const getCurrentWeek = () => {
-  const weeksInMonth = useBudgetStore((s) => s.weeksInMonth);
+  const { data } = useCurrentBudgetQuery();
+  if (!data) return 0;
+
   const currentDay = new Date();
 
-  const currentWeekIndex = weeksInMonth.findIndex(
+  const currentWeekIndex = data.weeksInMonth.findIndex(
     (w) => currentDay >= w.start && currentDay <= w.end
   );
 

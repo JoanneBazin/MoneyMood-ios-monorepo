@@ -1,9 +1,7 @@
-import { useBudgetStore } from "@/stores/budgetStore";
-import { useUserStore } from "@/stores/userStore";
+import { useAppStore } from "@/stores/appStore";
 
 export const Banner = () => {
-  const pageTitle = useBudgetStore((s) => s.pageTitle);
-  const user = useUserStore((s) => s.user);
+  const { user, pageTitle } = useAppStore();
 
   const avatarLetter = user?.name.split("")[0];
 

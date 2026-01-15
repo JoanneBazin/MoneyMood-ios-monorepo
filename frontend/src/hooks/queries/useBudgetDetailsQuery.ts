@@ -1,11 +1,11 @@
 import { fetchSpecialBudget } from "@/lib/api/specialBudgets";
-import { useBudgetStore } from "@/stores/budgetStore";
+import { useAppStore } from "@/stores/appStore";
 import { SpecialBudget } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export const useBudgetDetailsQuery = (id: string) => {
-  const setPageTitle = useBudgetStore((s) => s.setPageTitle);
+  const setPageTitle = useAppStore((s) => s.setPageTitle);
 
   const query = useQuery<SpecialBudget>({
     queryKey: ["specialBudget", id],

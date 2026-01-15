@@ -1,10 +1,8 @@
-import { useBudgetStore } from "@/stores/budgetStore";
-import { useUserStore } from "@/stores/userStore";
+import { useAppStore } from "@/stores/appStore";
 import { QueryClient } from "@tanstack/react-query";
 
 export const resetAppState = (queryClient: QueryClient) => {
-  useUserStore.getState().clearUser();
-  useBudgetStore.getState().reset();
+  useAppStore.getState().clearUser();
 
   queryClient.removeQueries();
 };

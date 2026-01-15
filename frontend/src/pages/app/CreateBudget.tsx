@@ -1,4 +1,3 @@
-import { useBudgetStore } from "@/stores/budgetStore";
 import { useEffect, useState } from "react";
 import {
   BaseEntryForm,
@@ -11,12 +10,13 @@ import { useCreateBudgetMutation } from "@/hooks/queries/mutations";
 import { BudgetDataCard, MonthYearPicker } from "@/components/ui";
 import { AddEntriesForm } from "@/components/forms";
 import { useFixedChargesQuery, useFixedIncomesQuery } from "@/hooks/queries";
+import { useAppStore } from "@/stores/appStore";
 
 export const CreateBudget = () => {
   const { data: charges = [] } = useFixedChargesQuery();
   const { data: incomes = [] } = useFixedIncomesQuery();
 
-  const { setPageTitle } = useBudgetStore();
+  const setPageTitle = useAppStore((s) => s.setPageTitle);
   const [month, setMonth] = useState<number | null>(null);
   const [year, setYear] = useState<number | null>(null);
 

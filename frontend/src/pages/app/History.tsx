@@ -1,4 +1,3 @@
-import { useBudgetStore } from "@/stores/budgetStore";
 import { useEffect, useState } from "react";
 import { getBudgetByDate } from "@/lib/api/monthlyBudgets";
 import { Search } from "lucide-react";
@@ -9,11 +8,12 @@ import { Loader } from "@/components/ui/Loader";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { ApiError } from "@/lib/ApiError";
+import { useAppStore } from "@/stores/appStore";
 
 export const History = () => {
   const { data: lastBudgets, isPending, error } = useLastBudgetsQuery();
   const { isOffline } = useOfflineStatus();
-  const setPageTitle = useBudgetStore((s) => s.setPageTitle);
+  const setPageTitle = useAppStore((s) => s.setPageTitle);
 
   const [searchedBudget, setSearchedBudget] =
     useState<LastMonthlyBudget | null>(null);

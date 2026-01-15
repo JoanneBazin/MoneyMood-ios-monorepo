@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DateDisplayProps } from "@/types";
 import { getWeeksInMonth } from "@/lib/weeks-helpers";
 import { useMemo } from "react";
+import { useCurrentBudgetQuery } from "@/hooks/queries";
 
 export const DateDisplay = ({
   weekIndex,
@@ -11,8 +12,9 @@ export const DateDisplay = ({
   oldMonth,
   oldYear,
 }: DateDisplayProps) => {
+  const { data } = useCurrentBudgetQuery();
   const weeks = isCurrentBudget
-    ? useBudgetStore((s) => s.weeksInMonth)
+    ? data?.weeksInMonth
     : oldYear !== undefined && oldMonth !== undefined
     ? getWeeksInMonth(oldYear, oldMonth)
     : undefined;

@@ -3,7 +3,6 @@ import {
   useFixedChargesQuery,
   useFixedIncomesQuery,
 } from "@/hooks/queries";
-import { useBudgetStore } from "@/stores/budgetStore";
 import { Outlet } from "react-router-dom";
 import { Bottombar, Header, OfflineBanner } from "../components";
 import { Banner } from "@/components/ui";
@@ -13,9 +12,7 @@ import { MainContentSkeleton } from "../components/skeletons";
 
 export const PrivateAppLayout = () => {
   const { isLoading, isError } = useCurrentBudgetQuery();
-  const isHydrated = useBudgetStore((s) => s.isBudgetHydrated);
   const { isOffline } = useOfflineStatus();
-  const isContentReady = !isLoading && isHydrated;
 
   useFixedChargesQuery();
   useFixedIncomesQuery();
@@ -29,7 +26,7 @@ export const PrivateAppLayout = () => {
         {isError && (
           <ErrorMessage message="Certains contenus n'ont pas pu être chargés" />
         )}
-        {isContentReady ? <Outlet /> : <MainContentSkeleton />}
+        {isLoading ? <MainContentSkeleton /> : <Outlet />}
       </main>
       <Bottombar />
     </div>

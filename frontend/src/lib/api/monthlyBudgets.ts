@@ -8,10 +8,6 @@ export const fetchCurrentBudget = async (): Promise<MonthlyBudget | null> => {
     credentials: "include",
   });
 
-  if (response.status === 404) {
-    return null;
-  }
-
   if (!response.ok) {
     const data = await response.json();
     throw new ApiError(

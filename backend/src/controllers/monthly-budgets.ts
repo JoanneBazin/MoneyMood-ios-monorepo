@@ -91,7 +91,7 @@ export const getCurrentMonthlyBudget = async (
     });
 
     if (!currentMonthlyBudget) {
-      return next(new HttpError(404, "Budget mensuel actif introuvable"));
+      return res.status(200).json(null);
     }
 
     return res.status(200).json(normalizeDecimalFields(currentMonthlyBudget));

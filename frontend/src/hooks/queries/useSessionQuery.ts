@@ -15,7 +15,6 @@ export const useSessionQuery = () => {
     queryKey: ["session"],
     queryFn: fetchSession,
     enabled: isOnline,
-    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

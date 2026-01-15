@@ -10,8 +10,6 @@ export const useCurrentBudgetQuery = () => {
     queryKey: ["currentBudget"],
     queryFn: fetchCurrentBudget,
     enabled: isOnline,
-    refetchOnWindowFocus: isOnline,
-    staleTime: 5 * 60 * 1000,
     select: (budget) => {
       if (!budget) return null;
       return {

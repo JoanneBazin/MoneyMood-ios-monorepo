@@ -3,7 +3,7 @@ import { WeeklyExpensesDisplay } from "@/components/features/budget/WeeklyExpens
 import { BackArrow, Collapse, RemainingBudgetDisplay } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { Loader } from "@/components/ui/Loader";
-import { useHistoryDetailsQuery } from "@/hooks/queries/useHistoryDetailsQuery";
+import { useHistoryDetailsQuery } from "@/hooks/queries";
 import { formatDateTitle } from "@/lib/formatDateTitle";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";

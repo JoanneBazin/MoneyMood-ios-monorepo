@@ -20,6 +20,7 @@ model User {
   password  String
   name  String
   createdAt DateTime  @default(now())
+  enabledExpenseValidation  Boolean @default(false)
 
   sessions  Session[]
   fixedIncomes FixedIncome[]
@@ -103,6 +104,8 @@ model Expense {
   name String
   amount  Decimal @db.Decimal(10, 2)
   createdAt DateTime  @default(now())
+  cashed  Boolean @default(false)
+  cashedAt  DateTime?
 
   weekNumber  Int?
   monthlyBudgetId  String?

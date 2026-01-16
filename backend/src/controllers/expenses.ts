@@ -9,38 +9,46 @@ import {
   normalizeDecimalFields,
   prisma,
 } from "../lib";
-import { updateMonthlyBudgetRemaining } from "../services";
+import {
+  updateMonthlyBudgetRemaining,
+  updateSpecialBudgetRemaining,
+} from "../services";
 
-export const addMonthlyExpenses = async (
+export const addExpenses = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const monthlyBudgetId = getParamsId(req, next);
-  if (!monthlyBudgetId) return;
+  const budgetId = getParamsId(req, next);
+  if (!budgetId) return;
+
+  if (!req.budgetType) {
+    return next(new HttpError(500, "Budget type non résolu"));
+  }
+  const isMonthly = req.budgetType === "monthly";
 
   const data = req.body;
   const expensesArray = Array.isArray(data) ? data : [data];
 
   try {
-    const monthlyExpenses = await Promise.all(
+    const newExpenses = await Promise.all(
       expensesArray.map((expense) =>
         prisma.expense.create({
           data: {
             ...expense,
-            monthlyBudgetId,
+            [isMonthly ? "monthlyBudgetId" : "specialBudgetId"]: budgetId,
           },
           select: expenseEntrySelect,
         })
       )
     );
 
-    const { remainingBudget } = await updateMonthlyBudgetRemaining(
-      monthlyBudgetId
-    );
+    const { remainingBudget } = isMonthly
+      ? await updateMonthlyBudgetRemaining(budgetId)
+      : await updateSpecialBudgetRemaining(budgetId);
 
     return res.status(201).json({
-      data: normalizeDecimalFields(monthlyExpenses),
+      data: normalizeDecimalFields(newExpenses),
       remainingBudget: normalizeDecimalFields(remainingBudget),
     });
   } catch (error) {
@@ -51,33 +59,35 @@ export const addMonthlyExpenses = async (
   }
 };
 
-export const updateMonthlyExpense = async (
+export const updateExpense = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const params = getMultipleParamsIds(req, ["id", "expenseId"], next);
   if (!params) return;
-  const { id: monthlyBudgetId, expenseId } = params;
+  const { id: budgetId, expenseId } = params;
 
-  const { name, amount } = req.body;
+  if (!req.budgetType) {
+    return next(new HttpError(500, "Budget type non résolu"));
+  }
+  const isMonthly = req.budgetType === "monthly";
+
+  const data = req.body;
 
   try {
     const updatedExpense = await prisma.expense.update({
       where: {
         id: expenseId,
-        monthlyBudgetId,
+        [isMonthly ? "monthlyBudgetId" : "specialBudgetId"]: budgetId,
       },
-      data: {
-        name,
-        amount,
-      },
+      data,
       select: expenseEntrySelect,
     });
 
-    const { remainingBudget } = await updateMonthlyBudgetRemaining(
-      monthlyBudgetId
-    );
+    const { remainingBudget } = isMonthly
+      ? await updateMonthlyBudgetRemaining(budgetId)
+      : await updateSpecialBudgetRemaining(budgetId);
 
     return res.status(200).json({
       data: normalizeDecimalFields(updatedExpense),
@@ -96,27 +106,32 @@ export const updateMonthlyExpense = async (
   }
 };
 
-export const deleteMonthlyExpense = async (
+export const deleteExpense = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const params = getMultipleParamsIds(req, ["id", "expenseId"], next);
   if (!params) return;
-  const { id: monthlyBudgetId, expenseId } = params;
+  const { id: budgetId, expenseId } = params;
+
+  if (!req.budgetType) {
+    return next(new HttpError(500, "Budget type non résolu"));
+  }
+  const isMonthly = req.budgetType === "monthly";
 
   try {
     const deletedEntry = await prisma.expense.delete({
       where: {
         id: expenseId,
-        monthlyBudgetId,
+        [isMonthly ? "monthlyBudgetId" : "specialBudgetId"]: budgetId,
       },
       select: { id: true },
     });
 
-    const { remainingBudget } = await updateMonthlyBudgetRemaining(
-      monthlyBudgetId
-    );
+    const { remainingBudget } = isMonthly
+      ? await updateMonthlyBudgetRemaining(budgetId)
+      : await updateSpecialBudgetRemaining(budgetId);
 
     return res.status(200).json({
       data: deletedEntry,

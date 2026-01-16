@@ -3,25 +3,26 @@ import express from "express";
 import {
   checkBudgetAccess,
   requireAuth,
+  resolveBudgetType,
   validateBody,
   validateQuery,
 } from "../middleware";
 import {
+  addExpenses,
   addMonthlyBudget,
   addMonthlyCharges,
-  addMonthlyExpenses,
   addMonthlyIncomes,
+  deleteExpense,
   deleteMonthlyBudget,
   deleteMonthlyCharge,
-  deleteMonthlyExpense,
   deleteMonthlyIncome,
   getCurrentMonthlyBudget,
   getLastBudgets,
   getMonthlyBudget,
   getMonthlyBudgetById,
+  updateExpense,
   updateMonthlyBudgetStatus,
   updateMonthlyCharge,
-  updateMonthlyExpense,
   updateMonthlyIncome,
 } from "../controllers";
 import {
@@ -103,20 +104,23 @@ router.post(
   requireAuth,
   checkBudgetAccess,
   validateBody(expenseServerSchema),
-  addMonthlyExpenses
+  resolveBudgetType,
+  addExpenses
 );
 router.put(
   "/:id/expenses/:expenseId",
   requireAuth,
   checkBudgetAccess,
   validateBody(baseEntryServerSchema),
-  updateMonthlyExpense
+  resolveBudgetType,
+  updateExpense
 );
 router.delete(
   "/:id/expenses/:expenseId",
   requireAuth,
   checkBudgetAccess,
-  deleteMonthlyExpense
+  resolveBudgetType,
+  deleteExpense
 );
 
 export default router;

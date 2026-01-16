@@ -1,8 +1,8 @@
 import {
   addFixedCharges,
-  deleteFixedCharges,
+  deleteFixedCharge,
   updateFixedCharge,
-} from "@/lib/api/fixedCharges";
+} from "@/lib/api";
 import { Entry, UpdateFixedEntryParams } from "@/types";
 import { BaseEntryOutput } from "@shared/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,7 +38,7 @@ export const useDeleteFixedChargeMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (chargeId: string) => deleteFixedCharges(chargeId),
+    mutationFn: (chargeId: string) => deleteFixedCharge(chargeId),
     onSuccess: (result) => {
       queryClient.setQueryData(["fixedCharges"], (prev: Entry[]) =>
         prev.filter((c) => c.id !== result.id)

@@ -1,6 +1,6 @@
+import { getCurrentOnlineStatus } from "@/lib/network";
 import { LoginInput, SignupInput } from "@shared/schemas";
 import { User } from "@shared/types";
-import { getCurrentOnlineStatus } from "../network";
 
 export const login = async ({ email, password }: LoginInput): Promise<User> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");

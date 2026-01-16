@@ -1,4 +1,4 @@
-import { fetchSpecialBudget } from "@/lib/api/specialBudgets";
+import { fetchSpecialBudget } from "@/lib/api";
 import { useAppStore } from "@/stores/appStore";
 import { SpecialBudget } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

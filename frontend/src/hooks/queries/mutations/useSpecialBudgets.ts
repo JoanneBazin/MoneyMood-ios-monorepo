@@ -3,12 +3,12 @@ import {
   deleteSpecialCategory,
   deleteSpecialCategoryOnCascade,
   updateSpecialCategory,
-} from "@/lib/api/budgetCategories";
+} from "@/lib/api";
 import {
   addSpecialBudget,
   deleteSpecialBudget,
   updateSpecialBudget,
-} from "@/lib/api/specialBudgets";
+} from "@/lib/api";
 import {
   AddSpecialCategoryParams,
   DeleteSpecialCategoryParams,

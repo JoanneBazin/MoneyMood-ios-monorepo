@@ -6,9 +6,11 @@ export interface Entry {
 
 export interface ExpenseEntry extends Entry {
   weekNumber: number;
+  cashed: boolean;
 }
 
 export interface SpecialExpenseEntry extends Entry {
   createdAt: string;
   specialCategoryId?: string | null;
+  cashed: boolean;
 }

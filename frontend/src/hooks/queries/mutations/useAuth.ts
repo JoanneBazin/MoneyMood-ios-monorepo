@@ -1,4 +1,4 @@
-import { login, logout, signup } from "@/lib/api/auth";
+import { login, logout, signup } from "@/lib/api";
 import { resetAppState } from "@/lib/resetAppState";
 import { useAppStore } from "@/stores/appStore";
 import { LoginInput, SignupInput } from "@shared/schemas";

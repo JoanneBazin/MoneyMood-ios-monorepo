@@ -1,20 +1,20 @@
-import { ExpenseEntry, ExpensesResponse } from "@/types";
-import { getCurrentOnlineStatus } from "../network";
-import { ApiError } from "../ApiError";
-import { ExpenseOutput } from "@moneymood-monorepo/shared";
+import { ApiError } from "@/lib/ApiError";
+import { getCurrentOnlineStatus } from "@/lib/network";
+import { Entry, MonthlyEntryResponse, MonthlyEntryType } from "@/types";
 import { BaseEntryOutput } from "@shared/schemas";
 
-export const addExpenses = async (
-  expenses: ExpenseOutput[],
+export const addMonthlyEntries = async (
+  type: MonthlyEntryType,
+  entries: BaseEntryOutput[],
   budgetId: string
-): Promise<ExpensesResponse<ExpenseEntry[]>> => {
+): Promise<MonthlyEntryResponse<Entry[]>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
-  const response = await fetch(`/api/monthly-budgets/${budgetId}/expenses`, {
+  const response = await fetch(`/api/monthly-budgets/${budgetId}/${type}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify(expenses),
+    body: JSON.stringify(entries),
   });
 
   if (!response.ok) {
@@ -25,20 +25,21 @@ export const addExpenses = async (
   return response.json();
 };
 
-export const updateExpense = async (
-  expense: BaseEntryOutput,
-  expenseId: string,
+export const updateMonthlyEntry = async (
+  type: MonthlyEntryType,
+  entry: BaseEntryOutput,
+  entryId: string,
   budgetId: string
-): Promise<ExpensesResponse<ExpenseEntry>> => {
+): Promise<MonthlyEntryResponse<Entry>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
-    `/api/monthly-budgets/${budgetId}/expenses/${expenseId}`,
+    `/api/monthly-budgets/${budgetId}/${type}/${entryId}`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify(expense),
+      body: JSON.stringify(entry),
     }
   );
 
@@ -50,14 +51,15 @@ export const updateExpense = async (
   return response.json();
 };
 
-export const deleteExpense = async (
-  expenseId: string,
+export const deleteMonthlyEntry = async (
+  type: MonthlyEntryType,
+  entryId: string,
   budgetId: string
-): Promise<ExpensesResponse<{ id: string }>> => {
+): Promise<MonthlyEntryResponse<{ id: string }>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
-    `/api/monthly-budgets/${budgetId}/expenses/${expenseId}`,
+    `/api/monthly-budgets/${budgetId}/${type}/${entryId}`,
     {
       method: "DELETE",
       credentials: "include",

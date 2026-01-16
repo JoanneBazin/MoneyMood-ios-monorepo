@@ -1,7 +1,8 @@
 import { CategoryEntryForm } from "@shared/schemas";
-import { ApiError } from "../ApiError";
-import { getCurrentOnlineStatus } from "../network";
+
 import { DeleteSpecialCategoryResponse, SpecialBudgetCategory } from "@/types";
+import { getCurrentOnlineStatus } from "@/lib/network";
+import { ApiError } from "@/lib/ApiError";
 
 export const addSpecialCategory = async (
   category: CategoryEntryForm,

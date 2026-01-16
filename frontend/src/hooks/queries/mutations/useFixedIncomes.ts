@@ -1,8 +1,8 @@
 import {
   addFixedIncomes,
-  deleteFixedIncomes,
+  deleteFixedIncome,
   updateFixedIncome,
-} from "@/lib/api/fixedIncomes";
+} from "@/lib/api";
 import { Entry, UpdateFixedEntryParams } from "@/types";
 import { BaseEntryOutput } from "@shared/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,7 +38,7 @@ export const useDeleteFixedIncomeMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (incomeId: string) => deleteFixedIncomes(incomeId),
+    mutationFn: (incomeId: string) => deleteFixedIncome(incomeId),
     onSuccess: (result) => {
       queryClient.setQueryData(["fixedIncomes"], (prev: Entry[]) =>
         prev.filter((c) => c.id !== result.id)

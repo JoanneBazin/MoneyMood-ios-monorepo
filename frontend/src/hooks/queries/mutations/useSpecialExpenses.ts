@@ -2,7 +2,7 @@ import {
   addSpecialExpenses,
   deleteSpecialExpense,
   updateSpecialExpense,
-} from "@/lib/api/specialExpenses";
+} from "@/lib/api";
 import {
   AddSpecialExpensesParams,
   DeleteSpecialExpenseParams,

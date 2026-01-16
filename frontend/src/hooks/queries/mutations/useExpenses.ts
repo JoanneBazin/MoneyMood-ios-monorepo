@@ -1,21 +1,22 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  addExpenses,
-  deleteExpense,
-  updateExpense,
-} from "@/lib/api/monthlyExpenses";
+
 import {
   AddExpensesParams,
   DeleteExpenseParams,
   MonthlyBudgetWithWeeks,
   UpdateExpenseParams,
 } from "@/types";
+import {
+  addMonthlyExpenses,
+  deleteMonthlyExpense,
+  updateMonthlyExpense,
+} from "@/lib/api";
 
 export const useAddExpensesMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ expenses, budgetId }: AddExpensesParams) =>
-      addExpenses(expenses, budgetId),
+      addMonthlyExpenses(expenses, budgetId),
     onSuccess: ({ data, remainingBudget }) => {
       queryClient.setQueryData(
         ["currentBudget"],
@@ -33,7 +34,7 @@ export const useUpdateExpenseMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ expense, expenseId, budgetId }: UpdateExpenseParams) =>
-      updateExpense(expense, expenseId, budgetId),
+      updateMonthlyExpense(expense, expenseId, budgetId),
     onSuccess: ({ data, remainingBudget }) => {
       queryClient.setQueryData(
         ["currentBudget"],
@@ -51,7 +52,7 @@ export const useDeleteExpenseMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ expenseId, budgetId }: DeleteExpenseParams) =>
-      deleteExpense(expenseId, budgetId),
+      deleteMonthlyExpense(expenseId, budgetId),
     onSuccess: ({ data, remainingBudget }) => {
       queryClient.setQueryData(
         ["currentBudget"],

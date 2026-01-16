@@ -1,4 +1,4 @@
-import { fetchLastBudgets } from "@/lib/api/monthlyBudgets";
+import { fetchLastBudgets } from "@/lib/api";
 import { LastMonthlyBudget } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 

@@ -2,7 +2,7 @@ import {
   addMonthlyEntries,
   deleteMonthlyEntry,
   updateMonthlyEntry,
-} from "@/lib/api/monthlyEntries";
+} from "@/lib/api";
 import {
   AddMonthlyEntriesParams,
   DeleteMonthlyEntryParams,

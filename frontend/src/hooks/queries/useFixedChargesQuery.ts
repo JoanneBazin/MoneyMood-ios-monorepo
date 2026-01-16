@@ -1,4 +1,4 @@
-import { fetchFixedCharges } from "@/lib/api/fixedCharges";
+import { fetchFixedCharges } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useOfflineStatus } from "../useOfflineStatus";
 import { Entry } from "@/types";

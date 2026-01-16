@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MonthlyBudgetForm } from "@shared/schemas";
+
+import { useNavigate } from "react-router-dom";
+import { UpdateMonthlyBudgetParams } from "@/types";
+import { getWeeksInMonth } from "@/lib/weeks-helpers";
 import {
   createMonthlyBudget,
   deleteMonthlyBudget,
   updateMonthlyBudgetStatus,
-} from "@/lib/api/monthlyBudgets";
-
-import { useNavigate } from "react-router-dom";
-import { MonthlyBudgetWithWeeks, UpdateMonthlyBudgetParams } from "@/types";
-import { getWeeksInMonth } from "@/lib/weeks-helpers";
+} from "@/lib/api";
 
 export const useCreateBudgetMutation = () => {
   const queryClient = useQueryClient();
@@ -17,10 +17,12 @@ export const useCreateBudgetMutation = () => {
   return useMutation({
     mutationFn: (budget: MonthlyBudgetForm) => createMonthlyBudget(budget),
     onSuccess: (budget) => {
-      queryClient.setQueryData(["currentBudget"], {
-        ...budget,
-        weeksInMonth: getWeeksInMonth(budget.year, budget.month),
-      });
+      if (budget.isCurrent) {
+        queryClient.setQueryData(["currentBudget"], {
+          ...budget,
+          weeksInMonth: getWeeksInMonth(budget.year, budget.month),
+        });
+      }
       queryClient.invalidateQueries({ queryKey: ["history"] });
       navigate("/app");
     },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getBudgetByDate } from "@/lib/api/monthlyBudgets";
+import { getBudgetByDate } from "@/lib/api";
 import { Search } from "lucide-react";
 import { useLastBudgetsQuery } from "@/hooks/queries";
 import { HistoryCard, MonthYearPicker } from "@/components/ui";

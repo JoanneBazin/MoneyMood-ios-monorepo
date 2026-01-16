@@ -6,9 +6,9 @@ export const resolveBudgetType = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.baseUrl.includes("monthly-budget")) {
+  if (req.baseUrl.includes("monthly-budgets")) {
     req.budgetType = "monthly";
-  } else if (req.baseUrl.includes("special-budget")) {
+  } else if (req.baseUrl.includes("special-budgets")) {
     req.budgetType = "special";
   } else {
     return next(new HttpError(400, "Type de budget invalide"));

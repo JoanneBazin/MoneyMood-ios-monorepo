@@ -17,6 +17,7 @@ import {
   getAllSpecialBudgets,
   getSpecialBudgetDetails,
   updateExpense,
+  updateExpenseValidation,
   updateSpecialBudget,
   updateSpecialCategoryName,
 } from "../controllers";
@@ -88,6 +89,13 @@ router.put(
   validateBody(specialExpenseServerSchema),
   resolveBudgetType,
   updateExpense
+);
+router.patch(
+  "/:id/expenses/:expenseId/cashed",
+  requireAuth,
+  checkSpecialBudgetAccess,
+  resolveBudgetType,
+  updateExpenseValidation
 );
 router.delete(
   "/:id/expenses/:expenseId",

@@ -9,6 +9,7 @@ export const expenseEntrySelect = {
   name: true,
   amount: true,
   weekNumber: true,
+  cashed: true,
 };
 export const specialExpenseEntrySelect = {
   id: true,
@@ -16,6 +17,7 @@ export const specialExpenseEntrySelect = {
   amount: true,
   specialCategoryId: true,
   createdAt: true,
+  cashed: true,
 };
 
 export const specialCategorySelect = {

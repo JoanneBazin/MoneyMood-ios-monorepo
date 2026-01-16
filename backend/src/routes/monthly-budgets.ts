@@ -21,6 +21,7 @@ import {
   getMonthlyBudget,
   getMonthlyBudgetById,
   updateExpense,
+  updateExpenseValidation,
   updateMonthlyBudgetStatus,
   updateMonthlyCharge,
   updateMonthlyIncome,
@@ -114,6 +115,13 @@ router.put(
   validateBody(baseEntryServerSchema),
   resolveBudgetType,
   updateExpense
+);
+router.patch(
+  "/:id/expenses/:expenseId/cashed",
+  requireAuth,
+  checkBudgetAccess,
+  resolveBudgetType,
+  updateExpenseValidation
 );
 router.delete(
   "/:id/expenses/:expenseId",

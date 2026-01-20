@@ -1,5 +1,10 @@
 import { BaseEntryOutput, ExpenseOutput } from "@shared/schemas";
-import { addExpensesBase, deleteExpenseBase, updateExpenseBase } from "./base";
+import {
+  addExpensesBase,
+  deleteExpenseBase,
+  updateExpenseBase,
+  updateExpenseValidationBase,
+} from "./base";
 import { ExpenseEntry } from "@/types";
 
 export const addMonthlyExpenses = async (
@@ -15,6 +20,18 @@ export const updateMonthlyExpense = async (
 ) =>
   updateExpenseBase<BaseEntryOutput, ExpenseEntry>(
     expense,
+    expenseId,
+    budgetId,
+    "monthly"
+  );
+
+export const updateMonthlyExpenseValidation = async (
+  cashed: boolean,
+  expenseId: string,
+  budgetId: string
+) =>
+  updateExpenseValidationBase<ExpenseEntry>(
+    cashed,
     expenseId,
     budgetId,
     "monthly"

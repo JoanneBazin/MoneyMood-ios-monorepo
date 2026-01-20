@@ -5,11 +5,13 @@ import {
   DeleteExpenseParams,
   MonthlyBudgetWithWeeks,
   UpdateExpenseParams,
+  UpdateExpenseValidationParams,
 } from "@/types";
 import {
   addMonthlyExpenses,
   deleteMonthlyExpense,
   updateMonthlyExpense,
+  updateMonthlyExpenseValidation,
 } from "@/lib/api";
 
 export const useAddExpensesMutation = () => {
@@ -42,6 +44,29 @@ export const useUpdateExpenseMutation = () => {
           ...prev,
           remainingBudget,
           expenses: prev.expenses.map((e) => (e.id === data.id ? data : e)),
+        })
+      );
+    },
+  });
+};
+
+export const useUpdateExpenseValidationMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      cashed,
+      expenseId,
+      budgetId,
+    }: UpdateExpenseValidationParams) =>
+      updateMonthlyExpenseValidation(cashed, expenseId, budgetId),
+    onSuccess: (expense) => {
+      queryClient.setQueryData(
+        ["currentBudget"],
+        (prev: MonthlyBudgetWithWeeks) => ({
+          ...prev,
+          expenses: prev.expenses.map((e) =>
+            e.id === expense.id ? expense : e
+          ),
         })
       );
     },

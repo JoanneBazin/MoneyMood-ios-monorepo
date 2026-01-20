@@ -52,6 +52,32 @@ export const updateExpenseBase = async <TExpense, TEntry>(
   return response.json();
 };
 
+export const updateExpenseValidationBase = async <TEntry>(
+  cashed: boolean,
+  expenseId: string,
+  budgetId: string,
+  type: BudgetType
+): Promise<TEntry> => {
+  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
+
+  const response = await fetch(
+    `/api/${type}-budgets/${budgetId}/expenses/${expenseId}/cashed`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ cashed }),
+    }
+  );
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
+  }
+
+  return response.json();
+};
+
 export const deleteExpenseBase = async (
   expenseId: string,
   budgetId: string,

@@ -39,6 +39,9 @@ export interface UpdateExpenseParams extends BaseExpenseParams {
 export interface UpdateSpecialExpenseParams extends BaseExpenseParams {
   expense: SpecialExpenseOutput;
 }
+export interface UpdateExpenseValidationParams extends BaseExpenseParams {
+  cashed: boolean;
+}
 
 export interface DeleteExpenseParams extends BaseExpenseParams {}
 export interface DeleteSpecialExpenseParams extends BaseExpenseParams {

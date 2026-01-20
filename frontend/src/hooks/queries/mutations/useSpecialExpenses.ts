@@ -2,11 +2,13 @@ import {
   addSpecialExpenses,
   deleteSpecialExpense,
   updateSpecialExpense,
+  updateSpecialExpenseValidation,
 } from "@/lib/api";
 import {
   AddSpecialExpensesParams,
   DeleteSpecialExpenseParams,
   SpecialBudget,
+  UpdateExpenseValidationParams,
   UpdateSpecialExpenseParams,
 } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -58,6 +60,24 @@ export const useUpdateSpecialExpenseMutation = () => {
       budgetId,
     }: UpdateSpecialExpenseParams) =>
       updateSpecialExpense(expense, expenseId, budgetId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["specialBudget", variables.budgetId],
+      });
+    },
+  });
+};
+
+export const useUpdateSpecialExpenseValidationMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      cashed,
+      expenseId,
+      budgetId,
+    }: UpdateExpenseValidationParams) =>
+      updateSpecialExpenseValidation(cashed, expenseId, budgetId),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["specialBudget", variables.budgetId],

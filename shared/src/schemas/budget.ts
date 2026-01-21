@@ -49,6 +49,7 @@ export const specialExpenseSchema = baseEntrySchema.extend({
 export const specialExpenseServerSchema = baseEntryServerSchema.extend({
   specialCategoryId: z.string().nullable().optional(),
 });
+export type SpecialExpenseInput = z.input<typeof specialExpenseSchema>;
 export type SpecialExpenseOutput = z.output<typeof specialExpenseSchema>;
 
 export const expenseSchema = baseEntrySchema.extend({
@@ -57,6 +58,7 @@ export const expenseSchema = baseEntrySchema.extend({
 export const expenseServerSchema = baseEntryServerSchema.extend({
   weekNumber: z.number().min(1).max(5),
 });
+export type ExpenseInput = z.input<typeof expenseSchema>;
 export type ExpenseOutput = z.output<typeof expenseSchema>;
 
 export const monthlyBudgetSchema = z.object({

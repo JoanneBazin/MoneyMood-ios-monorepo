@@ -5,12 +5,14 @@ export interface Entry {
 }
 
 export interface ExpenseEntry extends Entry {
-  weekNumber: number;
   cashed: boolean;
 }
 
-export interface SpecialExpenseEntry extends Entry {
+export interface MonthlyExpenseEntry extends ExpenseEntry {
+  weekNumber: number;
+}
+
+export interface SpecialExpenseEntry extends ExpenseEntry {
   createdAt: string;
   specialCategoryId?: string | null;
-  cashed: boolean;
 }

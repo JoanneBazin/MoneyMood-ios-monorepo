@@ -10,6 +10,7 @@ export const UpdateEntryForm = ({
   genericError,
   onSubmit,
   onDelete,
+  onResetErrors,
   children,
 }: UpdateEntryFormProps) => {
   const { id, name, amount } = initialData;
@@ -18,6 +19,11 @@ export const UpdateEntryForm = ({
     amount: amount.toString(),
   });
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const handleChange = (field: keyof BaseEntryForm, value: string) => {
+    onResetErrors();
+    setUpdatedEntry({ ...updatedEntry, [field]: value });
+  };
 
   return (
     <form data-testid="update-item-form">
@@ -31,9 +37,7 @@ export const UpdateEntryForm = ({
             data-testid="update-name-input"
             name="name"
             value={updatedEntry.name}
-            onChange={(e) =>
-              setUpdatedEntry({ ...updatedEntry, name: e.target.value })
-            }
+            onChange={(e) => handleChange("name", e.target.value)}
           />
           {validationErrors && validationErrors.name ? (
             <p className="form-error">{validationErrors.name}</p>
@@ -50,9 +54,7 @@ export const UpdateEntryForm = ({
                 data-testid="update-amount-input"
                 name="amount"
                 value={updatedEntry.amount}
-                onChange={(e) =>
-                  setUpdatedEntry({ ...updatedEntry, amount: e.target.value })
-                }
+                onChange={(e) => handleChange("amount", e.target.value)}
               />
             </div>
           </div>
@@ -68,7 +70,7 @@ export const UpdateEntryForm = ({
           type="button"
           className="secondary-btn"
           data-testid="delete-btn"
-          onClick={() => setConfirmDelete(true)}
+          onClick={() => setConfirmDelete((prev) => !prev)}
         >
           Supprimer
         </button>

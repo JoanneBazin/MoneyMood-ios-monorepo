@@ -5,20 +5,24 @@ import {
   updateExpenseBase,
   updateExpenseValidationBase,
 } from "./base";
-import { ExpenseEntry } from "@/types";
+import { MonthlyExpenseEntry } from "@/types";
 
 export const addMonthlyExpenses = async (
   expenses: ExpenseOutput[],
   budgetId: string
 ) =>
-  addExpensesBase<ExpenseOutput, ExpenseEntry>(expenses, budgetId, "monthly");
+  addExpensesBase<ExpenseOutput, MonthlyExpenseEntry>(
+    expenses,
+    budgetId,
+    "monthly"
+  );
 
 export const updateMonthlyExpense = async (
   expense: BaseEntryOutput,
   expenseId: string,
   budgetId: string
 ) =>
-  updateExpenseBase<BaseEntryOutput, ExpenseEntry>(
+  updateExpenseBase<BaseEntryOutput, MonthlyExpenseEntry>(
     expense,
     expenseId,
     budgetId,
@@ -30,7 +34,7 @@ export const updateMonthlyExpenseValidation = async (
   expenseId: string,
   budgetId: string
 ) =>
-  updateExpenseValidationBase<ExpenseEntry>(
+  updateExpenseValidationBase<MonthlyExpenseEntry>(
     cashed,
     expenseId,
     budgetId,

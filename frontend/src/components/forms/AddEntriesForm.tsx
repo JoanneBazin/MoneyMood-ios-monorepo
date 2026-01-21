@@ -18,7 +18,7 @@ export const AddEntriesForm = ({
   const handleUpdate = (
     index: number,
     field: keyof BaseEntryForm,
-    value: string
+    value: string,
   ) => {
     const updatedEntries = entries.map((entry, i) =>
       i === index
@@ -26,7 +26,7 @@ export const AddEntriesForm = ({
             ...entry,
             [field]: value,
           }
-        : entry
+        : entry,
     );
     onResetErrors();
     setEntries(updatedEntries);

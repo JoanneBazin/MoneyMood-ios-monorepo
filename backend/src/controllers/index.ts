@@ -7,3 +7,4 @@ export * from "./monthly-incomes";
 export * from "./special-budgets";
 export * from "./budget-categories";
 export * from "./expenses";
+export * from "./user";

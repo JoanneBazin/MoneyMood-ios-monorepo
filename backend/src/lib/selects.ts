@@ -1,3 +1,10 @@
+export const userSelect = {
+  id: true,
+  name: true,
+  email: true,
+  enabledExpenseValidation: true,
+};
+
 export const budgetEntrySelect = {
   id: true,
   name: true,

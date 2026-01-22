@@ -2,7 +2,7 @@ import { Request, NextFunction } from "express";
 import { HttpError } from "./HttpError";
 
 export const getUserId = (req: Request, next: NextFunction) => {
-  const userId = req.user?.id;
+  const userId: string = req.user?.id;
   if (!userId) {
     return next(new HttpError(401, "Utilisateur non authentifié"));
   }
@@ -20,7 +20,7 @@ export const getParamsId = (req: Request, next: NextFunction) => {
 export const getMultipleParamsIds = (
   req: Request,
   keys: string[],
-  next: NextFunction
+  next: NextFunction,
 ): void | Record<string, string> => {
   const ids: Record<string, string> = {};
 

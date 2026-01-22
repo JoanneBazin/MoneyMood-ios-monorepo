@@ -12,6 +12,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { ExpensesList } from "@/components/ui/ExpensesList";
 import { useWeeklyExpenses } from "@/hooks/useWeeklyExpenses";
 import { useWeeklyExpensesAction } from "@/hooks/actions";
+import { useAppStore } from "@/stores/appStore";
 
 export const WeeklyExpensesDisplay = ({
   budgetId,
@@ -33,6 +34,7 @@ export const WeeklyExpensesDisplay = ({
   } = useWeeklyExpenses({ expenses, weeklyBudget });
 
   const { actions, state, status } = useWeeklyExpensesAction({ budgetId });
+  const user = useAppStore((s) => s.user);
 
   useEffect(() => {
     setNewExpenses([]);
@@ -70,6 +72,7 @@ export const WeeklyExpensesDisplay = ({
   };
 
   const handleExpenseValidation = (expense: MonthlyExpenseEntry) => {
+    if (!user?.enabledExpenseValidation) return;
     actions.updateExpenseValidation(expense);
   };
 
@@ -101,6 +104,7 @@ export const WeeklyExpensesDisplay = ({
           <div>
             <ExpensesList<MonthlyExpenseEntry>
               data={weeklyExpenses}
+              enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
               validateExpense={handleExpenseValidation}
               setSelectedEntry={setSelectedEntry}
             />
@@ -125,6 +129,7 @@ export const WeeklyExpensesDisplay = ({
         ) : (
           <ExpensesList
             data={weeklyExpenses}
+            enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
             validateExpense={handleExpenseValidation}
             edit={false}
           />

@@ -1,4 +1,4 @@
-import { Entry } from "../budget";
+import { Entry, ExpenseEntry } from "../budget";
 
 export interface BackArrowProps {
   destination?: string;
@@ -8,6 +8,14 @@ export interface BackArrowProps {
 export interface DataListProps<T extends Entry> {
   data: T[];
   emptyMessage?: string;
+  setSelectedEntry?: (entry: T) => void;
+  edit?: boolean;
+}
+
+export interface ExpensesListProps<T extends ExpenseEntry> {
+  data: T[];
+  enabledExpenseValidation: boolean;
+  validateExpense: (expense: T) => void;
   setSelectedEntry?: (entry: T) => void;
   edit?: boolean;
 }

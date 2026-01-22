@@ -1,4 +1,5 @@
 export * from "./useAuth";
+export * from "./useUser";
 export * from "./useExpenses";
 export * from "./useFixedCharges";
 export * from "./useFixedIncomes";

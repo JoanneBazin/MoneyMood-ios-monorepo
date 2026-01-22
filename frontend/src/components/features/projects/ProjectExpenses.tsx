@@ -4,6 +4,7 @@ import { Modal, TotalDataDisplay } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { ExpensesList } from "@/components/ui/ExpensesList";
 import { useSpecialExpensesAction } from "@/hooks/actions";
+import { useAppStore } from "@/stores/appStore";
 import { ProjectExpensesProp, SpecialExpenseEntry } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";
 import { useEffect, useMemo, useState } from "react";
@@ -19,6 +20,7 @@ export const ProjectExpenses = ({
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const { actions, state, status } = useSpecialExpensesAction({ budgetId });
+  const user = useAppStore((s) => s.user);
 
   const totalExpenses = useMemo(() => {
     return expenses.reduce((acc, curr) => acc + curr.amount, 0);
@@ -73,6 +75,7 @@ export const ProjectExpenses = ({
 
       <ExpensesList<SpecialExpenseEntry>
         data={expenses}
+        enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
         validateExpense={handleExpenseValidation}
         setSelectedEntry={setSelectedEntry}
       />

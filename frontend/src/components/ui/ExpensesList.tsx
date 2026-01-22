@@ -1,15 +1,9 @@
-import { ExpenseEntry } from "@/types";
+import { ExpenseEntry, ExpensesListProps } from "@/types";
 import { ChevronRight, ShoppingBag } from "lucide-react";
-
-interface ExpensesListProps<T extends ExpenseEntry> {
-  data: T[];
-  validateExpense: (expense: T) => void;
-  setSelectedEntry?: (entry: T) => void;
-  edit?: boolean;
-}
 
 export const ExpensesList = <T extends ExpenseEntry>({
   data,
+  enabledExpenseValidation,
   validateExpense,
   setSelectedEntry,
   edit = true,
@@ -21,11 +15,15 @@ export const ExpensesList = <T extends ExpenseEntry>({
           data.map((entry, index) => (
             <div key={index} className="data-item" data-testid="data-item">
               <div
-                className={`data-item__name ${entry.cashed ? "cashed" : "cursor-pointer"}`}
-                onClick={() => validateExpense(entry)}
+                className={`data-item__name ${enabledExpenseValidation && entry.cashed ? "cashed" : ""}`}
               >
                 <ChevronRight size={16} />
-                <p>{entry.name}</p>
+                <p
+                  className={enabledExpenseValidation ? "cursor-pointer" : ""}
+                  onClick={() => validateExpense(entry)}
+                >
+                  {entry.name}
+                </p>
               </div>
               <div className="data-item__amount">
                 <p className="data-item__amount__entry">

@@ -31,9 +31,15 @@ export const signupSchema = authBaseSchema.extend({
 
 export const loginSchema = authBaseSchema;
 
-export const updateUserSchema = signupSchema.partial().extend({
-  enabledExpenseValidation: z.boolean().optional(),
-});
+export const updateUserSchema = signupSchema
+  .pick({
+    name: true,
+    email: true,
+  })
+  .partial()
+  .extend({
+    enabledExpenseValidation: z.boolean().optional(),
+  });
 
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

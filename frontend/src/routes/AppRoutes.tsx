@@ -1,20 +1,19 @@
-import { Route, Routes } from "react-router-dom";
-import { PrivateAppLayout } from "../layouts/app/PrivateAppLayout";
-import { Dashboard } from "../pages/app/Dashboard";
-import { CreateBudget } from "../pages/app/CreateBudget";
-import { History } from "../pages/app/History";
-import { ProfileLayout } from "../layouts/app/ProfileLayout";
-import { Profile } from "../pages/profile/Profile";
-import { NotFound } from "../pages/NotFound";
-
-import { LoginPage } from "@/pages/public/LoginPage";
-import { SignupPage } from "@/pages/public/SignupPage";
-import { HomeRedirect } from "@/components/auth/HomeRedirect";
-import { RequireGuest } from "@/components/auth/RequireGuest";
-import { RequireAuth } from "@/components/auth/RequireAuth";
-import { Projects } from "@/pages/app/Projects";
-import { ProjectDetail } from "@/pages/app/ProjectDetail";
-import { HistoryDetail } from "@/pages/app/HistoryDetail";
+import { HomeRedirect, RequireAuth, RequireGuest } from "@/components/auth";
+import { PrivateAppLayout, ProfileLayout } from "@/layouts/app";
+import {
+  CreateBudget,
+  Dashboard,
+  History,
+  HistoryDetail,
+  LoginPage,
+  NotFound,
+  ProfileBudget,
+  ProfileSettings,
+  ProjectDetail,
+  Projects,
+  SignupPage,
+} from "@/pages";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 export default function AppRoutes() {
   return (
@@ -42,8 +41,10 @@ export default function AppRoutes() {
           </Route>
         </Route>
 
-        <Route element={<ProfileLayout />}>
-          <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<ProfileLayout />}>
+          <Route index element={<Navigate to="budget" replace />} />
+          <Route path="/profile/budget" element={<ProfileBudget />} />
+          <Route path="/profile/settings" element={<ProfileSettings />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFound />} />

@@ -1,5 +1,6 @@
 export { Bottombar } from "./Bottombar";
 export { Header } from "./Header";
+export { ProfileNavigation } from "./ProfileNavigation";
 export { LoaderScreen } from "./LoaderScreen";
 export { PublicFooter } from "./PublicFooter";
 export { OfflineBanner } from "./OfflineBanner";

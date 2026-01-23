@@ -1,0 +1,17 @@
+@use "../abstracts" as *;
+
+.profile-nav {
+  display: flex;
+  justify-content: space-around;
+  gap: $spacing-sm;
+  padding: $spacing-xs 0 $spacing-md 0;
+  font-family: $font-family-secondary;
+  border-bottom: 1px solid $gray-500;
+
+  &__item {
+    @include font-responsive(sm);
+    .active {
+      font-weight: $font-weight-semibold;
+    }
+  }
+}

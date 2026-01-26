@@ -31,8 +31,3 @@ export interface UpdateMonthlyBudgetParams {
   budgetId: string;
   isCurrent: boolean;
 }
-
-export interface UpdateFixedEntryParams {
-  entry: BaseEntryOutput;
-  entryId: string;
-}

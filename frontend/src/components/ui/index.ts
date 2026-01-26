@@ -2,7 +2,7 @@ export { BackArrow } from "./BackArrow";
 export { Banner } from "./Banner";
 export { BudgetDataCard } from "./BudgetDataCard";
 export { Collapse } from "./Collapse";
-export { DataList } from "./DataList";
+export { EntriesList } from "./EntriesList";
 export { DateDisplay } from "./DateDisplay";
 export { HistoryCard } from "./HistoryCard";
 export { Modal } from "./Modal";

@@ -14,8 +14,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 export const useAddMonthlyEntriesMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ type, entries, budgetId }: AddMonthlyEntriesParams) =>
-      addMonthlyEntries(type, entries, budgetId),
+    mutationFn: ({ entries, budgetId, type }: AddMonthlyEntriesParams) =>
+      addMonthlyEntries(entries, budgetId, type),
     onSuccess: ({ data, remainingBudget, weeklyBudget }, variables) => {
       queryClient.setQueryData(
         ["currentBudget"],
@@ -24,7 +24,7 @@ export const useAddMonthlyEntriesMutation = () => {
           remainingBudget,
           weeklyBudget,
           [variables.type]: [...prev[variables.type], ...data],
-        })
+        }),
       );
     },
   });
@@ -34,12 +34,12 @@ export const useUpdateMonthlyEntriesMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
-      type,
       entry,
       entryId,
       budgetId,
+      type,
     }: UpdateMonthlyEntryParams) =>
-      updateMonthlyEntry(type, entry, entryId, budgetId),
+      updateMonthlyEntry(entry, entryId, budgetId, type),
     onSuccess: ({ data, remainingBudget, weeklyBudget }, variables) => {
       queryClient.setQueryData(
         ["currentBudget"],
@@ -48,9 +48,9 @@ export const useUpdateMonthlyEntriesMutation = () => {
           remainingBudget,
           weeklyBudget,
           [variables.type]: prev[variables.type].map((d) =>
-            d.id === data.id ? data : d
+            d.id === data.id ? data : d,
           ),
-        })
+        }),
       );
     },
   });
@@ -59,8 +59,8 @@ export const useUpdateMonthlyEntriesMutation = () => {
 export const useDeleteMonthlyEntriesMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ type, entryId, budgetId }: DeleteMonthlyEntryParams) =>
-      deleteMonthlyEntry(type, entryId, budgetId),
+    mutationFn: ({ entryId, budgetId, type }: DeleteMonthlyEntryParams) =>
+      deleteMonthlyEntry(entryId, budgetId, type),
     onSuccess: ({ data, remainingBudget, weeklyBudget }, variables) => {
       queryClient.setQueryData(
         ["currentBudget"],
@@ -69,9 +69,9 @@ export const useDeleteMonthlyEntriesMutation = () => {
           remainingBudget,
           weeklyBudget,
           [variables.type]: prev[variables.type].filter(
-            (d) => d.id !== data.id
+            (d) => d.id !== data.id,
           ),
-        })
+        }),
       );
     },
   });

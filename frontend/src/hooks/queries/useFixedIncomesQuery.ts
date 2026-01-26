@@ -1,4 +1,4 @@
-import { fetchFixedIncomes } from "@/lib/api";
+import { fetchFixedEntries } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useOfflineStatus } from "../useOfflineStatus";
 import { Entry } from "@/types";
@@ -8,7 +8,7 @@ export const useFixedIncomesQuery = () => {
 
   const query = useQuery<Entry[]>({
     queryKey: ["fixedIncomes"],
-    queryFn: fetchFixedIncomes,
+    queryFn: () => fetchFixedEntries("incomes"),
     enabled: isOnline,
   });
 

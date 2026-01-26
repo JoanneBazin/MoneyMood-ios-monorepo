@@ -4,9 +4,9 @@ import { Entry, MonthlyEntryResponse, MonthlyEntryType } from "@/types";
 import { BaseEntryOutput } from "@shared/schemas";
 
 export const addMonthlyEntries = async (
-  type: MonthlyEntryType,
   entries: BaseEntryOutput[],
-  budgetId: string
+  budgetId: string,
+  type: MonthlyEntryType,
 ): Promise<MonthlyEntryResponse<Entry[]>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
@@ -26,10 +26,10 @@ export const addMonthlyEntries = async (
 };
 
 export const updateMonthlyEntry = async (
-  type: MonthlyEntryType,
   entry: BaseEntryOutput,
   entryId: string,
-  budgetId: string
+  budgetId: string,
+  type: MonthlyEntryType,
 ): Promise<MonthlyEntryResponse<Entry>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
@@ -40,7 +40,7 @@ export const updateMonthlyEntry = async (
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(entry),
-    }
+    },
   );
 
   if (!response.ok) {
@@ -52,9 +52,9 @@ export const updateMonthlyEntry = async (
 };
 
 export const deleteMonthlyEntry = async (
-  type: MonthlyEntryType,
   entryId: string,
-  budgetId: string
+  budgetId: string,
+  type: MonthlyEntryType,
 ): Promise<MonthlyEntryResponse<{ id: string }>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
@@ -63,7 +63,7 @@ export const deleteMonthlyEntry = async (
     {
       method: "DELETE",
       credentials: "include",
-    }
+    },
   );
 
   if (!response.ok) {

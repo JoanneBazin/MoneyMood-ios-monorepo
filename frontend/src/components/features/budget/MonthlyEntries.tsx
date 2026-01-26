@@ -1,20 +1,11 @@
-import { useState } from "react";
-import {
-  BaseEntryForm,
-  baseEntrySchema,
-  validateArrayWithSchema,
-  validateWithSchema,
-} from "@shared/schemas";
-import {
-  useAddMonthlyEntriesMutation,
-  useDeleteMonthlyEntriesMutation,
-  useUpdateMonthlyEntriesMutation,
-} from "@/hooks/queries/mutations";
-import { BudgetDataCard, DataList, Modal } from "@/components/ui";
+import { useEffect, useState } from "react";
+import { BaseEntryForm } from "@shared/schemas";
+import { BudgetDataCard, EntriesList, Modal } from "@/components/ui";
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import { Entry, MonthlyEntriesView } from "@/types";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { RemainingBudgetDisplay } from "@/components/ui/RemainingBudgetDisplay";
+import { useMonthlyEntriesAction } from "@/hooks/actions";
 
 export const MonthlyEntries = ({
   type,
@@ -29,82 +20,35 @@ export const MonthlyEntries = ({
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [newEntries, setNewEntries] = useState<BaseEntryForm[]>([]);
 
-  const addMonthlyEntries = useAddMonthlyEntriesMutation();
-  const updateMonthlyEntry = useUpdateMonthlyEntriesMutation();
-  const deleteMonthlyEntry = useDeleteMonthlyEntriesMutation();
+  const { actions, state, status } = useMonthlyEntriesAction({
+    budgetId,
+    type,
+  });
 
-  const [validationError, setValidationError] = useState<
-    Record<string, string>[] | null
-  >(null);
-  const [updateValidationError, setUpdateValidationError] = useState<Record<
-    string,
-    string
-  > | null>(null);
-  const addRequestError = addMonthlyEntries.isError;
-  const [requestError, setRequestError] = useState<string | null>(null);
+  useEffect(() => {
+    if (selectedEntry) {
+      actions.clearUpdateErrors();
+    }
+  }, [selectedEntry]);
 
   const handleAddEntries = () => {
-    setValidationError(null);
-
-    const validation = validateArrayWithSchema(baseEntrySchema, newEntries);
-
-    if (!validation.success) {
-      setValidationError(Object.values(validation.errors));
-      return;
-    }
-
-    addMonthlyEntries.mutate(
-      {
-        type,
-        entries: validation.data,
-        budgetId,
-      },
-      { onSuccess: () => setNewEntries([]) }
-    );
+    actions.addEntries(newEntries, () => setNewEntries([]));
   };
 
   const handleUpdateEntry = (updatedEntry: BaseEntryForm, entryId: string) => {
-    setUpdateValidationError(null);
-    setRequestError(null);
-
-    const validation = validateWithSchema(baseEntrySchema, updatedEntry);
-
-    if (!validation.success) {
-      setUpdateValidationError(validation.errors);
+    if (
+      updatedEntry.name === selectedEntry?.name &&
+      Number(updatedEntry.amount) === selectedEntry.amount
+    ) {
+      setSelectedEntry(null);
       return;
     }
 
-    updateMonthlyEntry.mutate(
-      {
-        type,
-        entry: validation.data,
-        entryId,
-        budgetId,
-      },
-      {
-        onSuccess: () => setSelectedEntry(null),
-        onError: () =>
-          setRequestError("Une erreur est survenue lors de la mise à jour"),
-      }
-    );
+    actions.updateEntry(updatedEntry, entryId, () => setSelectedEntry(null));
   };
 
   const handleDeleteEntry = (entryId: string) => {
-    setUpdateValidationError(null);
-    setRequestError(null);
-
-    deleteMonthlyEntry.mutate(
-      {
-        type,
-        entryId,
-        budgetId,
-      },
-      {
-        onSuccess: () => setSelectedEntry(null),
-        onError: () =>
-          setRequestError("Une erreur est survenue lors de la suppression"),
-      }
-    );
+    actions.deleteEntry(entryId, () => setSelectedEntry(null));
   };
 
   return (
@@ -114,27 +58,17 @@ export const MonthlyEntries = ({
         total={totalData}
       />
 
-      {addRequestError && (
-        <ErrorMessage message="Une erreur interne est survenue lors de la création" />
-      )}
+      {state.dashboardError && <ErrorMessage message={state.dashboardError} />}
 
       <div className="my-2xl">
         <BudgetDataCard title={title} color="black">
-          <DataList
-            data={data}
-            setSelectedEntry={setSelectedEntry}
-            emptyMessage={
-              type === "charges"
-                ? "Aucune charge déclarée"
-                : "Aucun revenu déclaré"
-            }
-          />
+          <EntriesList data={data} setSelectedEntry={setSelectedEntry} />
 
           <AddEntriesForm
             initialData={newEntries}
-            errors={validationError}
+            errors={state.addValidationErrors}
             onChange={setNewEntries}
-            onResetErrors={() => setValidationError(null)}
+            onResetErrors={() => actions.clearAddValidationErrors}
             type={type}
           />
           {newEntries.length > 0 && (
@@ -142,7 +76,7 @@ export const MonthlyEntries = ({
               onClick={handleAddEntries}
               className="primary-btn"
               data-testid="add-entries-btn"
-              disabled={addMonthlyEntries.isPending}
+              disabled={status.isAdding}
             >
               Enregistrer
             </button>
@@ -160,10 +94,11 @@ export const MonthlyEntries = ({
         >
           <UpdateEntryForm
             initialData={selectedEntry}
-            validationErrors={updateValidationError}
-            genericError={requestError}
+            validationErrors={state.updateValidationError}
+            genericError={state.modalError}
             onSubmit={handleUpdateEntry}
             onDelete={handleDeleteEntry}
+            onResetErrors={() => actions.clearUpdateErrors()}
           />
         </Modal>
       )}

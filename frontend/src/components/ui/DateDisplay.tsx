@@ -18,8 +18,6 @@ export const DateDisplay = ({
       ? getWeeksInMonth(oldYear, oldMonth)
       : undefined;
 
-  console.log(weeks);
-
   if (!weeks) return;
   const formattedWeeks = useMemo(
     () =>
@@ -35,8 +33,6 @@ export const DateDisplay = ({
       })),
     [weeks],
   );
-
-  console.log("formatted: ", formattedWeeks);
 
   return (
     <div className="week-selector">

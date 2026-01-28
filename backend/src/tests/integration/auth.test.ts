@@ -57,7 +57,7 @@ describe("Auth Routes", () => {
   it("should return 401 if password is wrong", async () => {
     const res = await request(app).post("/api/auth/login").send({
       email: user.email,
-      password: "wrongPassword",
+      password: "wrongPassword1234",
     });
 
     expect(res.status).toBe(401);
@@ -69,7 +69,7 @@ describe("Auth Routes", () => {
   it("should return 401 if user doesn't exist", async () => {
     const wrongUser = {
       email: "nonexistent@test.com",
-      password: "anyPassword",
+      password: "anyPassword1234",
     };
     const res = await request(app).post("/api/auth/login").send(wrongUser);
 

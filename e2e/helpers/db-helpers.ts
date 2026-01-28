@@ -6,7 +6,7 @@ const prisma = new PrismaClient({ datasourceUrl: process.env.DATABASE_URL });
 export const createUserInDB = async (
   name: string,
   email: string,
-  password: string
+  password: string,
 ) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -32,7 +32,7 @@ export const createMonthlyBudgetInBD = async (
   userId: string,
   month = 1,
   year = 2025,
-  isCurrent = true
+  isCurrent = true,
 ) => {
   const budget = await prisma.monthlyBudget.create({
     data: {
@@ -53,6 +53,25 @@ export const createMonthlyBudgetInBD = async (
     ...budget,
     remainingBudget: Number(budget.remainingBudget),
     weeklyBudget: Number(budget.weeklyBudget),
+  };
+};
+
+export const createMonthlyExpenseInDB = async (monthlyBudgetId: string) => {
+  const newExpense = await prisma.expense.create({
+    data: {
+      monthlyBudgetId,
+      name: "Expense",
+      amount: 50,
+      weekNumber: 1,
+    },
+    select: {
+      name: true,
+      amount: true,
+    },
+  });
+  return {
+    ...newExpense,
+    amount: Number(newExpense.amount),
   };
 };
 
@@ -79,6 +98,20 @@ export const deleteAllFixedEntriesInDB = async (userId: string) => {
   ]);
 };
 
+export const resetUserData = async (
+  id: string,
+  name: string,
+  email: string,
+) => {
+  await prisma.user.update({
+    where: { id },
+    data: {
+      name,
+      email,
+    },
+  });
+};
+
 export const createSpecialBudgetInDB = async (userId: string) => {
   const newBudget = await prisma.specialBudget.create({
     data: {
@@ -97,7 +130,7 @@ export const createSpecialBudgetInDB = async (userId: string) => {
 
 export const createSpecialExpenseInDB = async (
   specialBudgetId: string,
-  catId?: string
+  catId?: string,
 ) => {
   const newExpense = await prisma.expense.create({
     data: {

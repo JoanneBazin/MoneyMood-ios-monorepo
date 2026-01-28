@@ -16,6 +16,7 @@ export const ExpensesList = <T extends ExpenseEntry>({
             <div key={index} className="data-item" data-testid="data-item">
               <div
                 className={`data-item__name ${enabledExpenseValidation && entry.cashed ? "cashed" : ""}`}
+                data-testid="data-item-name"
               >
                 <ChevronRight size={16} />
                 <p

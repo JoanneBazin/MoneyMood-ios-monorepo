@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpError } from "src/lib";
+import { HttpError } from "../lib";
 
 export const resolveBudgetType = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   if (req.baseUrl.includes("monthly-budgets")) {
     req.budgetType = "monthly";

@@ -49,6 +49,7 @@ export const UpdateUserProfile = ({ user }: { user: User }) => {
         <input
           type="text"
           value={updatedUser.name}
+          data-testid="user-name-input"
           onChange={(e) =>
             setUpdatedUser({
               ...updatedUser,
@@ -67,6 +68,7 @@ export const UpdateUserProfile = ({ user }: { user: User }) => {
         <input
           type="text"
           value={updatedUser.email}
+          data-testid="user-email-input"
           onChange={(e) =>
             setUpdatedUser({
               ...updatedUser,
@@ -85,6 +87,7 @@ export const UpdateUserProfile = ({ user }: { user: User }) => {
           <input
             type="checkbox"
             checked={updatedUser.enabledExpenseValidation}
+            data-testid="expense-validation-checkbox"
             onChange={() =>
               setUpdatedUser({
                 ...updatedUser,
@@ -99,7 +102,11 @@ export const UpdateUserProfile = ({ user }: { user: User }) => {
           montants débités
         </span>
       </div>
-      <button className="primary-btn" disabled={!isUpdates}>
+      <button
+        className="primary-btn"
+        disabled={!isUpdates}
+        data-testid="update-user-submit"
+      >
         Enregistrer
       </button>
     </form>

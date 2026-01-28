@@ -61,13 +61,13 @@ export const FixedEntriesDisplay = ({
           errors={state.addValidationErrors}
           onResetErrors={() => actions.clearAddValidationErrors}
           onChange={setNewEntries}
-          type="charges"
+          type={type}
         />
         {newEntries.length > 0 && (
           <button
             onClick={handleAddEntries}
             className="primary-btn"
-            data-testid="add-charges-btn"
+            data-testid={`add-${type}-btn`}
             disabled={status.isAdding}
           >
             Enregistrer
@@ -80,7 +80,7 @@ export const FixedEntriesDisplay = ({
           <Modal
             isOpen={!!selectedEntry}
             onClose={() => setSelectedEntry(null)}
-            title={`Mettre à jour les charges`}
+            title={`Mettre à jour les ${type === "charges" ? "charges" : "revenus"}`}
           >
             <UpdateEntryForm
               initialData={selectedEntry}

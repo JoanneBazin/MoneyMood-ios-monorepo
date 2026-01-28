@@ -40,6 +40,7 @@ export const Header = () => {
                       <NavLink
                         to="/app"
                         className={({ isActive }) => (isActive ? "active" : "")}
+                        data-testid="dashboard-nav"
                       >
                         Gérer mes budgets
                       </NavLink>

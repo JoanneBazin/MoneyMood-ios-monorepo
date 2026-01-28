@@ -16,6 +16,7 @@ export const ProfileNavigation = () => {
           <NavLink
             to="/profile/settings"
             className={({ isActive }) => (isActive ? "active" : "")}
+            data-testid="profile-settings-nav"
           >
             Paramètres
           </NavLink>

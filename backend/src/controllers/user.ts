@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { getUserId, HttpError, prisma, userSelect } from "src/lib";
+import { getUserId, HttpError, prisma, userSelect } from "../lib";
 
 export const updateCurrentUser = async (
   req: Request,

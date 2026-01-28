@@ -84,11 +84,15 @@ export const useWeeklyExpensesAction = ({ budgetId }: { budgetId: string }) => {
     );
   };
 
-  const updateExpenseValidation = (expense: MonthlyExpenseEntry) => {
+  const updateExpenseValidation = (
+    expense: MonthlyExpenseEntry,
+    isCurrentBudget: boolean,
+  ) => {
     updateValidationMutation.mutate({
       cashed: !expense.cashed,
       expenseId: expense.id,
       budgetId,
+      isCurrentBudget,
     });
   };
 

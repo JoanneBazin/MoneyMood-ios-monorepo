@@ -31,7 +31,7 @@ export const WeeklyExpensesDisplay = ({
     weeklyExpenses,
     remainingWeeklyBudget,
     currentWeekNumber,
-  } = useWeeklyExpenses({ expenses, weeklyBudget });
+  } = useWeeklyExpenses({ expenses, weeklyBudget, edit });
 
   const { actions, state, status } = useWeeklyExpensesAction({ budgetId });
   const user = useAppStore((s) => s.user);
@@ -73,7 +73,7 @@ export const WeeklyExpensesDisplay = ({
 
   const handleExpenseValidation = (expense: MonthlyExpenseEntry) => {
     if (!user?.enabledExpenseValidation) return;
-    actions.updateExpenseValidation(expense);
+    actions.updateExpenseValidation(expense, edit);
   };
 
   const handleDeleteExpense = (expenseId: string) => {

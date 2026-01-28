@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AddExpensesParams,
   DeleteExpenseParams,
+  MonthlyBudget,
   MonthlyBudgetWithWeeks,
   UpdateExpenseParams,
   UpdateExpenseValidationParams,
@@ -26,7 +27,7 @@ export const useAddExpensesMutation = () => {
           ...prev,
           remainingBudget,
           expenses: [...prev.expenses, ...data],
-        })
+        }),
       );
     },
   });
@@ -44,7 +45,7 @@ export const useUpdateExpenseMutation = () => {
           ...prev,
           remainingBudget,
           expenses: prev.expenses.map((e) => (e.id === data.id ? data : e)),
-        })
+        }),
       );
     },
   });
@@ -57,18 +58,31 @@ export const useUpdateExpenseValidationMutation = () => {
       cashed,
       expenseId,
       budgetId,
+      isCurrentBudget,
     }: UpdateExpenseValidationParams) =>
       updateMonthlyExpenseValidation(cashed, expenseId, budgetId),
-    onSuccess: (expense) => {
-      queryClient.setQueryData(
-        ["currentBudget"],
-        (prev: MonthlyBudgetWithWeeks) => ({
-          ...prev,
-          expenses: prev.expenses.map((e) =>
-            e.id === expense.id ? expense : e
-          ),
-        })
-      );
+    onSuccess: (expense, variables) => {
+      if (variables.isCurrentBudget) {
+        queryClient.setQueryData(
+          ["currentBudget"],
+          (prev: MonthlyBudgetWithWeeks) => ({
+            ...prev,
+            expenses: prev.expenses.map((e) =>
+              e.id === expense.id ? expense : e,
+            ),
+          }),
+        );
+      } else {
+        queryClient.setQueryData(
+          ["history", variables.budgetId],
+          (prev: MonthlyBudget) => ({
+            ...prev,
+            expenses: prev.expenses.map((e) =>
+              e.id === expense.id ? expense : e,
+            ),
+          }),
+        );
+      }
     },
   });
 };
@@ -85,7 +99,7 @@ export const useDeleteExpenseMutation = () => {
           ...prev,
           remainingBudget,
           expenses: prev.expenses.filter((expense) => expense.id !== data.id),
-        })
+        }),
       );
     },
   });

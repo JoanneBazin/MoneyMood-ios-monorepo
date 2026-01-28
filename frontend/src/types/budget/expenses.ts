@@ -19,6 +19,7 @@ export interface WeeklyExpensesDisplayProps {
 export interface WeeklyExpensesParams {
   expenses: MonthlyExpenseEntry[];
   weeklyBudget: number;
+  edit: boolean;
 }
 
 // Mutations
@@ -46,6 +47,7 @@ export interface UpdateSpecialExpenseParams extends BaseExpenseParams {
 }
 export interface UpdateExpenseValidationParams extends BaseExpenseParams {
   cashed: boolean;
+  isCurrentBudget: boolean;
 }
 
 export interface DeleteExpenseParams extends BaseExpenseParams {}

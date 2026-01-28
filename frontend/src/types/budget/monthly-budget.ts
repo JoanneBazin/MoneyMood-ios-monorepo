@@ -1,4 +1,3 @@
-import { BaseEntryOutput } from "@shared/schemas";
 import { Entry, MonthlyExpenseEntry } from "./entries";
 import { WeekProps } from "../ui";
 

@@ -5,8 +5,9 @@ import { useMemo, useState } from "react";
 export const useWeeklyExpenses = ({
   expenses,
   weeklyBudget,
+  edit,
 }: WeeklyExpensesParams) => {
-  const [weekIndex, setWeekIndex] = useState(getCurrentWeek());
+  const [weekIndex, setWeekIndex] = useState(edit ? getCurrentWeek() : 0);
   const currentWeekNumber = weekIndex + 1;
 
   const weeklyExpenses = useMemo(

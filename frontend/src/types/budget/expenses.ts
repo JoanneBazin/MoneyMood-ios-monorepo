@@ -3,17 +3,23 @@ import {
   ExpenseOutput,
   SpecialExpenseOutput,
 } from "@shared/schemas";
-import { ExpenseEntry } from "./entries";
+import { MonthlyExpenseEntry } from "./entries";
 
 export interface WeeklyExpensesDisplayProps {
   budgetId: string;
   weeklyBudget: number;
-  expenses: ExpenseEntry[];
+  expenses: MonthlyExpenseEntry[];
   edit?: boolean;
   oldDate?: {
     year: number;
     month: number;
   };
+}
+
+export interface WeeklyExpensesParams {
+  expenses: MonthlyExpenseEntry[];
+  weeklyBudget: number;
+  edit: boolean;
 }
 
 // Mutations
@@ -38,6 +44,10 @@ export interface UpdateExpenseParams extends BaseExpenseParams {
 }
 export interface UpdateSpecialExpenseParams extends BaseExpenseParams {
   expense: SpecialExpenseOutput;
+}
+export interface UpdateExpenseValidationParams extends BaseExpenseParams {
+  cashed: boolean;
+  isCurrentBudget: boolean;
 }
 
 export interface DeleteExpenseParams extends BaseExpenseParams {}

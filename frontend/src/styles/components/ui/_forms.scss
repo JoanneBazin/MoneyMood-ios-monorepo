@@ -74,3 +74,23 @@
   gap: $spacing-xs;
   max-width: 75%;
 }
+
+.update-user {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin: $spacing-xl 0;
+  &__item {
+    display: grid;
+    align-items: center;
+    max-width: 70vw;
+    grid-template-columns: 15% 85%;
+    gap: $spacing-sm;
+    @include font-responsive(xs);
+
+    input {
+      box-shadow: none;
+      max-width: 250px;
+    }
+  }
+}

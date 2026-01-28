@@ -1,4 +1,4 @@
-import { fetchCurrentBudget } from "@/lib/api/monthlyBudgets";
+import { fetchCurrentBudget } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useOfflineStatus } from "../useOfflineStatus";
 import { MonthlyBudget, MonthlyBudgetWithWeeks } from "@/types";

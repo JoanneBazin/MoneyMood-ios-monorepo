@@ -19,7 +19,7 @@ docker run --name ci-test-postgres \
   -d postgres:15
 
 echo "⏳ Waiting for PostgreSQL..."
-sleep 3
+sleep 5
 docker exec ci-test-postgres pg_isready -U test -d test_db
 
 echo "📝 Writing test DATABASE_URL..."

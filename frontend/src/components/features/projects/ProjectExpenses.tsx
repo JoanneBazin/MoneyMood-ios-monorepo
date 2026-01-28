@@ -1,19 +1,12 @@
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import { CategorySelect } from "@/components/forms/CategorySelect";
-import { DataList, Modal, TotalDataDisplay } from "@/components/ui";
+import { Modal, TotalDataDisplay } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import {
-  useAddSpecialExpenseMutation,
-  useDeleteSpecialExpenseMutation,
-  useUpdateSpecialExpenseMutation,
-} from "@/hooks/queries/mutations/useSpecialExpenses";
+import { ExpensesList } from "@/components/ui/ExpensesList";
+import { useSpecialExpensesAction } from "@/hooks/actions";
+import { useAppStore } from "@/stores/appStore";
 import { ProjectExpensesProp, SpecialExpenseEntry } from "@/types";
-import {
-  BaseEntryForm,
-  specialExpenseSchema,
-  validateArrayWithSchema,
-  validateWithSchema,
-} from "@shared/schemas";
+import { BaseEntryForm } from "@shared/schemas";
 import { useEffect, useMemo, useState } from "react";
 
 export const ProjectExpenses = ({
@@ -25,18 +18,10 @@ export const ProjectExpenses = ({
   const [selectedEntry, setSelectedEntry] =
     useState<SpecialExpenseEntry | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const addExpenses = useAddSpecialExpenseMutation();
-  const updateExpense = useUpdateSpecialExpenseMutation();
-  const deleteExpense = useDeleteSpecialExpenseMutation();
-  const [validationError, setValidationError] = useState<
-    Record<string, string>[] | null
-  >(null);
-  const [updateValidationError, setUpdateValidationError] = useState<Record<
-    string,
-    string
-  > | null>(null);
-  const addRequestError = addExpenses.isError;
-  const [requestError, setRequestError] = useState<string | null>(null);
+
+  const { actions, state, status } = useSpecialExpensesAction({ budgetId });
+  const user = useAppStore((s) => s.user);
+
   const totalExpenses = useMemo(() => {
     return expenses.reduce((acc, curr) => acc + curr.amount, 0);
   }, [expenses]);
@@ -44,107 +29,62 @@ export const ProjectExpenses = ({
   useEffect(() => {
     if (selectedEntry) {
       setSelectedCategory(selectedEntry.specialCategoryId ?? "");
+      actions.clearUpdateErrors();
     }
   }, [selectedEntry]);
 
   const handleAddExpenses = () => {
-    setValidationError(null);
-    setRequestError(null);
+    const expenses = categoryId
+      ? newExpenses.map((expense) => ({
+          ...expense,
+          specialCategoryId: categoryId,
+        }))
+      : newExpenses;
 
-    let validation;
-
-    if (categoryId) {
-      const expensesWithCat = newExpenses.map((e) => ({
-        ...e,
-        specialCategoryId: categoryId,
-      }));
-      validation = validateArrayWithSchema(
-        specialExpenseSchema,
-        expensesWithCat
-      );
-    } else {
-      validation = validateArrayWithSchema(specialExpenseSchema, newExpenses);
-    }
-
-    if (!validation.success) {
-      setValidationError(Object.values(validation.errors));
-      return;
-    }
-
-    addExpenses.mutate(
-      { expenses: validation.data, budgetId, categoryId },
-      { onSuccess: () => setNewExpenses([]) }
-    );
+    actions.addExpenses(expenses, categoryId, () => setNewExpenses([]));
   };
 
   const handleUpdateExpense = (
     updatedExpense: BaseEntryForm,
-    expenseId: string
+    expenseId: string,
   ) => {
-    setUpdateValidationError(null);
-    setRequestError(null);
-
     const expense = { ...updatedExpense, specialCategoryId: selectedCategory };
-
-    const { data, success, errors } = validateWithSchema(
-      specialExpenseSchema,
-      expense
-    );
-
-    if (!success) {
-      setUpdateValidationError(errors);
-      return;
-    }
-
     if (
-      data.name === selectedEntry?.name &&
-      data.amount === selectedEntry.amount &&
-      data.specialCategoryId === selectedEntry.specialCategoryId
+      expense.name === selectedEntry?.name &&
+      Number(expense.amount) === selectedEntry.amount &&
+      expense.specialCategoryId === selectedEntry.specialCategoryId
     ) {
       setSelectedEntry(null);
       return;
     }
 
-    updateExpense.mutate(
-      { expense: data, expenseId, budgetId },
-      {
-        onSuccess: () => setSelectedEntry(null),
-        onError: () =>
-          setRequestError("Une erreur est survenue lors de la mise à jour"),
-      }
-    );
+    actions.updateExpense(expense, expenseId, () => setSelectedEntry(null));
+  };
+
+  const handleExpenseValidation = (expense: SpecialExpenseEntry) => {
+    actions.updateExpenseValidation(expense);
   };
 
   const handleDeleteExpense = (expenseId: string) => {
-    setUpdateValidationError(null);
-    setRequestError(null);
-
-    deleteExpense.mutate(
-      { expenseId, budgetId, categoryId },
-      {
-        onSuccess: () => setSelectedEntry(null),
-        onError: () =>
-          setRequestError("Une erreur est survenue lors de la suppression"),
-      }
-    );
+    actions.deleteExpense(expenseId, () => setSelectedEntry(null));
   };
 
   return (
     <div className="my-2xl">
-      {addRequestError && (
-        <ErrorMessage message="Une erreur interne est survenue" />
-      )}
+      {state.dashboardError && <ErrorMessage message={state.dashboardError} />}
 
-      <DataList<SpecialExpenseEntry>
+      <ExpensesList<SpecialExpenseEntry>
         data={expenses}
+        enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
+        validateExpense={handleExpenseValidation}
         setSelectedEntry={setSelectedEntry}
       />
 
       <AddEntriesForm
         initialData={newExpenses}
-        errors={validationError}
+        errors={state.addValidationErrors}
         onChange={setNewExpenses}
-        onResetErrors={() => setValidationError(null)}
+        onResetErrors={() => actions.clearAddValidationErrors()}
         type="special-expense"
       />
       {newExpenses.length > 0 && (
@@ -152,13 +92,13 @@ export const ProjectExpenses = ({
           onClick={handleAddExpenses}
           className="primary-btn"
           data-testid="submit-form-entry"
-          disabled={addExpenses.isPending}
+          disabled={status.isAdding}
         >
           Enregistrer
         </button>
       )}
 
-      <TotalDataDisplay total={totalExpenses} title="" />
+      <TotalDataDisplay total={totalExpenses} />
 
       {selectedEntry && (
         <Modal
@@ -168,10 +108,11 @@ export const ProjectExpenses = ({
         >
           <UpdateEntryForm
             initialData={selectedEntry}
-            validationErrors={updateValidationError}
-            genericError={requestError}
+            validationErrors={state.updateValidationError}
+            genericError={state.modalError}
             onSubmit={handleUpdateExpense}
             onDelete={handleDeleteExpense}
+            onResetErrors={() => actions.clearUpdateErrors()}
           >
             <CategorySelect
               budgetId={budgetId}

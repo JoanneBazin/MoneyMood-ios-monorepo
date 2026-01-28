@@ -1,4 +1,4 @@
-import { fetchSession } from "@/lib/api/auth";
+import { fetchSession } from "@/lib/api";
 import { User } from "@shared/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOfflineStatus } from "../useOfflineStatus";

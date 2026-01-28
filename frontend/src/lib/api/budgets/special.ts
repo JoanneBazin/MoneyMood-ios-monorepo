@@ -1,7 +1,7 @@
 import { SpecialBudgetForm } from "@shared/schemas";
-import { ApiError } from "../ApiError";
-import { getCurrentOnlineStatus } from "../network";
 import { SpecialBudget, SpecialBudgetItem } from "@/types";
+import { getCurrentOnlineStatus } from "@/lib/network";
+import { ApiError } from "@/lib/ApiError";
 
 export const fetchAllSpecialBudgets = async (): Promise<
   SpecialBudgetItem[]

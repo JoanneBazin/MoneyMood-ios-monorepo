@@ -5,6 +5,7 @@ declare global {
     interface Request {
       user?: User;
       session?: string;
+      budgetType?: "monthly" | "special";
     }
   }
 }

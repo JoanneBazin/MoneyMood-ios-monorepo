@@ -1,3 +1,10 @@
+export const userSelect = {
+  id: true,
+  name: true,
+  email: true,
+  enabledExpenseValidation: true,
+};
+
 export const budgetEntrySelect = {
   id: true,
   name: true,
@@ -9,6 +16,7 @@ export const expenseEntrySelect = {
   name: true,
   amount: true,
   weekNumber: true,
+  cashed: true,
 };
 export const specialExpenseEntrySelect = {
   id: true,
@@ -16,6 +24,7 @@ export const specialExpenseEntrySelect = {
   amount: true,
   specialCategoryId: true,
   createdAt: true,
+  cashed: true,
 };
 
 export const specialCategorySelect = {

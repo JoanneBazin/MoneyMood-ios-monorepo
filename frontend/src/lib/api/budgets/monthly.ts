@@ -1,7 +1,7 @@
+import { ApiError } from "@/lib/ApiError";
+import { getCurrentOnlineStatus } from "@/lib/network";
 import { LastMonthlyBudget, MonthlyBudget } from "@/types";
 import { MonthlyBudgetForm } from "@shared/schemas";
-import { getCurrentOnlineStatus } from "../network";
-import { ApiError } from "../ApiError";
 
 export const fetchCurrentBudget = async (): Promise<MonthlyBudget | null> => {
   const response = await fetch(`/api/monthly-budgets/current`, {

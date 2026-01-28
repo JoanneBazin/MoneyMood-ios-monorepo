@@ -15,8 +15,8 @@ export const DateDisplay = ({
   const weeks = isCurrentBudget
     ? data?.weeksInMonth
     : oldYear !== undefined && oldMonth !== undefined
-    ? getWeeksInMonth(oldYear, oldMonth)
-    : undefined;
+      ? getWeeksInMonth(oldYear, oldMonth)
+      : undefined;
 
   if (!weeks) return;
   const formattedWeeks = useMemo(
@@ -31,7 +31,7 @@ export const DateDisplay = ({
           month: "2-digit",
         }),
       })),
-    [weeks]
+    [weeks],
   );
 
   return (

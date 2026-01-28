@@ -30,6 +30,7 @@
 
   &__read {
     color: $primary-dark;
+    text-align: right;
     @include font-responsive(xs);
   }
 }

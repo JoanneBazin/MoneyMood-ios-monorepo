@@ -22,9 +22,10 @@ export interface AddEntriesFormProps {
 export interface UpdateEntryFormProps {
   initialData: Entry;
   validationErrors: Record<string, string> | null;
-  genericError: string | null;
+  genericError?: string | null;
   onSubmit: (entry: BaseEntryForm, entryId: string) => void;
   onDelete: (entryId: string) => void;
+  onResetErrors: () => void;
   children?: React.ReactNode;
 }
 

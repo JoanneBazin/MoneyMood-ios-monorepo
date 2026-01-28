@@ -1,4 +1,4 @@
-import { getBudgetById } from "@/lib/api/monthlyBudgets";
+import { getBudgetById } from "@/lib/api";
 import { MonthlyBudget } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 

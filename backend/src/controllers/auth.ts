@@ -8,13 +8,14 @@ import {
   HttpError,
   isPrismaUniqueConstraint,
   prisma,
+  userSelect,
   verifyPassword,
 } from "../lib";
 
 export const signup = async (
   req: Request<{}, {}, SignupInput>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { email, password, name } = req.body;
@@ -22,11 +23,7 @@ export const signup = async (
     const hashedPassword = await hashPassword(password);
     const user = await prisma.user.create({
       data: { email, name, password: hashedPassword },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
+      select: userSelect,
     });
 
     const sessionToken = await createSession(user.id);
@@ -51,7 +48,7 @@ export const signup = async (
 export const login = async (
   req: Request<{}, {}, LoginInput>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { email, password } = req.body;
@@ -73,7 +70,12 @@ export const login = async (
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ id: user.id, email: user.email, name: user.name });
+    res.json({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      enabledExpenseValidation: user.enabledExpenseValidation,
+    });
   } catch (error) {
     return next(error);
   }
@@ -88,7 +90,7 @@ export const getSession = (req: Request, res: Response, next: NextFunction) => {
 export const logout = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const sessionId = req.cookies.session;

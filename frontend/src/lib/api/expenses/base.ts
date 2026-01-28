@@ -1,19 +1,21 @@
-import { CategoryEntryForm } from "@shared/schemas";
-import { ApiError } from "../ApiError";
-import { getCurrentOnlineStatus } from "../network";
-import { DeleteSpecialCategoryResponse, SpecialBudgetCategory } from "@/types";
+import { ApiError } from "@/lib/ApiError";
+import { getCurrentOnlineStatus } from "@/lib/network";
+import { ExpensesResponse } from "@/types";
 
-export const addSpecialCategory = async (
-  category: CategoryEntryForm,
-  budgetId: string
-): Promise<SpecialBudgetCategory> => {
+type BudgetType = "monthly" | "special";
+
+export const addExpensesBase = async <TExpense, TEntry>(
+  expenses: TExpense[],
+  budgetId: string,
+  type: BudgetType
+): Promise<ExpensesResponse<TEntry[]>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
-  const response = await fetch(`/api/special-budgets/${budgetId}/categories`, {
+  const response = await fetch(`/api/${type}-budgets/${budgetId}/expenses`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify(category),
+    body: JSON.stringify(expenses),
   });
 
   if (!response.ok) {
@@ -24,20 +26,47 @@ export const addSpecialCategory = async (
   return response.json();
 };
 
-export const updateSpecialCategory = async (
-  category: CategoryEntryForm,
-  categoryId: string,
-  budgetId: string
-): Promise<SpecialBudgetCategory> => {
+export const updateExpenseBase = async <TExpense, TEntry>(
+  expense: TExpense,
+  expenseId: string,
+  budgetId: string,
+  type: BudgetType
+): Promise<ExpensesResponse<TEntry>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
-    `/api/special-budgets/${budgetId}/categories/${categoryId}`,
+    `/api/${type}-budgets/${budgetId}/expenses/${expenseId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(expense),
+    }
+  );
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Echec de la connexion");
+  }
+
+  return response.json();
+};
+
+export const updateExpenseValidationBase = async <TEntry>(
+  cashed: boolean,
+  expenseId: string,
+  budgetId: string,
+  type: BudgetType
+): Promise<TEntry> => {
+  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
+
+  const response = await fetch(
+    `/api/${type}-budgets/${budgetId}/expenses/${expenseId}/cashed`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify(category),
+      body: JSON.stringify({ cashed }),
     }
   );
 
@@ -49,38 +78,18 @@ export const updateSpecialCategory = async (
   return response.json();
 };
 
-export const deleteSpecialCategory = async (
-  categoryId: string,
-  budgetId: string
-): Promise<DeleteSpecialCategoryResponse> => {
+export const deleteExpenseBase = async (
+  expenseId: string,
+  budgetId: string,
+  type: BudgetType
+): Promise<ExpensesResponse<{ id: string }>> => {
   if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
 
   const response = await fetch(
-    `/api/special-budgets/${budgetId}/categories/${categoryId}`,
+    `/api/${type}-budgets/${budgetId}/expenses/${expenseId}`,
     {
       method: "DELETE",
-      credentials: "include",
-    }
-  );
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
-};
-
-export const deleteSpecialCategoryOnCascade = async (
-  categoryId: string,
-  budgetId: string
-): Promise<{ remainingBudget: number }> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(
-    `/api/special-budgets/${budgetId}/categories/${categoryId}/cascade`,
-    {
-      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
     }
   );

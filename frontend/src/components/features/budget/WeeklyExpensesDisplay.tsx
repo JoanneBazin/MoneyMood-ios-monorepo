@@ -1,27 +1,18 @@
 import { useEffect, useState } from "react";
-import {
-  BaseEntryForm,
-  baseEntrySchema,
-  expenseSchema,
-  validateArrayWithSchema,
-  validateWithSchema,
-} from "@shared/schemas";
-import {
-  useAddExpensesMutation,
-  useDeleteExpenseMutation,
-  useUpdateExpenseMutation,
-} from "@/hooks/queries/mutations";
+import { BaseEntryForm } from "@shared/schemas";
 import {
   BudgetDataCard,
-  DataList,
   DateDisplay,
   Modal,
   TotalDataDisplay,
 } from "@/components/ui";
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
-import { ExpenseEntry, WeeklyExpensesDisplayProps } from "@/types";
+import { MonthlyExpenseEntry, WeeklyExpensesDisplayProps } from "@/types";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { getCurrentWeek } from "@/lib/weeks-helpers";
+import { ExpensesList } from "@/components/ui/ExpensesList";
+import { useWeeklyExpenses } from "@/hooks/useWeeklyExpenses";
+import { useWeeklyExpensesAction } from "@/hooks/actions";
+import { useAppStore } from "@/stores/appStore";
 
 export const WeeklyExpensesDisplay = ({
   budgetId,
@@ -31,112 +22,67 @@ export const WeeklyExpensesDisplay = ({
   oldDate,
 }: WeeklyExpensesDisplayProps) => {
   const [newExpenses, setNewExpenses] = useState<BaseEntryForm[]>([]);
-  const [weekIndex, setWeekIndex] = useState(getCurrentWeek());
-  const currentWeekNumber = weekIndex + 1;
-  const weeklyExpenses = expenses.filter(
-    (expense) => expense.weekNumber === currentWeekNumber
-  );
-  const remainingWeeklyBudget =
-    weeklyBudget - weeklyExpenses.reduce((acc, entry) => acc + entry.amount, 0);
+  const [selectedEntry, setSelectedEntry] =
+    useState<MonthlyExpenseEntry | null>(null);
 
-  const [selectedEntry, setSelectedEntry] = useState<ExpenseEntry | null>(null);
+  const {
+    weekIndex,
+    setWeekIndex,
+    weeklyExpenses,
+    remainingWeeklyBudget,
+    currentWeekNumber,
+  } = useWeeklyExpenses({ expenses, weeklyBudget, edit });
 
-  const addExpenses = useAddExpensesMutation();
-  const updateExpense = useUpdateExpenseMutation();
-  const deleteExpense = useDeleteExpenseMutation();
-
-  const [validationError, setValidationError] = useState<
-    Record<string, string>[] | null
-  >(null);
-  const [updateValidationError, setUpdateValidationError] = useState<Record<
-    string,
-    string
-  > | null>(null);
-  const addRequestError = addExpenses.isError;
-  const [requestError, setRequestError] = useState<string | null>(null);
+  const { actions, state, status } = useWeeklyExpensesAction({ budgetId });
+  const user = useAppStore((s) => s.user);
 
   useEffect(() => {
     setNewExpenses([]);
   }, [weekIndex]);
 
-  const handleAddExpenses = () => {
-    setValidationError(null);
-    setRequestError(null);
+  useEffect(() => {
+    if (selectedEntry) {
+      actions.clearUpdateErrors();
+    }
+  }, [selectedEntry]);
 
+  const handleAddExpenses = () => {
     const newWeeklyExpenses = newExpenses.map((exp) => ({
       ...exp,
       weekNumber: currentWeekNumber,
     }));
-
-    const validation = validateArrayWithSchema(
-      expenseSchema,
-      newWeeklyExpenses
-    );
-    if (!validation.success) {
-      setValidationError(Object.values(validation.errors));
-      return;
-    }
-
-    addExpenses.mutate(
-      { expenses: validation.data, budgetId },
-      { onSuccess: () => setNewExpenses([]) }
-    );
+    actions.addExpenses(newWeeklyExpenses, () => setNewExpenses([]));
   };
 
   const handleUpdateExpense = (
     updatedExpense: BaseEntryForm,
-    expenseId: string
+    expenseId: string,
   ) => {
-    setUpdateValidationError(null);
-    setRequestError(null);
-
-    const { data, success, errors } = validateWithSchema(
-      baseEntrySchema,
-      updatedExpense
-    );
-
-    if (!success) {
-      setUpdateValidationError(errors);
-      return;
-    }
-
     if (
-      data.name === selectedEntry?.name &&
-      data.amount === selectedEntry.amount
+      updatedExpense.name === selectedEntry?.name &&
+      Number(updatedExpense.amount) === selectedEntry.amount
     ) {
       setSelectedEntry(null);
       return;
     }
 
-    updateExpense.mutate(
-      { expense: data, expenseId, budgetId },
-      {
-        onSuccess: () => setSelectedEntry(null),
-        onError: () =>
-          setRequestError("Une erreur est survenue lors de la mise à jour"),
-      }
+    actions.updateExpense(updatedExpense, expenseId, () =>
+      setSelectedEntry(null),
     );
   };
 
-  const handleDeleteExpense = (expenseId: string) => {
-    setUpdateValidationError(null);
-    setRequestError(null);
+  const handleExpenseValidation = (expense: MonthlyExpenseEntry) => {
+    if (!user?.enabledExpenseValidation) return;
+    actions.updateExpenseValidation(expense, edit);
+  };
 
-    deleteExpense.mutate(
-      { expenseId, budgetId },
-      {
-        onSuccess: () => setSelectedEntry(null),
-        onError: () =>
-          setRequestError("Une erreur est survenue lors de la suppression"),
-      }
-    );
+  const handleDeleteExpense = (expenseId: string) => {
+    actions.deleteExpense(expenseId, () => setSelectedEntry(null));
   };
 
   return (
     <>
-      {addRequestError && (
-        <ErrorMessage message="Une erreur interne est survenue" />
-      )}
+      {state.dashboardError && <ErrorMessage message={state.dashboardError} />}
       <BudgetDataCard title="Dépenses">
         {edit ? (
           <DateDisplay
@@ -156,16 +102,17 @@ export const WeeklyExpensesDisplay = ({
 
         {edit ? (
           <div>
-            <DataList<ExpenseEntry>
+            <ExpensesList<MonthlyExpenseEntry>
               data={weeklyExpenses}
+              enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
+              validateExpense={handleExpenseValidation}
               setSelectedEntry={setSelectedEntry}
-              emptyMessage="Aucune dépense cette semaine"
             />
             <AddEntriesForm
               initialData={newExpenses}
-              errors={validationError}
+              errors={state.addValidationErrors}
+              onResetErrors={() => actions.clearAddValidationErrors()}
               onChange={setNewExpenses}
-              onResetErrors={() => setValidationError(null)}
               type="expense"
             />
             {newExpenses.length > 0 && (
@@ -173,16 +120,17 @@ export const WeeklyExpensesDisplay = ({
                 onClick={handleAddExpenses}
                 className="primary-btn"
                 data-testid="submit-form-entry"
-                disabled={addExpenses.isPending}
+                disabled={status.isAdding}
               >
                 Enregistrer
               </button>
             )}
           </div>
         ) : (
-          <DataList
+          <ExpensesList
             data={weeklyExpenses}
-            emptyMessage="Aucune dépense cette semaine"
+            enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
+            validateExpense={handleExpenseValidation}
             edit={false}
           />
         )}
@@ -199,10 +147,11 @@ export const WeeklyExpensesDisplay = ({
           >
             <UpdateEntryForm
               initialData={selectedEntry}
-              validationErrors={updateValidationError}
-              genericError={requestError}
+              validationErrors={state.updateValidationError}
+              genericError={state.modalError}
               onSubmit={handleUpdateExpense}
               onDelete={handleDeleteExpense}
+              onResetErrors={() => actions.clearUpdateErrors()}
             />
           </Modal>
         )}

@@ -3,21 +3,23 @@ import express from "express";
 import {
   checkSpecialBudgetAccess,
   requireAuth,
+  resolveBudgetType,
   validateBody,
 } from "../middleware";
 import {
+  addExpenses,
   addSpecialBudget,
   addSpecialCategory,
-  addSpecialExpenses,
+  deleteExpense,
   deleteSpecialBudget,
   deleteSpecialCategory,
   deleteSpecialCategoryOnCascade,
-  deleteSpecialExpense,
   getAllSpecialBudgets,
   getSpecialBudgetDetails,
+  updateExpense,
+  updateExpenseValidation,
   updateSpecialBudget,
   updateSpecialCategoryName,
-  updateSpecialExpense,
 } from "../controllers";
 import {
   categorySchema,
@@ -77,20 +79,30 @@ router.post(
   requireAuth,
   checkSpecialBudgetAccess,
   validateBody(specialExpenseServerSchema),
-  addSpecialExpenses
+  resolveBudgetType,
+  addExpenses
 );
 router.put(
   "/:id/expenses/:expenseId",
   requireAuth,
   checkSpecialBudgetAccess,
   validateBody(specialExpenseServerSchema),
-  updateSpecialExpense
+  resolveBudgetType,
+  updateExpense
+);
+router.patch(
+  "/:id/expenses/:expenseId/cashed",
+  requireAuth,
+  checkSpecialBudgetAccess,
+  resolveBudgetType,
+  updateExpenseValidation
 );
 router.delete(
   "/:id/expenses/:expenseId",
   requireAuth,
   checkSpecialBudgetAccess,
-  deleteSpecialExpense
+  resolveBudgetType,
+  deleteExpense
 );
 
 export default router;

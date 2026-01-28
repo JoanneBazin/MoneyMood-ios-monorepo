@@ -1,15 +1,23 @@
 import { z } from "zod";
 
-export const signupSchema = z.object({
-  email: z.string().email("Format d'email invalide").toLowerCase().trim(),
+const authBaseSchema = z.object({
+  email: z
+    .string()
+    .email("Format d'email invalide")
+    .min(1, "Email requis")
+    .toLowerCase()
+    .trim(),
   password: z
     .string()
     .min(8, "Le mot de passe doit contenir au moins 8 caractères")
     .max(100, "Le mot de passe est trop long")
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]/,
-      "Le mot de passe doit contenir au moins : une minuscule, une majuscule et un chiffre"
+      "Le mot de passe doit contenir au moins : une minuscule, une majuscule et un chiffre",
     ),
+});
+
+export const signupSchema = authBaseSchema.extend({
   name: z
     .string()
     .trim()
@@ -17,19 +25,22 @@ export const signupSchema = z.object({
     .max(100, "Le nom est trop long")
     .refine(
       (val) => /^[a-zA-ZÀ-ÿ\s'-]*$/.test(val),
-      "Le nom contient des caractères invalides"
+      "Le nom contient des caractères invalides",
     ),
 });
 
-export const loginSchema = z.object({
-  email: z
-    .string()
-    .email("Format d'email invalide")
-    .min(1, "Email requis")
-    .toLowerCase()
-    .trim(),
-  password: z.string().min(1, "Le mot de passe est requis"),
-});
+export const loginSchema = authBaseSchema;
+
+export const updateUserSchema = signupSchema
+  .pick({
+    name: true,
+    email: true,
+  })
+  .partial()
+  .extend({
+    enabledExpenseValidation: z.boolean().optional(),
+  });
 
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;

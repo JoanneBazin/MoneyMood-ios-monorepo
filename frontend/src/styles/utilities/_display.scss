@@ -38,6 +38,14 @@
   display: flex;
   align-items: flex-start;
 }
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-end {
+  align-self: flex-end;
+}
 
 .gap-sm {
   gap: $spacing-sm;

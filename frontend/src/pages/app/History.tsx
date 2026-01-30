@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { getBudgetByDate } from "@/lib/api";
 import { Search } from "lucide-react";
 import { useLastBudgetsQuery } from "@/hooks/queries";
-import { HistoryCard, MonthYearPicker } from "@/components/ui";
+import {
+  HistoryCard,
+  MonthYearPicker,
+  Loader,
+  OfflineEmptyState,
+} from "@/components/ui";
 import { LastMonthlyBudget } from "@/types";
-import { Loader } from "@/components/ui/Loader";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { ApiError } from "@/lib/ApiError";
 import { useAppStore } from "@/stores/appStore";
@@ -36,24 +39,21 @@ export const History = () => {
       setSearchError(
         error instanceof ApiError
           ? error.message
-          : "Erreur lors de la recherche"
+          : "Erreur lors de la recherche",
       );
     } finally {
       setIsSearchLoading(false);
     }
   };
 
-  if (isOffline)
-    return (
-      <ErrorMessage message="Vous êtes hors ligne. Veuillez vous reconnecter pour accéder à l'historique des budgets." />
-    );
-
   return (
     <section>
-      <div className="date-picker-container">
-        <p>Rechercher par mois</p>
-        <MonthYearPicker onChange={handleDateChange} defaultInput={false} />
-      </div>
+      {!isOffline && (
+        <div className="date-picker-container">
+          <p>Rechercher par mois</p>
+          <MonthYearPicker onChange={handleDateChange} defaultInput={false} />
+        </div>
+      )}
 
       {searchError && (
         <div className="search-error">
@@ -71,7 +71,7 @@ export const History = () => {
       )}
 
       {isPending && <Loader type="layout" />}
-      {error && <ErrorMessage message={error.message} />}
+      {error && <OfflineEmptyState error={error.message} />}
 
       <div className="my-2xl">
         {lastBudgets &&

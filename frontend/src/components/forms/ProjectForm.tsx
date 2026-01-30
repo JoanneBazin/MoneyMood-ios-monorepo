@@ -2,7 +2,7 @@ import { specialBudgetSchema, validateWithSchema } from "@shared/schemas";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { ProjectFormProps } from "@/types";
-import { ErrorMessage } from "../ui/ErrorMessage";
+import { ErrorMessage } from "../ui";
 
 export const ProjectForm = ({
   onSubmit,

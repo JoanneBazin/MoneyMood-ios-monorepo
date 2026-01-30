@@ -1,8 +1,11 @@
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import { CategorySelect } from "@/components/forms/CategorySelect";
-import { Modal, TotalDataDisplay } from "@/components/ui";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { ExpensesList } from "@/components/ui/ExpensesList";
+import {
+  Modal,
+  TotalDataDisplay,
+  ErrorMessage,
+  ExpensesList,
+} from "@/components/ui";
 import { useSpecialExpensesAction } from "@/hooks/actions";
 import { useAppStore } from "@/stores/appStore";
 import { ProjectExpensesProp, SpecialExpenseEntry } from "@/types";

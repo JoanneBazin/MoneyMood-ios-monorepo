@@ -5,3 +5,4 @@ export { UpdateEntryForm } from "./UpdateEntryForm";
 export { ProjectForm } from "./ProjectForm";
 export { CategoryForm } from "./CategoryForm";
 export { UpdateUserProfile } from "./UpdateUserProfile";
+export { AddMonthlyBudgetForm } from "./AddMonthlyBudgetForm";

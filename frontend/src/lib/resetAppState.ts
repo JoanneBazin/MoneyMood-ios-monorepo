@@ -5,4 +5,5 @@ export const resetAppState = (queryClient: QueryClient) => {
   useAppStore.getState().clearUser();
 
   queryClient.removeQueries();
+  localStorage.removeItem("budget-app-cache");
 };

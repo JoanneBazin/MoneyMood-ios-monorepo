@@ -1,10 +1,13 @@
 import { ChevronRight, ShoppingBag } from "lucide-react";
 import { DataListProps, Entry } from "@/types";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 
 export const EntriesList = <T extends Entry>({
   data,
   setSelectedEntry,
 }: DataListProps<T>) => {
+  const { isOffline } = useOfflineStatus();
+
   return (
     <>
       <div className="mb-xs">
@@ -25,6 +28,7 @@ export const EntriesList = <T extends Entry>({
                   className="data-item__amount__update"
                   data-testid="update-item-btn"
                   onClick={() => setSelectedEntry(entry)}
+                  disabled={isOffline}
                 >
                   modifier
                 </button>
@@ -34,7 +38,11 @@ export const EntriesList = <T extends Entry>({
         ) : (
           <div className="empty-data">
             <ShoppingBag className="empty-data__icon" />
-            <p>Pas de données</p>
+            <p>
+              {isOffline
+                ? "Connectez-vous pour ajouter des données"
+                : "Pas de données"}
+            </p>
           </div>
         )}
       </div>

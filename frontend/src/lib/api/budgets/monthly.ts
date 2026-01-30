@@ -1,5 +1,5 @@
+import { apiFetch } from "@/lib/apiFetch";
 import { ApiError } from "@/lib/ApiError";
-import { getCurrentOnlineStatus } from "@/lib/network";
 import { LastMonthlyBudget, MonthlyBudget } from "@/types";
 import { MonthlyBudgetForm } from "@shared/schemas";
 
@@ -12,7 +12,36 @@ export const fetchCurrentBudget = async (): Promise<MonthlyBudget | null> => {
     const data = await response.json();
     throw new ApiError(
       response.status,
-      data.error || "Budget mensuel non disponible"
+      data.error || "Budget mensuel non disponible",
+    );
+  }
+  return response.json();
+};
+
+export const getBudgetById = async (
+  budgetId: string,
+): Promise<MonthlyBudget> => {
+  const response = await fetch(`/api/monthly-budgets/${budgetId}`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new ApiError(response.status, data.error || "Budget non disponible");
+  }
+  return response.json();
+};
+
+export const fetchLastBudgets = async (): Promise<LastMonthlyBudget[]> => {
+  const response = await fetch(`/api/monthly-budgets/history`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new ApiError(
+      response.status,
+      data.error || "Budgets non disponibles",
     );
   }
   return response.json();
@@ -20,109 +49,34 @@ export const fetchCurrentBudget = async (): Promise<MonthlyBudget | null> => {
 
 export const updateMonthlyBudgetStatus = async (
   budgetId: string,
-  isCurrent: boolean
+  isCurrent: boolean,
 ): Promise<MonthlyBudget> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/monthly-budgets/${budgetId}`, {
+  return apiFetch(`/api/monthly-budgets/${budgetId}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify({ isCurrent }),
   });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
 };
 
 export const createMonthlyBudget = async (
-  budget: MonthlyBudgetForm
+  budget: MonthlyBudgetForm,
 ): Promise<MonthlyBudget> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/monthly-budgets`, {
+  return apiFetch(`/api/monthly-budgets`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(budget),
   });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
 };
 
 export const getBudgetByDate = async (
   year: number,
-  month: number
+  month: number,
 ): Promise<LastMonthlyBudget> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(
-    `/api/monthly-budgets?month=${month}&year=${year}`,
-    {
-      credentials: "include",
-    }
-  );
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Aucun budget trouvé");
-  }
-  return response.json();
-};
-
-export const getBudgetById = async (
-  budgetId: string
-): Promise<MonthlyBudget> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/monthly-budgets/${budgetId}`, {
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Budget introuvable");
-  }
-  return response.json();
-};
-
-export const fetchLastBudgets = async (): Promise<LastMonthlyBudget[]> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/monthly-budgets/history`, {
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Aucun budget trouvé");
-  }
-  return response.json();
+  return apiFetch(`/api/monthly-budgets?month=${month}&year=${year}`);
 };
 
 export const deleteMonthlyBudget = async (
-  budgetId: string
+  budgetId: string,
 ): Promise<{ id: string; isCurrent: boolean }> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/monthly-budgets/${budgetId}`, {
+  return apiFetch(`/api/monthly-budgets/${budgetId}`, {
     method: "DELETE",
-    credentials: "include",
   });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
 };

@@ -1,8 +1,12 @@
-import { CreateSpecialBudget } from "@/components/features/projects/CreateSpecialBudget";
-import { Modal, SpecialBudgetCard } from "@/components/ui";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { Loader } from "@/components/ui/Loader";
+import { CreateSpecialBudget } from "@/components/features";
+import {
+  Modal,
+  SpecialBudgetCard,
+  Loader,
+  OfflineEmptyState,
+} from "@/components/ui";
 import { useSpecialBudgetsQuery } from "@/hooks/queries";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { useAppStore } from "@/stores/appStore";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,6 +15,7 @@ export const Projects = () => {
   const setPageTitle = useAppStore((s) => s.setPageTitle);
   const { data: specialBudgets, isPending, error } = useSpecialBudgetsQuery();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { isOffline } = useOfflineStatus();
 
   useEffect(() => {
     setPageTitle("Gérer des budgets ponctuels");
@@ -19,19 +24,21 @@ export const Projects = () => {
   return (
     <section className="my-2xl">
       {isPending && <Loader type="layout" />}
-      {error && <ErrorMessage message={error.message} />}
+      {error && <OfflineEmptyState error={error.message} />}
 
       {!isPending && !error && (
         <div>
-          <div
-            role="button"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex-start gap-sm"
-            data-testid="create-project-btn"
-          >
-            <Plus />
-            <p>Créer un budget spécifique</p>
-          </div>
+          {!isOffline && (
+            <div
+              role="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex-start gap-sm"
+              data-testid="create-project-btn"
+            >
+              <Plus />
+              <p>Créer un budget spécifique</p>
+            </div>
+          )}
 
           {specialBudgets && (
             <div className="my-md">

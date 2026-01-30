@@ -1,6 +1,7 @@
 import { CategoryForm } from "@/components/forms";
 import { Modal } from "@/components/ui";
 import { useAddSpecialCategoryMutation } from "@/hooks/queries/mutations";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import {
   CategoryEntryForm,
   categorySchema,
@@ -16,6 +17,7 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
   > | null>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
   const { mutate, isPending } = useAddSpecialCategoryMutation();
+  const { isOffline } = useOfflineStatus();
 
   const handleAddCategory = (category: CategoryEntryForm) => {
     setValidationError(null);
@@ -34,7 +36,7 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
         onSuccess: () => setIsCreateModalOpen(false),
         onError: () =>
           setRequestError("Une erreur est survenue lors de la création"),
-      }
+      },
     );
   };
   return (
@@ -43,6 +45,7 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
         onClick={() => setIsCreateModalOpen(true)}
         className="cat-button"
         data-testid="add-special-cat-btn"
+        disabled={isOffline}
       >
         Créer une catégorie
       </button>

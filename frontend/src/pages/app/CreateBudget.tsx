@@ -1,127 +1,28 @@
-import { useEffect, useState } from "react";
-import {
-  BaseEntryForm,
-  monthlyBudgetSchema,
-  validateWithSchema,
-} from "@shared/schemas";
-import { extractArrayErrors } from "@/lib/extractArrayErrors";
-import { getWeeksInMonth } from "@/lib/weeks-helpers";
-import { useCreateBudgetMutation } from "@/hooks/queries/mutations";
-import { BudgetDataCard, MonthYearPicker } from "@/components/ui";
-import { AddEntriesForm } from "@/components/forms";
+import { useEffect } from "react";
 import { useFixedChargesQuery, useFixedIncomesQuery } from "@/hooks/queries";
 import { useAppStore } from "@/stores/appStore";
+import { AddMonthlyBudgetForm } from "@/components/forms";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
+import { InfoMessage } from "@/components/ui";
 
 export const CreateBudget = () => {
   const { data: charges = [] } = useFixedChargesQuery();
   const { data: incomes = [] } = useFixedIncomesQuery();
+  const { isOffline } = useOfflineStatus();
 
   const setPageTitle = useAppStore((s) => s.setPageTitle);
-  const [month, setMonth] = useState<number | null>(null);
-  const [year, setYear] = useState<number | null>(null);
-
-  const [monthlyCharges, setMonthlyCharges] = useState<BaseEntryForm[]>(
-    charges.map((c) => ({ ...c, amount: c.amount.toString() }))
-  );
-  const [monthlyIncomes, setMonthlyIncomes] = useState<BaseEntryForm[]>(
-    incomes.map((i) => ({ ...i, amount: i.amount.toString() }))
-  );
-  const [isCurrent, setIsCurrent] = useState(true);
-
-  const [incomesErrors, setIncomesErrors] = useState<
-    Record<string, string>[] | null
-  >(null);
-  const [chargesErrors, setChargesErrors] = useState<
-    Record<string, string>[] | null
-  >(null);
-  const { mutate, isPending, error: requestError } = useCreateBudgetMutation();
 
   useEffect(() => {
     setPageTitle("Ajouter un budget mensuel");
   }, []);
 
-  const handleDateChange = (month: number, year: number) => {
-    setMonth(month);
-    setYear(year);
-  };
-
-  const handleSubmit = () => {
-    setIncomesErrors(null);
-    setChargesErrors(null);
-
-    if (!year || !month) return;
-
-    const newBudget = {
-      month,
-      year,
-      isCurrent,
-      incomes: monthlyIncomes,
-      charges: monthlyCharges,
-      numberOfWeeks: getWeeksInMonth(year, month).length,
-    };
-
-    const validation = validateWithSchema(monthlyBudgetSchema, newBudget);
-    if (!validation.success) {
-      setIncomesErrors(extractArrayErrors(validation.errors, "incomes"));
-      setChargesErrors(extractArrayErrors(validation.errors, "charges"));
-      return;
-    }
-
-    mutate(validation.data);
-  };
-
   return (
     <section className="create-section">
-      <div className="create-section__title">
-        <h2>Budget pour le mois de</h2>
-        <MonthYearPicker onChange={handleDateChange} />
-      </div>
-      {requestError && (
-        <p className="form-error my-md" data-testid="create-req-error">
-          {requestError.message}
-        </p>
+      {isOffline ? (
+        <InfoMessage message="Impossible de créer un nouveau budget en mode hors-ligne" />
+      ) : (
+        <AddMonthlyBudgetForm incomes={incomes} charges={charges} />
       )}
-      <BudgetDataCard title="Revenus">
-        <AddEntriesForm
-          initialData={monthlyIncomes}
-          errors={incomesErrors}
-          onChange={setMonthlyIncomes}
-          onResetErrors={() => setIncomesErrors(null)}
-          type="incomes"
-        />
-      </BudgetDataCard>
-      <BudgetDataCard title="Charges">
-        <AddEntriesForm
-          initialData={monthlyCharges}
-          errors={chargesErrors}
-          onChange={setMonthlyCharges}
-          onResetErrors={() => setChargesErrors(null)}
-          type="charges"
-        />
-      </BudgetDataCard>
-
-      <div className="create-section__checkbox">
-        <label className="create-section__checkbox__label">
-          <input
-            type="checkbox"
-            checked={isCurrent}
-            onChange={(e) => setIsCurrent(e.target.checked)}
-          />
-          Définir comme budget actif
-        </label>
-        <span className="create-section__checkbox__span">
-          Ce budget sera disponible directement sur votre dashboard
-        </span>
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        className="primary-btn"
-        data-testid="submit-monthly-budget"
-        disabled={isPending}
-      >
-        Valider
-      </button>
     </section>
   );
 };

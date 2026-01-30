@@ -14,7 +14,7 @@
   color: $primary-dark;
   width: fit-content;
 
-  &:hover {
+  &:not(:disabled):hover {
     background: $primary-light;
     color: $white;
   }
@@ -40,6 +40,10 @@
 .req-info {
   color: $gray-700;
   @include font-responsive(xs);
+}
+.info-comment {
+  color: $gray-500;
+  @include font-responsive(xxs);
 }
 
 .primary-btn {

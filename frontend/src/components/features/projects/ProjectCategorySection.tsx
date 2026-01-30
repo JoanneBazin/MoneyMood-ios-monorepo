@@ -5,6 +5,7 @@ import {
   useDeleteSpecialCategoryMutation,
   useUpdateSpecialCategoryMutation,
 } from "@/hooks/queries/mutations";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { ProjectCategorySectionProps } from "@/types";
 import {
   CategoryEntryForm,
@@ -25,6 +26,7 @@ export const ProjectCategorySection = ({
     string,
     string
   > | null>(null);
+  const { isOffline } = useOfflineStatus();
 
   const updateCategory = useUpdateSpecialCategoryMutation();
   const deleteCategory = useDeleteSpecialCategoryMutation();
@@ -36,7 +38,7 @@ export const ProjectCategorySection = ({
 
     const { data, success, errors } = validateWithSchema(
       categorySchema,
-      updatedCategory
+      updatedCategory,
     );
 
     if (!success) {
@@ -59,7 +61,7 @@ export const ProjectCategorySection = ({
         onSuccess: () => setIsEditModalOpen(false),
         onError: () =>
           setRequestError("Une erreur est survenue lors de la mise à jour"),
-      }
+      },
     );
   };
 
@@ -77,7 +79,7 @@ export const ProjectCategorySection = ({
           onSuccess: () => setIsEditModalOpen(false),
           onError: () =>
             setRequestError("Une erreur est survenue lors de la mise à jour"),
-        }
+        },
       );
     } else {
       deleteCategory.mutate(
@@ -89,7 +91,7 @@ export const ProjectCategorySection = ({
           onSuccess: () => setIsEditModalOpen(false),
           onError: () =>
             setRequestError("Une erreur est survenue lors de la mise à jour"),
-        }
+        },
       );
     }
   };
@@ -102,6 +104,7 @@ export const ProjectCategorySection = ({
           onClick={() => setIsEditModalOpen(true)}
           aria-label="Modifier la catégorie"
           data-testid="update-cat-btn"
+          disabled={isOffline}
         >
           <Pen size={14} />
         </button>

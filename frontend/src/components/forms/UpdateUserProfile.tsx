@@ -1,4 +1,5 @@
 import { useUpdateUserMutation } from "@/hooks/queries/mutations";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { getChangedFields } from "@/lib/getChangedFields";
 import { updateUserSchema, validateWithSchema } from "@shared/schemas";
 import { User } from "@shared/types";
@@ -13,6 +14,7 @@ export const UpdateUserProfile = ({ user }: { user: User }) => {
     string
   > | null>(null);
   const isUpdates = Object.keys(getChangedFields(user, updatedUser)).length > 0;
+  const { isOffline } = useOfflineStatus();
 
   const handleUpdateUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -104,7 +106,7 @@ export const UpdateUserProfile = ({ user }: { user: User }) => {
       </div>
       <button
         className="primary-btn"
-        disabled={!isUpdates}
+        disabled={!isUpdates || isOffline}
         data-testid="update-user-submit"
       >
         Enregistrer

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AddEntriesFormProps } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 
 export const AddEntriesForm = ({
   initialData,
@@ -10,6 +11,7 @@ export const AddEntriesForm = ({
   type,
 }: AddEntriesFormProps) => {
   const [entries, setEntries] = useState<BaseEntryForm[]>(initialData || []);
+  const { isOffline } = useOfflineStatus();
 
   useEffect(() => {
     setEntries([...(initialData || [])]);
@@ -111,6 +113,7 @@ export const AddEntriesForm = ({
         className="add-btn"
         aria-label="Ajouter une ligne"
         data-testid={`add-${type}-input`}
+        disabled={isOffline}
       >
         +
       </button>

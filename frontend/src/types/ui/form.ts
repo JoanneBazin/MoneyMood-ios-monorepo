@@ -6,6 +6,11 @@ import {
 import { Entry } from "../budget";
 import React from "react";
 
+export interface AddMonthlyBudgetFormProps {
+  incomes: Entry[];
+  charges: Entry[];
+}
+
 export interface MonthYearPickerProps {
   onChange: (month: number, year: number) => void;
   defaultInput?: boolean;

@@ -46,14 +46,14 @@ test.describe("Budget history", () => {
     await page.click('[data-testid="create-nav"]');
     await page.click('[data-testid="submit-monthly-budget"]');
 
-    await page.goto("/app/history");
+    await page.click('[data-testid="history-nav"]');
 
     const budgetDate = displayedDate(currentBudget.year, currentBudget.month);
 
     await expect(
       page.locator('[data-testid="history-card"]', {
         hasText: new RegExp(budgetDate, "i"),
-      })
+      }),
     ).toBeVisible();
   });
 
@@ -76,10 +76,10 @@ test.describe("Budget history", () => {
 
     await expect(page).toHaveURL("/app");
     await expect(
-      page.locator('[data-testid="remaining-budget"]')
+      page.locator('[data-testid="remaining-budget"]'),
     ).toContainText(String(oldBudget.remainingBudget));
     await expect(page.locator('[data-testid="app-banner"]')).toContainText(
-      new RegExp(budgetDate, "i")
+      new RegExp(budgetDate, "i"),
     );
   });
 });

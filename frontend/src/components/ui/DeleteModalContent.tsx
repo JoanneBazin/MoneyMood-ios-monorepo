@@ -1,6 +1,6 @@
 import { DeleteModalContentProps } from "@/types";
-import { ErrorMessage } from "./ErrorMessage";
 import { Loader2 } from "lucide-react";
+import { ErrorMessage } from "./ErrorMessage";
 
 export const DeleteModalContent = ({
   onDelete,

@@ -69,7 +69,7 @@ MoneyMood offre une approche simplifiée de la gestion de budget : définissez v
 - **Architecture monorepo** : Configuration de workspaces npm avec package `shared` pour partager types et validations Zod entre frontend/backend
 - **Système d'authentification custom** : Implémentation de sessions sécurisées avec tokens cryptographiques (crypto.randomBytes), expiration glissante (rolling sessions) et nettoyage automatique
 - **Tests E2E isolés** : Configuration Playwright avec base de données Docker dédiée pour des tests reproductibles sans conflit
-- **PWA et offline-first** : Stratégie de cache et synchronisation différée pour le mode hors-ligne (en cours)
+- **PWA et mode offline** : Accès en lecture seule aux données mises en cache pour une consultation hors ligne
 
 ---
 

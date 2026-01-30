@@ -1,7 +1,7 @@
 import { Check, X } from "lucide-react";
 import { useState } from "react";
 import { UpdateEntryFormProps } from "@/types";
-import { ErrorMessage } from "../ui/ErrorMessage";
+import { ErrorMessage } from "../ui";
 import { BaseEntryForm } from "@shared/schemas";
 
 export const UpdateEntryForm = ({

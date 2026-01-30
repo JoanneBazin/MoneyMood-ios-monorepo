@@ -5,11 +5,11 @@ import {
   DateDisplay,
   Modal,
   TotalDataDisplay,
+  ErrorMessage,
+  ExpensesList,
 } from "@/components/ui";
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import { MonthlyExpenseEntry, WeeklyExpensesDisplayProps } from "@/types";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { ExpensesList } from "@/components/ui/ExpensesList";
 import { useWeeklyExpenses } from "@/hooks/useWeeklyExpenses";
 import { useWeeklyExpensesAction } from "@/hooks/actions";
 import { useAppStore } from "@/stores/appStore";

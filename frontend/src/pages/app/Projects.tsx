@@ -1,7 +1,10 @@
-import { CreateSpecialBudget } from "@/components/features/projects/CreateSpecialBudget";
-import { Modal, SpecialBudgetCard } from "@/components/ui";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { Loader } from "@/components/ui/Loader";
+import { CreateSpecialBudget } from "@/components/features";
+import {
+  Modal,
+  SpecialBudgetCard,
+  ErrorMessage,
+  Loader,
+} from "@/components/ui";
 import { useSpecialBudgetsQuery } from "@/hooks/queries";
 import { useAppStore } from "@/stores/appStore";
 import { Plus } from "lucide-react";

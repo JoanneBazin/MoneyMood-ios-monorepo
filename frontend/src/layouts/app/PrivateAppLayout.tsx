@@ -5,8 +5,7 @@ import {
 } from "@/hooks/queries";
 import { Outlet } from "react-router-dom";
 import { Bottombar, Header, OfflineBanner } from "../components";
-import { Banner } from "@/components/ui";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { Banner, ErrorMessage } from "@/components/ui";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { MainContentSkeleton } from "../components/skeletons";
 

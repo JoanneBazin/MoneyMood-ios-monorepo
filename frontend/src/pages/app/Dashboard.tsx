@@ -1,4 +1,4 @@
-import { CurrentBudgetLayout } from "@/components/features/dashboard/CurrentBudgetLayout";
+import { CurrentBudgetLayout } from "@/components/features";
 import { useCurrentBudgetQuery } from "@/hooks/queries";
 import { Link } from "react-router-dom";
 

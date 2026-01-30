@@ -2,9 +2,12 @@ import { CreateSpecialCategory } from "@/components/features/projects/CreateSpec
 import { ProjectCategorySection } from "@/components/features/projects/ProjectCategorySection";
 import { ProjectExpenses } from "@/components/features/projects/ProjectExpenses";
 import { SpecialBudgetOptions } from "@/components/features/projects/SpecialBudgetOptions";
-import { BackArrow, RemainingBudgetDisplay } from "@/components/ui";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { Loader } from "@/components/ui/Loader";
+import {
+  BackArrow,
+  RemainingBudgetDisplay,
+  ErrorMessage,
+  Loader,
+} from "@/components/ui";
 import { useBudgetDetailsQuery } from "@/hooks/queries";
 import { useNavigate, useParams } from "react-router-dom";
 

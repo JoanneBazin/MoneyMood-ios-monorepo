@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ErrorMessage } from "../ui/ErrorMessage";
+import { ErrorMessage } from "../ui";
 import { X } from "lucide-react";
 import { CategoryFormProps } from "@/types";
 

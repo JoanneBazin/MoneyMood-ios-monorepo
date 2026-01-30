@@ -1,4 +1,4 @@
-import { FixedEntriesDisplay } from "@/components/features/fixed-entries/FixedEntriesDisplay";
+import { FixedEntriesDisplay } from "@/components/features";
 import { useFixedChargesQuery, useFixedIncomesQuery } from "@/hooks/queries";
 
 export const ProfileBudget = () => {

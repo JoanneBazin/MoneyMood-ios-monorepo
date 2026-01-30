@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { getBudgetByDate } from "@/lib/api";
 import { Search } from "lucide-react";
 import { useLastBudgetsQuery } from "@/hooks/queries";
-import { HistoryCard, MonthYearPicker } from "@/components/ui";
+import {
+  HistoryCard,
+  MonthYearPicker,
+  Loader,
+  ErrorMessage,
+} from "@/components/ui";
 import { LastMonthlyBudget } from "@/types";
-import { Loader } from "@/components/ui/Loader";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { ApiError } from "@/lib/ApiError";
 import { useAppStore } from "@/stores/appStore";
@@ -36,7 +39,7 @@ export const History = () => {
       setSearchError(
         error instanceof ApiError
           ? error.message
-          : "Erreur lors de la recherche"
+          : "Erreur lors de la recherche",
       );
     } finally {
       setIsSearchLoading(false);

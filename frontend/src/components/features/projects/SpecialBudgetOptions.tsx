@@ -1,7 +1,5 @@
 import { ProjectForm } from "@/components/forms";
-import { Modal } from "@/components/ui";
-import { AnimatedDropdown } from "@/components/ui/AnimateDropdown";
-import { DeleteModalContent } from "@/components/ui/DeleteModalContent";
+import { AnimatedDropdown, DeleteModalContent, Modal } from "@/components/ui";
 import {
   useDeleteSpecialBudgetMutation,
   useUpdateSpecialBudgetMutation,
@@ -43,7 +41,7 @@ export const SpecialBudgetOptions = ({
         onSuccess: () => {
           setSelectedAction(null);
         },
-      }
+      },
     );
   };
 

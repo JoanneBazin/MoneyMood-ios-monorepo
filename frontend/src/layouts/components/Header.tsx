@@ -3,7 +3,7 @@ import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { useLogoutMutation } from "@/hooks/queries/mutations";
 import { useClickOutside } from "@/hooks/useClickOutside";
-import { AnimatedMenu } from "@/components/ui/AnimateMenu";
+import { AnimatedMenu } from "@/components/ui";
 import { AnimatePresence } from "motion/react";
 
 export const Header = () => {

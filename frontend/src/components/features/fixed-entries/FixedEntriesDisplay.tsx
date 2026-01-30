@@ -4,8 +4,8 @@ import {
   EntriesList,
   Modal,
   TotalDataDisplay,
+  ErrorMessage,
 } from "@/components/ui";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useFixedEntriesAction } from "@/hooks/actions";
 import { Entry, FixedEntriesDisplayProps } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";

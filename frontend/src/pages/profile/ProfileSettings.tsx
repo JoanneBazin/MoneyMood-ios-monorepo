@@ -1,5 +1,5 @@
 import { UpdateUserProfile } from "@/components/forms";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { ErrorMessage } from "@/components/ui";
 import { useAppStore } from "@/stores/appStore";
 
 export const ProfileSettings = () => {

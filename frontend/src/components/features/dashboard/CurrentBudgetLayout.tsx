@@ -1,14 +1,19 @@
 import { formatDateTitle } from "@/lib/formatDateTitle";
 import { useEffect, useState } from "react";
-import { MonthlyEntries } from "../budget/MonthlyEntries";
-import { BackArrow, RemainingBudgetDisplay } from "@/components/ui";
-import { WeeklyExpensesDisplay } from "../budget/WeeklyExpensesDisplay";
-import { TotalCard } from "@/components/ui/TotalCard";
-import { MonthlyBudgetOptions } from "../budget/MonthlyBudgetOptions";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { AnimatedView } from "@/components/ui/AnimatedView";
+import {
+  BackArrow,
+  RemainingBudgetDisplay,
+  TotalCard,
+  ErrorMessage,
+  AnimatedView,
+} from "@/components/ui";
 import { MonthlyBudgetWithWeeks } from "@/types";
 import { useAppStore } from "@/stores/appStore";
+import {
+  MonthlyBudgetOptions,
+  WeeklyExpensesDisplay,
+  MonthlyEntries,
+} from "../budget";
 
 type View = "app" | "charges" | "incomes";
 
@@ -25,11 +30,11 @@ export const CurrentBudgetLayout = ({
 
   const totalCharges = budget.charges.reduce(
     (acc, entry) => acc + entry.amount,
-    0
+    0,
   );
   const totalIncomes = budget.incomes.reduce(
     (acc, entry) => acc + entry.amount,
-    0
+    0,
   );
 
   useEffect(() => {
@@ -63,7 +68,7 @@ export const CurrentBudgetLayout = ({
           budgetId={budget.id}
           onError={() =>
             setBudgetError(
-              "Une erreur est survenue lors de la mise à jour du budget"
+              "Une erreur est survenue lors de la mise à jour du budget",
             )
           }
         />

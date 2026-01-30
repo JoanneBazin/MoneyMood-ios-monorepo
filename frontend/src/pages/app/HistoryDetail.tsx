@@ -1,8 +1,14 @@
-import { MonthlyBudgetOptions } from "@/components/features/budget/MonthlyBudgetOptions";
-import { WeeklyExpensesDisplay } from "@/components/features/budget/WeeklyExpensesDisplay";
-import { BackArrow, Collapse, RemainingBudgetDisplay } from "@/components/ui";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { Loader } from "@/components/ui/Loader";
+import {
+  MonthlyBudgetOptions,
+  WeeklyExpensesDisplay,
+} from "@/components/features";
+import {
+  BackArrow,
+  Collapse,
+  RemainingBudgetDisplay,
+  ErrorMessage,
+  Loader,
+} from "@/components/ui";
 import { useHistoryDetailsQuery } from "@/hooks/queries";
 import { formatDateTitle } from "@/lib/formatDateTitle";
 import { useState } from "react";
@@ -45,7 +51,7 @@ export const HistoryDetail = () => {
               isCurrent={false}
               onError={() =>
                 setMutationError(
-                  "Une erreur est survenue lors de la mise à jour du budget"
+                  "Une erreur est survenue lors de la mise à jour du budget",
                 )
               }
             />

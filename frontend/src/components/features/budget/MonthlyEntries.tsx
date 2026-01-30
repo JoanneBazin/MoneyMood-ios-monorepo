@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { BaseEntryForm } from "@shared/schemas";
-import { BudgetDataCard, EntriesList, Modal } from "@/components/ui";
+import {
+  BudgetDataCard,
+  EntriesList,
+  Modal,
+  ErrorMessage,
+  RemainingBudgetDisplay,
+} from "@/components/ui";
 import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import { Entry, MonthlyEntriesView } from "@/types";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { RemainingBudgetDisplay } from "@/components/ui/RemainingBudgetDisplay";
 import { useMonthlyEntriesAction } from "@/hooks/actions";
 
 export const MonthlyEntries = ({

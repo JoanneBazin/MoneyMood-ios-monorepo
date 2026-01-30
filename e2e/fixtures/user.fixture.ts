@@ -20,7 +20,7 @@ export const test = baseTest.extend<
       const user = await createUserInDB(
         testUser.name,
         testUser.email,
-        testUser.password
+        testUser.password,
       );
 
       await use({ ...testUser, id: user.id });
@@ -30,4 +30,13 @@ export const test = baseTest.extend<
     },
     { scope: "worker" },
   ],
+  page: async ({ page }, use) => {
+    await page.addInitScript(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+      sessionStorage.setItem("playwright-test", "true");
+    });
+
+    await use(page);
+  },
 });

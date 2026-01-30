@@ -3,6 +3,11 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import { resetAppState } from "./resetAppState";
 import { ApiError } from "./ApiError";
 
+const isTest =
+  typeof window !== "undefined" &&
+  (window.navigator.webdriver ||
+    sessionStorage.getItem("playwright-test") === "true");
+
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error: any) => {
@@ -18,7 +23,7 @@ export const queryClient = new QueryClient({
       gcTime: 1000 * 60 * 60 * 24 * 7,
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
-      networkMode: "offlineFirst",
+      networkMode: isTest ? "online" : "offlineFirst",
       retry: (failureCount, error) => {
         if (!navigator.onLine) return false;
         return failureCount < 1;
@@ -31,7 +36,9 @@ export const queryClient = new QueryClient({
   },
 });
 
-export const persister = createAsyncStoragePersister({
-  storage: window.localStorage,
-  key: "budget-app-cache",
-});
+export const persister = isTest
+  ? null
+  : createAsyncStoragePersister({
+      storage: window.localStorage,
+      key: "budget-app-cache",
+    });

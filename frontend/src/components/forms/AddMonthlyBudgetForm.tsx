@@ -65,7 +65,7 @@ export const AddMonthlyBudgetForm = ({
   };
 
   return (
-    <div>
+    <div className="flex-col">
       <div className="create-section__title">
         <h2>Budget pour le mois de</h2>
         <MonthYearPicker onChange={handleDateChange} />
@@ -110,7 +110,7 @@ export const AddMonthlyBudgetForm = ({
 
       <button
         onClick={handleSubmit}
-        className="primary-btn"
+        className="primary-btn item-end"
         data-testid="submit-monthly-budget"
         disabled={isPending}
       >

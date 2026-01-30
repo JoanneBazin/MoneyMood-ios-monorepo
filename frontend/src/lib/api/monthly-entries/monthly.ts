@@ -1,5 +1,4 @@
-import { ApiError } from "@/lib/ApiError";
-import { getCurrentOnlineStatus } from "@/lib/network";
+import { apiFetch } from "@/lib/api";
 import { Entry, MonthlyEntryResponse, MonthlyEntryType } from "@/types";
 import { BaseEntryOutput } from "@shared/schemas";
 
@@ -8,21 +7,10 @@ export const addMonthlyEntries = async (
   budgetId: string,
   type: MonthlyEntryType,
 ): Promise<MonthlyEntryResponse<Entry[]>> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/monthly-budgets/${budgetId}/${type}`, {
+  return apiFetch(`/api/monthly-budgets/${budgetId}/${type}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(entries),
   });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
 };
 
 export const updateMonthlyEntry = async (
@@ -31,24 +19,10 @@ export const updateMonthlyEntry = async (
   budgetId: string,
   type: MonthlyEntryType,
 ): Promise<MonthlyEntryResponse<Entry>> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(
-    `/api/monthly-budgets/${budgetId}/${type}/${entryId}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(entry),
-    },
-  );
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
+  return apiFetch(`/api/monthly-budgets/${budgetId}/${type}/${entryId}`, {
+    method: "PUT",
+    body: JSON.stringify(entry),
+  });
 };
 
 export const deleteMonthlyEntry = async (
@@ -56,20 +30,7 @@ export const deleteMonthlyEntry = async (
   budgetId: string,
   type: MonthlyEntryType,
 ): Promise<MonthlyEntryResponse<{ id: string }>> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(
-    `/api/monthly-budgets/${budgetId}/${type}/${entryId}`,
-    {
-      method: "DELETE",
-      credentials: "include",
-    },
-  );
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
+  return apiFetch(`/api/monthly-budgets/${budgetId}/${type}/${entryId}`, {
+    method: "DELETE",
+  });
 };

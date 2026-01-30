@@ -1,95 +1,46 @@
 import { CategoryEntryForm } from "@shared/schemas";
 
 import { DeleteSpecialCategoryResponse, SpecialBudgetCategory } from "@/types";
-import { getCurrentOnlineStatus } from "@/lib/network";
-import { ApiError } from "@/lib/ApiError";
+import { apiFetch } from "@/lib/api";
 
 export const addSpecialCategory = async (
   category: CategoryEntryForm,
-  budgetId: string
+  budgetId: string,
 ): Promise<SpecialBudgetCategory> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/special-budgets/${budgetId}/categories`, {
+  return apiFetch(`/api/special-budgets/${budgetId}/categories`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(category),
   });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
 };
 
 export const updateSpecialCategory = async (
   category: CategoryEntryForm,
   categoryId: string,
-  budgetId: string
+  budgetId: string,
 ): Promise<SpecialBudgetCategory> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(
-    `/api/special-budgets/${budgetId}/categories/${categoryId}`,
-    {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(category),
-    }
-  );
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
+  return apiFetch(`/api/special-budgets/${budgetId}/categories/${categoryId}`, {
+    method: "PATCH",
+    body: JSON.stringify(category),
+  });
 };
 
 export const deleteSpecialCategory = async (
   categoryId: string,
-  budgetId: string
+  budgetId: string,
 ): Promise<DeleteSpecialCategoryResponse> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(
-    `/api/special-budgets/${budgetId}/categories/${categoryId}`,
-    {
-      method: "DELETE",
-      credentials: "include",
-    }
-  );
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
+  return apiFetch(`/api/special-budgets/${budgetId}/categories/${categoryId}`, {
+    method: "DELETE",
+  });
 };
 
 export const deleteSpecialCategoryOnCascade = async (
   categoryId: string,
-  budgetId: string
+  budgetId: string,
 ): Promise<{ remainingBudget: number }> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(
+  return apiFetch(
     `/api/special-budgets/${budgetId}/categories/${categoryId}/cascade`,
     {
       method: "DELETE",
-      credentials: "include",
-    }
+    },
   );
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
 };

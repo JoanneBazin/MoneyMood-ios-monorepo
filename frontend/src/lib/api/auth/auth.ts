@@ -1,23 +1,12 @@
-import { getCurrentOnlineStatus } from "@/lib/network";
+import { apiFetch } from "@/lib/api";
 import { LoginInput, SignupInput } from "@shared/schemas";
 import { User } from "@shared/types";
 
 export const login = async ({ email, password }: LoginInput): Promise<User> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/auth/login`, {
+  return apiFetch(`/api/auth/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify({ email, password }),
   });
-
-  if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la connexion");
-  }
-
-  return response.json();
 };
 
 export const signup = async ({
@@ -25,33 +14,16 @@ export const signup = async ({
   email,
   password,
 }: SignupInput): Promise<User> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-  const response = await fetch(`/api/auth/signup`, {
+  return apiFetch(`/api/auth/signup`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify({ name, email, password }),
   });
-
-  if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de l'inscription");
-  }
-
-  return response.json();
 };
 
 export const logout = async (): Promise<void> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-  const response = await fetch(`/api/auth/logout`, {
+  return apiFetch(`/api/auth/logout`, {
     method: "POST",
-    credentials: "include",
   });
-
-  if (!response.ok) {
-    const { error } = await response.json();
-    throw new Error(error || "Echec de la déconnexion");
-  }
 };
 
 export const fetchSession = async () => {

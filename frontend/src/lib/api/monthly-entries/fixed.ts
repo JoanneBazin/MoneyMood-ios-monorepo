@@ -1,13 +1,11 @@
 import { BaseEntryOutput } from "@shared/schemas";
 import { Entry, MonthlyEntryType } from "@/types";
-import { getCurrentOnlineStatus } from "@/lib/network";
 import { ApiError } from "@/lib/ApiError";
+import { apiFetch } from "@/lib/api";
 
 export const fetchFixedEntries = async (
   type: MonthlyEntryType,
 ): Promise<Entry[]> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
   const response = await fetch(`/api/fixed-${type}`, {
     credentials: "include",
   });
@@ -27,21 +25,10 @@ export const addFixedEntries = async (
   entries: BaseEntryOutput[],
   type: MonthlyEntryType,
 ): Promise<Entry[]> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/fixed-${type}`, {
+  return apiFetch(`/api/fixed-${type}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(entries),
   });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
 };
 
 export const updateFixedEntry = async (
@@ -49,39 +36,17 @@ export const updateFixedEntry = async (
   entryId: string,
   type: MonthlyEntryType,
 ): Promise<Entry> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/fixed-${type}/${entryId}`, {
+  return apiFetch(`/api/fixed-${type}/${entryId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(entry),
   });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
 };
 
 export const deleteFixedEntry = async (
   entryId: string,
   type: MonthlyEntryType,
 ): Promise<{ id: string }> => {
-  if (!getCurrentOnlineStatus()) throw new Error("Vous êtes hors ligne");
-
-  const response = await fetch(`/api/fixed-${type}/${entryId}`, {
+  return apiFetch(`/api/fixed-${type}/${entryId}`, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
   });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Echec de la connexion");
-  }
-
-  return response.json();
 };

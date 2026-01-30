@@ -6,7 +6,7 @@ import {
   HistoryCard,
   MonthYearPicker,
   Loader,
-  ErrorMessage,
+  OfflineEmptyState,
 } from "@/components/ui";
 import { LastMonthlyBudget } from "@/types";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
@@ -46,17 +46,14 @@ export const History = () => {
     }
   };
 
-  if (isOffline)
-    return (
-      <ErrorMessage message="Vous êtes hors ligne. Veuillez vous reconnecter pour accéder à l'historique des budgets." />
-    );
-
   return (
     <section>
-      <div className="date-picker-container">
-        <p>Rechercher par mois</p>
-        <MonthYearPicker onChange={handleDateChange} defaultInput={false} />
-      </div>
+      {!isOffline && (
+        <div className="date-picker-container">
+          <p>Rechercher par mois</p>
+          <MonthYearPicker onChange={handleDateChange} defaultInput={false} />
+        </div>
+      )}
 
       {searchError && (
         <div className="search-error">
@@ -74,7 +71,7 @@ export const History = () => {
       )}
 
       {isPending && <Loader type="layout" />}
-      {error && <ErrorMessage message={error.message} />}
+      {error && <OfflineEmptyState error={error.message} />}
 
       <div className="my-2xl">
         {lastBudgets &&

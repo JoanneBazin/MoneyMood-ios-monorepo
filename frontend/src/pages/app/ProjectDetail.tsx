@@ -1,12 +1,14 @@
-import { CreateSpecialCategory } from "@/components/features/projects/CreateSpecialCategory";
-import { ProjectCategorySection } from "@/components/features/projects/ProjectCategorySection";
-import { ProjectExpenses } from "@/components/features/projects/ProjectExpenses";
-import { SpecialBudgetOptions } from "@/components/features/projects/SpecialBudgetOptions";
+import {
+  CreateSpecialCategory,
+  ProjectCategorySection,
+  ProjectExpenses,
+  SpecialBudgetOptions,
+} from "@/components/features";
 import {
   BackArrow,
   RemainingBudgetDisplay,
-  ErrorMessage,
   Loader,
+  OfflineEmptyState,
 } from "@/components/ui";
 import { useBudgetDetailsQuery } from "@/hooks/queries";
 import { useNavigate, useParams } from "react-router-dom";
@@ -19,9 +21,6 @@ export const ProjectDetail = () => {
     return;
   }
   const { data: budget, isPending, error } = useBudgetDetailsQuery(id);
-  if (!budget) return;
-
-  const updatable = { name: budget.name, totalBudget: budget.totalBudget };
 
   if (isPending) {
     return (
@@ -34,40 +33,54 @@ export const ProjectDetail = () => {
     <section>
       <BackArrow />
 
-      {error && <ErrorMessage message={error.message} />}
-      <div className="flex-between">
-        <RemainingBudgetDisplay
-          type="Budget restant"
-          total={budget.remainingBudget}
+      {error && (
+        <OfflineEmptyState
+          error={error.message ?? "Erreur lors de la récupération des données"}
         />
-        <RemainingBudgetDisplay
-          type="Budget initial"
-          total={budget.totalBudget}
-          base={true}
-        />
-        <SpecialBudgetOptions budgetId={budget.id} updatableData={updatable} />
-      </div>
-      <div>
-        <CreateSpecialCategory budgetId={budget.id} />
-      </div>
-
-      <div>
-        <ProjectExpenses budgetId={budget.id} expenses={budget.expenses} />
-
-        {budget.categories.map((cat) => (
-          <ProjectCategorySection
-            key={cat.id}
-            budgetId={budget.id}
-            category={{ name: cat.name, id: cat.id }}
-          >
-            <ProjectExpenses
-              budgetId={budget.id}
-              expenses={cat.expenses}
-              categoryId={cat.id}
+      )}
+      {budget && (
+        <div>
+          <div className="flex-between">
+            <RemainingBudgetDisplay
+              type="Budget restant"
+              total={budget.remainingBudget}
             />
-          </ProjectCategorySection>
-        ))}
-      </div>
+            <RemainingBudgetDisplay
+              type="Budget initial"
+              total={budget.totalBudget}
+              base={true}
+            />
+            <SpecialBudgetOptions
+              budgetId={budget.id}
+              updatableData={{
+                name: budget.name,
+                totalBudget: budget.totalBudget,
+              }}
+            />
+          </div>
+          <div>
+            <CreateSpecialCategory budgetId={budget.id} />
+          </div>
+
+          <div>
+            <ProjectExpenses budgetId={budget.id} expenses={budget.expenses} />
+
+            {budget.categories.map((cat) => (
+              <ProjectCategorySection
+                key={cat.id}
+                budgetId={budget.id}
+                category={{ name: cat.name, id: cat.id }}
+              >
+                <ProjectExpenses
+                  budgetId={budget.id}
+                  expenses={cat.expenses}
+                  categoryId={cat.id}
+                />
+              </ProjectCategorySection>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 };

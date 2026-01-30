@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/apiFetch";
 import { Entry, MonthlyEntryResponse, MonthlyEntryType } from "@/types";
 import { BaseEntryOutput } from "@shared/schemas";
 

@@ -1,3 +1,4 @@
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { ExpenseEntry, ExpensesListProps } from "@/types";
 import { ChevronRight, ShoppingBag } from "lucide-react";
 
@@ -8,6 +9,8 @@ export const ExpensesList = <T extends ExpenseEntry>({
   setSelectedEntry,
   edit = true,
 }: ExpensesListProps<T>) => {
+  const { isOffline } = useOfflineStatus();
+
   return (
     <div>
       <div className="mb-xs">
@@ -20,7 +23,11 @@ export const ExpensesList = <T extends ExpenseEntry>({
               >
                 <ChevronRight size={16} />
                 <p
-                  className={enabledExpenseValidation ? "cursor-pointer" : ""}
+                  className={
+                    enabledExpenseValidation && !isOffline
+                      ? "cursor-pointer"
+                      : ""
+                  }
                   onClick={() => validateExpense(entry)}
                 >
                   {entry.name}
@@ -36,6 +43,7 @@ export const ExpensesList = <T extends ExpenseEntry>({
                     className="data-item__amount__update"
                     data-testid="update-item-btn"
                     onClick={() => setSelectedEntry(entry)}
+                    disabled={isOffline}
                   >
                     modifier
                   </button>

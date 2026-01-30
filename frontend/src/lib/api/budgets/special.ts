@@ -1,7 +1,7 @@
 import { SpecialBudgetForm } from "@shared/schemas";
 import { SpecialBudget, SpecialBudgetItem } from "@/types";
 import { ApiError } from "@/lib/ApiError";
-import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/apiFetch";
 
 export const fetchAllSpecialBudgets = async (): Promise<
   SpecialBudgetItem[]

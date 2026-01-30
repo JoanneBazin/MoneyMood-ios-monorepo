@@ -1,11 +1,10 @@
-import { Modal } from "@/components/ui";
-import { AnimatedDropdown } from "@/components/ui/AnimateDropdown";
-import { DeleteModalContent } from "@/components/ui/DeleteModalContent";
+import { AnimatedDropdown, DeleteModalContent, Modal } from "@/components/ui";
 import {
   useDeleteMonthlyBudgetMutation,
   useUpdateBudgetStatusMutation,
 } from "@/hooks/queries/mutations";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { MonthlyBudgetOptionsProps } from "@/types";
 import { CalendarFold, Settings, Trash } from "lucide-react";
 import { AnimatePresence } from "motion/react";
@@ -19,6 +18,7 @@ export const MonthlyBudgetOptions = ({
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const dropdownRef = useClickOutside(() => setIsOptionsOpen(false));
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isOffline } = useOfflineStatus();
 
   const updateBudgetStatus = useUpdateBudgetStatusMutation();
   const deleteMonthlyBudget = useDeleteMonthlyBudgetMutation();
@@ -31,7 +31,7 @@ export const MonthlyBudgetOptions = ({
           setIsOptionsOpen(false);
           onError();
         },
-      }
+      },
     );
   };
 
@@ -55,6 +55,7 @@ export const MonthlyBudgetOptions = ({
               <button
                 onClick={handleUpdateBudget}
                 data-testid="update-budget-status"
+                disabled={isOffline}
               >
                 <CalendarFold size={14} className="mr-xxs" />
 
@@ -68,6 +69,7 @@ export const MonthlyBudgetOptions = ({
                 className="red-error"
                 data-testid="delete-budget-btn"
                 onClick={() => setIsModalOpen(true)}
+                disabled={isOffline}
               >
                 <Trash size={14} className="mr-xxs" />
                 <span>Supprimer le budget</span>

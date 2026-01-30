@@ -5,6 +5,7 @@ import {
   useUpdateSpecialBudgetMutation,
 } from "@/hooks/queries/mutations";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { SpecialBudgetOptionsProps } from "@/types";
 import { SpecialBudgetForm } from "@shared/schemas";
 import { Edit, Settings, Trash } from "lucide-react";
@@ -25,6 +26,7 @@ export const SpecialBudgetOptions = ({
   const updateSpecialBudget = useUpdateSpecialBudgetMutation();
   const deleteSpecialBudget = useDeleteSpecialBudgetMutation();
   const navigate = useNavigate();
+  const { isOffline } = useOfflineStatus();
 
   const handleUpdateBudget = (budget: SpecialBudgetForm) => {
     if (
@@ -69,6 +71,7 @@ export const SpecialBudgetOptions = ({
               <button
                 onClick={() => setSelectedAction("edit")}
                 data-testid="update-special-budget-btn"
+                disabled={isOffline}
               >
                 <Edit size={14} className="mr-xxs" />
 
@@ -78,6 +81,7 @@ export const SpecialBudgetOptions = ({
                 className="red-error"
                 onClick={() => setSelectedAction("delete")}
                 data-testid="delete-special-budget-btn"
+                disabled={isOffline}
               >
                 <Trash size={14} className="mr-xxs" />
                 <span>Supprimer le budget</span>

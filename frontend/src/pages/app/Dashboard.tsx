@@ -1,23 +1,20 @@
-import { CurrentBudgetLayout } from "@/components/features";
+import { CurrentBudgetLayout, EmptyBudgetActions } from "@/components/features";
+import { ErrorMessage, OfflineEmptyState } from "@/components/ui";
 import { useCurrentBudgetQuery } from "@/hooks/queries";
-import { Link } from "react-router-dom";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 
 export const Dashboard = () => {
-  const { data: currentBudget } = useCurrentBudgetQuery();
+  const {
+    data: currentBudget,
+    isError,
+    dataUpdatedAt,
+  } = useCurrentBudgetQuery();
+  const { isOffline } = useOfflineStatus();
+  const isOfflineNoCache = isOffline && !currentBudget && dataUpdatedAt === 0;
 
-  return currentBudget ? (
-    <CurrentBudgetLayout budget={currentBudget} />
-  ) : (
-    <section data-testid="budget-actions-container">
-      <Link to="/app/create" className="budget-actions">
-        <div className="budget-actions__button">+</div>
-        <p className="budget-actions__text">Commencer un nouveau mois</p>
-      </Link>
+  if (isOfflineNoCache) return <OfflineEmptyState />;
+  if (isError) return <ErrorMessage />;
+  if (!currentBudget) return <EmptyBudgetActions />;
 
-      <Link to="/profile" className="budget-actions">
-        <div className="budget-actions__button">+</div>
-        <p className="budget-actions__text">Mes revenus et charges fixes</p>
-      </Link>
-    </section>
-  );
+  return <CurrentBudgetLayout budget={currentBudget} />;
 };

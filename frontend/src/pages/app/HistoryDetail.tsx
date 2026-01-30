@@ -8,6 +8,7 @@ import {
   RemainingBudgetDisplay,
   ErrorMessage,
   Loader,
+  OfflineEmptyState,
 } from "@/components/ui";
 import { useHistoryDetailsQuery } from "@/hooks/queries";
 import { formatDateTitle } from "@/lib/formatDateTitle";
@@ -37,7 +38,9 @@ export const HistoryDetail = () => {
     <section>
       <BackArrow />
       {error && (
-        <ErrorMessage message="Erreur lors de la récupération des données" />
+        <OfflineEmptyState
+          error={error.message ?? "Erreur lors de la récupération des données"}
+        />
       )}
       {budget ? (
         <>

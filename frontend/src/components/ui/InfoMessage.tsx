@@ -1,14 +1,18 @@
 import { AlertOctagon } from "lucide-react";
 
 export const InfoMessage = ({
-  message = "Erreur lors de la récupération des données",
+  message,
+  comment,
+}: {
+  message: string;
+  comment?: string;
 }) => {
   return (
-    <div className="flex-center gap-sm red-error my-2xl">
+    <div className="flex-center gap-sm my-2xl">
       <AlertOctagon />
       <div>
-        <p className="req-error">{message}</p>
-        <p className="form-error">Veuillez réessayer ultérieurement</p>
+        <p className="req-info">{message}</p>
+        <p className="info-comment">{comment}</p>
       </div>
     </div>
   );

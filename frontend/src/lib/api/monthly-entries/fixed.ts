@@ -1,7 +1,7 @@
 import { BaseEntryOutput } from "@shared/schemas";
 import { Entry, MonthlyEntryType } from "@/types";
 import { ApiError } from "@/lib/ApiError";
-import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/apiFetch";
 
 export const fetchFixedEntries = async (
   type: MonthlyEntryType,

@@ -26,6 +26,7 @@ export const queryClient = new QueryClient({
     },
     mutations: {
       networkMode: "online",
+      retry: false,
     },
   },
 });

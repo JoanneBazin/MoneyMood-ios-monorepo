@@ -1,7 +1,7 @@
 import { CategoryEntryForm } from "@shared/schemas";
 
 import { DeleteSpecialCategoryResponse, SpecialBudgetCategory } from "@/types";
-import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/apiFetch";
 
 export const addSpecialCategory = async (
   category: CategoryEntryForm,

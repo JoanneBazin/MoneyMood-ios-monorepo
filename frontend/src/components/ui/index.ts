@@ -19,3 +19,4 @@ export { ErrorMessage } from "./ErrorMessage";
 export { InfoMessage } from "./InfoMessage";
 export { TotalCard } from "./TotalCard";
 export { Loader } from "./Loader";
+export { OfflineEmptyState } from "./OfflineEmptyState";

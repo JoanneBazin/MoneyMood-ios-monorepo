@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/apiFetch";
 import { ApiError } from "@/lib/ApiError";
 import { LastMonthlyBudget, MonthlyBudget } from "@/types";
 import { MonthlyBudgetForm } from "@shared/schemas";

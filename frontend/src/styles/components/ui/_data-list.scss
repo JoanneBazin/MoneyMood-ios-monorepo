@@ -39,7 +39,7 @@
       color: $primary-dark;
       @include font-responsive(xs);
 
-      &:hover {
+      &:not(:disabled):hover {
         color: $primary;
       }
     }

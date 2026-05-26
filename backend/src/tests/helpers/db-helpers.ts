@@ -1,4 +1,23 @@
 import { prisma } from "../setup";
+import bcrypt from "bcrypt";
+
+export const createUserInDb = async (
+  name: string,
+  email: string,
+  password: string,
+) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  return prisma.user.create({
+    data: { name, email, password: hashedPassword },
+    select: { id: true },
+  });
+};
+
+export const deleteUserFromDb = async (email: string) => {
+  await prisma.user.deleteMany({
+    where: { email },
+  });
+};
 
 const baseBudget = {
   month: 9,
@@ -16,7 +35,7 @@ const baseBudget = {
 
 export const createMonthlyBudget = async (
   userId: string,
-  newBudget = baseBudget
+  newBudget = baseBudget,
 ) => {
   const {
     month,

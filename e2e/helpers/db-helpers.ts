@@ -23,12 +23,29 @@ export const createUserInDB = async (
 };
 
 export const deleteUserFromDB = async (email: string) => {
-  await prisma.user.delete({
+  await prisma.user.deleteMany({
     where: { email },
   });
 };
 
-export const createMonthlyBudgetInBD = async (
+export const updateSessionExpirationInDb = async (
+  userId: string,
+  expiresAt: Date,
+) => {
+  await prisma.session.updateMany({
+    where: { userId },
+    data: { expiresAt },
+  });
+};
+
+export const getSession = async (userId: string) => {
+  return prisma.session.findFirst({
+    where: { userId },
+    select: { id: true, expiresAt: true },
+  });
+};
+
+export const createMonthlyBudgetInDB = async (
   userId: string,
   month = 1,
   year = 2025,

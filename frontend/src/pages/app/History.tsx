@@ -47,7 +47,7 @@ export const History = () => {
   };
 
   return (
-    <section>
+    <section data-testid="history-section">
       {!isOffline && (
         <div className="date-picker-container">
           <p>Rechercher par mois</p>

@@ -88,7 +88,7 @@ export const ProjectExpenses = ({
         errors={state.addValidationErrors}
         onChange={setNewExpenses}
         onResetErrors={() => actions.clearAddValidationErrors()}
-        type="special-expense"
+        type="special-expenses"
       />
       {newExpenses.length > 0 && (
         <button

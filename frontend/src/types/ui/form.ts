@@ -21,7 +21,7 @@ export interface AddEntriesFormProps {
   errors: Record<string, string>[] | null;
   onChange: (entries: BaseEntryForm[]) => void;
   onResetErrors: () => void;
-  type: "charges" | "incomes" | "expense" | "special-expense";
+  type: "charges" | "incomes" | "expenses" | "special-expenses";
 }
 
 export interface UpdateEntryFormProps {

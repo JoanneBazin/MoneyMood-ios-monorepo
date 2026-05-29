@@ -15,7 +15,7 @@
       "@shared/*": ["../shared/src/*"]
     }
   },
-  "include": ["src/**/*", "src/generated/**/*", "src/tests"],
+  "include": ["src/**/*", "src/generated/**/*", "src/tests/**/*"],
   "exclude": ["**/*.test.ts", "**/__tests__"],
   "files": ["src/types/express.d.ts"]
 }

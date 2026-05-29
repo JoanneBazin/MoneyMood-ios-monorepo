@@ -113,13 +113,13 @@ export const WeeklyExpensesDisplay = ({
               errors={state.addValidationErrors}
               onResetErrors={() => actions.clearAddValidationErrors()}
               onChange={setNewExpenses}
-              type="expense"
+              type="expenses"
             />
             {newExpenses.length > 0 && (
               <button
                 onClick={handleAddExpenses}
                 className="primary-btn"
-                data-testid="submit-form-entry"
+                data-testid="add-expenses-btn"
                 disabled={status.isAdding}
               >
                 Enregistrer

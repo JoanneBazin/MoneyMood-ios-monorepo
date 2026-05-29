@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+
 import app from "../../app";
 import { prisma } from "../../lib/prismaClient";
 import { authenticatedRequest, createTestUser } from "../helpers/auth-helpers";
@@ -14,7 +16,7 @@ describe("Monthly Budget Routes", () => {
 
   beforeAll(async () => {
     const { response, cookie } = await createTestUser(
-      "monthly-budget@test.com"
+      "monthly-budget@test.com",
     );
     authCookie = cookie;
     userId = response.body.id;
@@ -79,15 +81,34 @@ describe("Monthly Budget Routes", () => {
       expect(res.body).toHaveProperty("error");
     });
 
-    it("should return 400 if creating budget with invalid body", async () => {
-      const authReq = authenticatedRequest(authCookie);
-      const res = await authReq
-        .post("/api/monthly-budgets")
-        .send({ ...newBudget, incomes: "wrongData" });
+    it("should return 401 if deleting budget without auth", async () => {
+      const budget = await createMonthlyBudget(userId);
+      const res = await request(app).delete(
+        `/api/monthly-budgets/${budget.id}`,
+      );
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(401);
       expect(res.body).toHaveProperty("error");
     });
+
+    const fields: Array<keyof typeof newBudget> = [
+      "month",
+      "year",
+      "isCurrent",
+      "numberOfWeeks",
+    ];
+    for (const field of fields) {
+      it(`should return 400 if creating budget with missing ${field}`, async () => {
+        const authReq = authenticatedRequest(authCookie);
+        const reqBody = { ...newBudget };
+        delete reqBody[field];
+
+        const res = await authReq.post("/api/monthly-budgets").send(reqBody);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toHaveProperty("error");
+      });
+    }
 
     it("should return current budget", async () => {
       await createMonthlyBudget(userId);
@@ -128,7 +149,7 @@ describe("Monthly Budget Routes", () => {
       expect(res.body).toHaveProperty("data");
       expect(res.body).toHaveProperty("remainingBudget");
       expect(res.body.remainingBudget).toBe(
-        budget.remainingBudget - newExpense.amount
+        budget.remainingBudget - newExpense.amount,
       );
 
       const expenseInDb = await prisma.expense.findFirst({
@@ -150,12 +171,25 @@ describe("Monthly Budget Routes", () => {
 
     it("should return 400 if adding expense with invalid body", async () => {
       const budget = await createMonthlyBudget(userId);
-      const wrongExpense = { ...newExpense, name: 5000 };
+      const wrongExpense = { ...newExpense, weekNumber: 0 };
 
       const authReq = authenticatedRequest(authCookie);
       const res = await authReq
         .post(`/api/monthly-budgets/${budget.id}/expenses`)
         .send(wrongExpense);
+
+      expect(res.status).toBe(400);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("should return 400 if adding expense without weekNumber", async () => {
+      const budget = await createMonthlyBudget(userId);
+      const { weekNumber: _, ...reqBody } = newExpense;
+
+      const authReq = authenticatedRequest(authCookie);
+      const res = await authReq
+        .post(`/api/monthly-budgets/${budget.id}/expenses`)
+        .send(reqBody);
 
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty("error");
@@ -214,76 +248,102 @@ describe("Monthly Budget Routes", () => {
     });
   });
 
-  describe("__Monthly incomes/charges__", () => {
-    const newEntry = {
-      name: "New Entry",
-      amount: 20,
-    };
+  type PrismaModelSheets = keyof typeof prisma;
+  interface ResourceConfig {
+    label: string;
+    entryType: "charges" | "incomes";
+    table: PrismaModelSheets;
+    computeExpected: (prev: number, amount: number) => number;
+  }
 
-    it("should create new monthly charge and update remaining budget", async () => {
-      const budget = await createMonthlyBudget(userId);
+  const resources: ResourceConfig[] = [
+    {
+      label: "Monthly charges",
+      entryType: "charges",
+      table: "monthlyCharge",
+      computeExpected: (prev, amount) => prev - amount,
+    },
+    {
+      label: "Monthly incomes",
+      entryType: "incomes",
+      table: "monthlyIncome",
+      computeExpected: (prev: number, amount: number) => prev + amount,
+    },
+  ];
 
-      const authReq = authenticatedRequest(authCookie);
-      const res = await authReq
-        .post(`/api/monthly-budgets/${budget.id}/charges`)
-        .send(newEntry);
+  for (const { label, entryType, table, computeExpected } of resources) {
+    describe(`__${label}__`, () => {
+      const newEntry = {
+        name: "New Entry",
+        amount: 100,
+      };
 
-      expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty("data");
-      expect(res.body).toHaveProperty("remainingBudget");
-      expect(res.body.remainingBudget).toBe(
-        budget.remainingBudget - newEntry.amount
-      );
+      it(`should create new monthly ${entryType} and update remaining budget`, async () => {
+        const budget = await createMonthlyBudget(userId);
 
-      const chargeInDb = await prisma.monthlyCharge.findFirst({
-        where: { name: newEntry.name, monthlyBudgetId: budget.id },
-        select: { id: true },
+        const authReq = authenticatedRequest(authCookie);
+        const res = await authReq
+          .post(`/api/monthly-budgets/${budget.id}/${entryType}`)
+          .send(newEntry);
+
+        expect(res.status).toBe(201);
+        expect(res.body).toHaveProperty("data");
+        expect(res.body).toHaveProperty("remainingBudget");
+        expect(res.body.remainingBudget).toBe(
+          computeExpected(budget.remainingBudget, newEntry.amount),
+        );
+
+        const dbModel = prisma[table] as any;
+        const entryInDb = await dbModel.findFirst({
+          where: { name: newEntry.name, monthlyBudgetId: budget.id },
+          select: { id: true },
+        });
+        expect(entryInDb).not.toBeNull();
       });
-      expect(chargeInDb).toBeDefined();
-    });
 
-    it("should update monthly income", async () => {
-      const budget = await createMonthlyBudget(userId);
-      const { id: incomeId } = await addMonthlyIncome(budget.id);
-      const updatedIncome = { name: "Updated", amount: 20 };
+      it("should update monthly income", async () => {
+        const budget = await createMonthlyBudget(userId);
+        const { id: incomeId } = await addMonthlyIncome(budget.id);
+        const updatedIncome = { name: "Updated", amount: 20 };
 
-      const authReq = authenticatedRequest(authCookie);
-      const res = await authReq
-        .put(`/api/monthly-budgets/${budget.id}/incomes/${incomeId}`)
-        .send(updatedIncome);
+        const authReq = authenticatedRequest(authCookie);
+        const res = await authReq
+          .put(`/api/monthly-budgets/${budget.id}/incomes/${incomeId}`)
+          .send(updatedIncome);
 
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("data");
-      expect(res.body).toHaveProperty("remainingBudget");
-      expect(res.body.remainingBudget).toBe(
-        budget.remainingBudget + updatedIncome.amount
-      );
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("data");
+        expect(res.body).toHaveProperty("remainingBudget");
+        expect(res.body.remainingBudget).toBe(
+          budget.remainingBudget + updatedIncome.amount,
+        );
 
-      const incomeInDb = await prisma.monthlyIncome.findUnique({
-        where: { id: incomeId, monthlyBudgetId: budget.id },
-        select: { name: true, amount: true },
+        const incomeInDb = await prisma.monthlyIncome.findUnique({
+          where: { id: incomeId, monthlyBudgetId: budget.id },
+          select: { name: true, amount: true },
+        });
+        expect(incomeInDb?.name).toBe(updatedIncome.name);
+        expect(Number(incomeInDb?.amount)).toBe(updatedIncome.amount);
       });
-      expect(incomeInDb?.name).toBe(updatedIncome.name);
-      expect(Number(incomeInDb?.amount)).toBe(updatedIncome.amount);
-    });
 
-    it("should delete monthly income", async () => {
-      const budget = await createMonthlyBudget(userId);
-      const { id: incomeId } = await addMonthlyIncome(budget.id);
+      it("should delete monthly income", async () => {
+        const budget = await createMonthlyBudget(userId);
+        const { id: incomeId } = await addMonthlyIncome(budget.id);
 
-      const authReq = authenticatedRequest(authCookie);
-      const res = await authReq
-        .delete(`/api/monthly-budgets/${budget.id}/incomes/${incomeId}`)
-        .send();
+        const authReq = authenticatedRequest(authCookie);
+        const res = await authReq
+          .delete(`/api/monthly-budgets/${budget.id}/incomes/${incomeId}`)
+          .send();
 
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("remainingBudget");
-      expect(res.body.remainingBudget).toBe(budget.remainingBudget);
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("remainingBudget");
+        expect(res.body.remainingBudget).toBe(budget.remainingBudget);
 
-      const incomeInDb = await prisma.monthlyIncome.findUnique({
-        where: { id: incomeId, monthlyBudgetId: budget.id },
+        const incomeInDb = await prisma.monthlyIncome.findUnique({
+          where: { id: incomeId, monthlyBudgetId: budget.id },
+        });
+        expect(incomeInDb).toBeNull();
       });
-      expect(incomeInDb).toBeNull();
     });
-  });
+  }
 });

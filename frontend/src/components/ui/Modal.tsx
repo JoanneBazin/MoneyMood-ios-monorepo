@@ -15,7 +15,11 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
           </Dialog.Description>
           {children}
           <Dialog.Close asChild>
-            <button className="dialog-content__close" aria-label="Fermer">
+            <button
+              className="dialog-content__close"
+              aria-label="Fermer"
+              data-testid="dialog-close"
+            >
               <X />
             </button>
           </Dialog.Close>

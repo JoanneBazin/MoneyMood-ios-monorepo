@@ -61,7 +61,18 @@ export const createMonthlyBudgetInDB = async (
       weeklyBudget: 100,
       numberOfWeeks: 5,
       incomes: {
-        create: [{ name: "income", amount: 500 }],
+        create: [{ name: "income", amount: 550 }],
+      },
+      charges: {
+        create: [{ name: "charge", amount: 50 }],
+      },
+    },
+    include: {
+      charges: {
+        select: { name: true, amount: true },
+      },
+      incomes: {
+        select: { name: true, amount: true },
       },
     },
   });
@@ -73,13 +84,16 @@ export const createMonthlyBudgetInDB = async (
   };
 };
 
-export const createMonthlyExpenseInDB = async (monthlyBudgetId: string) => {
+export const createMonthlyExpenseInDB = async (
+  monthlyBudgetId: string,
+  weekNumber = 1,
+) => {
   const newExpense = await prisma.expense.create({
     data: {
       monthlyBudgetId,
       name: "Expense",
       amount: 50,
-      weekNumber: 1,
+      weekNumber,
     },
     select: {
       name: true,

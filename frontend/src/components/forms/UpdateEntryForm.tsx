@@ -98,6 +98,7 @@ export const UpdateEntryForm = ({
             type="button"
             onClick={() => setConfirmDelete(false)}
             className="delete-item__button cancel"
+            data-testid="cancel-delete-btn"
           >
             <X size={16} />
           </button>

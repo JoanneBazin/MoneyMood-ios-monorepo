@@ -1,5 +1,5 @@
 import { expect, test } from "fixtures/user.fixture";
-import { getStoredUser, loginUser } from "../helpers/auth";
+import { getStoredUser, loginUser } from "../../helpers/auth";
 import {
   createMonthlyBudgetInDB,
   createUserInDB,

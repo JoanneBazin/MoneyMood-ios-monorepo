@@ -13,7 +13,7 @@ export const RemainingBudgetDisplay = ({
       <p>{type}</p>
       <p className="total-budget">
         <span>€</span>
-        {total.toFixed(2)}
+        <span data-testid="total-budget-amount">{total.toFixed(2)}</span>
       </p>
     </div>
   );

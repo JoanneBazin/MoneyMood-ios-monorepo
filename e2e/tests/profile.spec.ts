@@ -1,7 +1,7 @@
 import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "helpers/auth";
 import {
-  createMonthlyBudgetInBD,
+  createMonthlyBudgetInDB,
   createMonthlyExpenseInDB,
   deleteAllFixedEntriesInDB,
   deleteAllMonthlyBudgetsInDB,
@@ -144,7 +144,7 @@ test.describe("User profile", () => {
 
   test("should activate expense validation option", async ({ page, user }) => {
     await loginUser(page, user.email, user.password);
-    const { id: budgetId } = await createMonthlyBudgetInBD(user.id);
+    const { id: budgetId } = await createMonthlyBudgetInDB(user.id);
     const expense = await createMonthlyExpenseInDB(budgetId);
 
     await page.click('[data-testid="nav-menu"]');

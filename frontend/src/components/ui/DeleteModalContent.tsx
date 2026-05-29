@@ -22,7 +22,11 @@ export const DeleteModalContent = ({
         >
           {isPending ? <Loader2 /> : "Supprimer"}
         </button>
-        <button onClick={onClose} className="secondary-btn">
+        <button
+          onClick={onClose}
+          className="secondary-btn"
+          data-testid="cancel-delete-btn"
+        >
           Annuler
         </button>
       </div>

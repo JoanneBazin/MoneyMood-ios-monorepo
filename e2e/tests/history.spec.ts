@@ -2,7 +2,7 @@ import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "helpers/auth";
 import { displayedDate } from "helpers/budget";
 import {
-  createMonthlyBudgetInBD,
+  createMonthlyBudgetInDB,
   deleteAllMonthlyBudgetsInDB,
 } from "helpers/db-helpers";
 
@@ -19,7 +19,7 @@ test.describe("Budget history", () => {
     user,
   }) => {
     await loginUser(page, user.email, user.password);
-    const oldBudget = await createMonthlyBudgetInBD(user.id, 6, 2025, false);
+    const oldBudget = await createMonthlyBudgetInDB(user.id, 6, 2025, false);
     const budgetDate = displayedDate(oldBudget.year, oldBudget.month);
 
     await page.click('[data-testid="history-nav"]');
@@ -40,7 +40,7 @@ test.describe("Budget history", () => {
     page,
     user,
   }) => {
-    const currentBudget = await createMonthlyBudgetInBD(user.id);
+    const currentBudget = await createMonthlyBudgetInDB(user.id);
     await loginUser(page, user.email, user.password);
 
     await page.click('[data-testid="create-nav"]');
@@ -62,7 +62,7 @@ test.describe("Budget history", () => {
     user,
   }) => {
     await loginUser(page, user.email, user.password);
-    const oldBudget = await createMonthlyBudgetInBD(user.id, 6, 2025, false);
+    const oldBudget = await createMonthlyBudgetInDB(user.id, 6, 2025, false);
     const budgetDate = displayedDate(oldBudget.year, oldBudget.month);
 
     await page.click('[data-testid="history-nav"]');

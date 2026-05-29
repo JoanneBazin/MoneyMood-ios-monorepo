@@ -7,7 +7,7 @@ export const TotalCard = ({ title, totalData, setView }: TotalCardProps) => {
   return (
     <div
       className={`total-card ${color}`}
-      data-testid="total-card"
+      data-testid={`total-card-${title}`}
       role="button"
       tabIndex={0}
       onClick={setView}
@@ -19,7 +19,9 @@ export const TotalCard = ({ title, totalData, setView }: TotalCardProps) => {
       )}
       <div className="total-card__text">
         <p>{title}</p>
-        <span>€ {totalData.toFixed(2)}</span>
+        <span data-testid={`total-card-${title}-amount`}>
+          € {totalData.toFixed(2)}
+        </span>
       </div>
     </div>
   );

@@ -84,6 +84,39 @@ export const createMonthlyBudgetInDB = async (
   };
 };
 
+export const createArchivedBudget = async (
+  userId: string,
+  year = 2025,
+  count = 7,
+) => {
+  const budgetsData = [];
+  const targetMonths = [];
+
+  for (let i = 0; i < count; i++) {
+    const month = i + 1;
+    targetMonths.push(month);
+
+    budgetsData.push({
+      userId,
+      month,
+      year,
+      isCurrent: false,
+      remainingBudget: 0,
+      weeklyBudget: 0,
+      numberOfWeeks: 4,
+    });
+  }
+
+  await prisma.monthlyBudget.createMany({
+    data: budgetsData,
+  });
+
+  return {
+    year,
+    months: targetMonths.sort((a, b) => b - a),
+  };
+};
+
 export const createMonthlyExpenseInDB = async (
   monthlyBudgetId: string,
   weekNumber = 1,

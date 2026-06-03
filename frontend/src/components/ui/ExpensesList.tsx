@@ -29,6 +29,7 @@ export const ExpensesList = <T extends ExpenseEntry>({
                       : ""
                   }
                   onClick={() => validateExpense(entry)}
+                  data-testid="expense-validation-btn"
                 >
                   {entry.name}
                 </p>

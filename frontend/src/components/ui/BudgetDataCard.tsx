@@ -7,7 +7,7 @@ export const BudgetDataCard = ({
   return (
     <article className="data-card" data-testid="budget-data">
       <div className={`data-card__title ${color}`}>
-        <p>{title}</p>
+        <p data-testid="budget-data-title">{title}</p>
       </div>
       <div className="data-card__content">{children}</div>
     </article>

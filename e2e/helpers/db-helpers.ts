@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient({ datasourceUrl: process.env.DATABASE_URL });
+export type PrismaModelSheets = keyof typeof prisma;
 
 export const createUserInDB = async (
   name: string,
@@ -84,7 +85,7 @@ export const createMonthlyBudgetInDB = async (
   };
 };
 
-export const createArchivedBudget = async (
+export const createArchivedBudgets = async (
   userId: string,
   year = 2025,
   count = 7,
@@ -149,6 +150,21 @@ export const deleteAllMonthlyExpensesInDB = async (monthlyBudgetId: string) => {
   await prisma.expense.deleteMany({
     where: { monthlyBudgetId },
   });
+};
+
+export const createFixedEntryInDb = async (
+  userId: string,
+  table: PrismaModelSheets,
+) => {
+  const dbModel = prisma[table] as any;
+  const entry = await dbModel.create({
+    data: {
+      userId,
+      name: "Entry",
+      amount: "100",
+    },
+  });
+  return { ...entry, amount: Number(entry.amount) };
 };
 
 export const deleteAllFixedEntriesInDB = async (userId: string) => {

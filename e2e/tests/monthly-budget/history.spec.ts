@@ -2,7 +2,7 @@ import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "helpers/auth";
 import { displayedDate, getCurrencyValue } from "helpers/budget";
 import {
-  createArchivedBudget,
+  createArchivedBudgets,
   createMonthlyBudgetInDB,
   deleteAllMonthlyBudgetsInDB,
 } from "helpers/db-helpers";
@@ -55,7 +55,7 @@ test.describe("Budget history", () => {
     "should display only the 6 most recent budgets and filter by date",
     { tag: ["@regression"] },
     async ({ page, user }) => {
-      const { year, months } = await createArchivedBudget(user.id);
+      const { year, months } = await createArchivedBudgets(user.id);
       const visiblesMonths = months.slice(0, 6);
       const oldestMonth = months[6];
 

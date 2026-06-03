@@ -47,7 +47,9 @@ export const ProjectForm = ({
           }
         />
         {validationError && validationError.name && (
-          <p className="form-error">{validationError.name}</p>
+          <p className="form-error" data-testid="name-validation-error">
+            {validationError.name}
+          </p>
         )}
       </div>
       <div className="labelled-input">
@@ -69,7 +71,9 @@ export const ProjectForm = ({
         </div>
 
         {validationError && validationError.totalBudget && (
-          <p className="form-error">Montant invalide</p>
+          <p className="form-error" data-testid="amount-validation-error">
+            Montant invalide
+          </p>
         )}
       </div>
 

@@ -63,7 +63,12 @@ export const ProjectDetail = () => {
           </div>
 
           <div>
-            <ProjectExpenses budgetId={budget.id} expenses={budget.expenses} />
+            <div data-testid="expenses-section">
+              <ProjectExpenses
+                budgetId={budget.id}
+                expenses={budget.expenses}
+              />
+            </div>
 
             {budget.categories.map((cat) => (
               <ProjectCategorySection

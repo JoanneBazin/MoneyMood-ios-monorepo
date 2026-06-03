@@ -2,8 +2,8 @@ import { Page } from "@playwright/test";
 import { expect } from "fixtures/user.fixture";
 
 export const accessProjectDetails = async (page: Page, budgetName: string) => {
-  await page.click('[data-testid="projects-nav"]');
-  const budgetCard = page.locator('[data-testid="special-budget-card"]', {
+  await page.getByTestId("projects-nav").click();
+  const budgetCard = page.getByTestId("special-budget-card").filter({
     hasText: budgetName,
   });
   await expect(budgetCard).toBeVisible();
@@ -15,7 +15,7 @@ export const accessProjectDetails = async (page: Page, budgetName: string) => {
 export const selectWhenStable = async (
   page: Page,
   selector: string,
-  label: string
+  label: string,
 ) => {
   const select = page.locator(selector);
   await select.waitFor({ state: "visible" });

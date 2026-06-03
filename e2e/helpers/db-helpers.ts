@@ -192,11 +192,14 @@ export const resetUserData = async (
   });
 };
 
-export const createSpecialBudgetInDB = async (userId: string) => {
+export const createSpecialBudgetInDB = async (
+  userId: string,
+  name = "Special project",
+) => {
   const newBudget = await prisma.specialBudget.create({
     data: {
       userId,
-      name: "Common project",
+      name,
       totalBudget: 100,
       remainingBudget: 100,
     },
@@ -206,6 +209,61 @@ export const createSpecialBudgetInDB = async (userId: string) => {
     totalBudget: Number(newBudget.totalBudget),
     remainingBudget: Number(newBudget.remainingBudget),
   };
+};
+
+export const createSpecialBudgetWithCatAndExpenses = async (userId: string) => {
+  const newBudget = await prisma.specialBudget.create({
+    data: {
+      userId,
+      name: "Special project",
+      totalBudget: 200,
+      remainingBudget: 100,
+    },
+  });
+
+  const category = await createSpecialCategoryInDB(newBudget.id);
+  const expenseWithCat = await createSpecialExpenseInDB(
+    newBudget.id,
+    category.id,
+  );
+  const expenseWithoutCat = await createSpecialExpenseInDB(newBudget.id);
+
+  return {
+    ...newBudget,
+    totalBudget: Number(newBudget.totalBudget),
+    remainingBudget: Number(newBudget.remainingBudget),
+    category: {
+      name: category.name,
+      expense: expenseWithCat,
+    },
+    expenseWithoutCat,
+  };
+};
+
+export const createMultipleSpecialBudgets = async (
+  userId: string,
+  count = 2,
+) => {
+  const budgetsData = [];
+
+  for (let i = 0; i < count; i++) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+
+    budgetsData.push({
+      userId,
+      name: `Project ${i}`,
+      totalBudget: 0,
+      remainingBudget: 0,
+      createdAt: date,
+    });
+  }
+
+  const budgets = await prisma.specialBudget.createMany({
+    data: budgetsData,
+  });
+
+  return budgetsData;
 };
 
 export const createSpecialExpenseInDB = async (
@@ -240,7 +298,7 @@ export const createSpecialCategoryInDB = async (specialBudgetId: string) => {
   return prisma.specialBudgetCategory.create({
     data: {
       specialBudgetId,
-      name: "Common category",
+      name: "Special category",
     },
     select: { name: true, id: true },
   });

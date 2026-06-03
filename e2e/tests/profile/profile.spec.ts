@@ -6,6 +6,7 @@ import {
   createUserInDB,
   resetUserData,
 } from "helpers/db-helpers";
+import { accessProfileSettings } from "helpers/profile";
 
 test.describe("User profile", () => {
   test(
@@ -13,11 +14,8 @@ test.describe("User profile", () => {
     { tag: ["@regression"] },
     async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
+      await accessProfileSettings(page);
       const newUser = { name: "Updated Name", email: "updated@test.com" };
-
-      await page.getByTestId("nav-menu").click();
-      await page.getByTestId("profile-nav").click();
-      await page.getByTestId("profile-settings-nav").click();
 
       const banner = page.getByTestId("app-banner");
       const nameInput = page.getByTestId("user-name-input");
@@ -58,10 +56,7 @@ test.describe("User profile", () => {
       );
 
       await loginUser(page, user.email, user.password);
-
-      await page.getByTestId("nav-menu").click();
-      await page.getByTestId("profile-nav").click();
-      await page.getByTestId("profile-settings-nav").click();
+      await accessProfileSettings(page);
 
       await page.getByTestId("user-email-input").fill(existantUser.email);
       await page.getByTestId("update-user-submit").click();
@@ -100,10 +95,7 @@ test.describe("User profile", () => {
       user,
     }) => {
       await loginUser(page, user.email, user.password);
-
-      await page.getByTestId("nav-menu").click();
-      await page.getByTestId("profile-nav").click();
-      await page.getByTestId("profile-settings-nav").click();
+      await accessProfileSettings(page);
 
       await page.getByTestId(`user-${field}-input`).fill(value);
       await page.getByTestId("update-user-submit").click();
@@ -117,9 +109,7 @@ test.describe("User profile", () => {
     const { id: budgetId } = await createMonthlyBudgetInDB(user.id);
     const expense = await createMonthlyExpenseInDB(budgetId);
 
-    await page.getByTestId("nav-menu").click();
-    await page.getByTestId("profile-nav").click();
-    await page.getByTestId("profile-settings-nav").click();
+    await accessProfileSettings(page);
 
     await page.getByTestId("expense-validation-checkbox").check();
     await page.getByTestId("update-user-submit").click();

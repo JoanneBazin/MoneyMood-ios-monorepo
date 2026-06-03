@@ -7,6 +7,7 @@ import {
   PrismaModelSheets,
   deleteAllMonthlyBudgetsInDB,
 } from "helpers/db-helpers";
+import { accessProfileBudget } from "helpers/profile";
 
 interface ResourcesConfig {
   label: string;
@@ -45,11 +46,8 @@ test.describe("Fixed incomes and charges", () => {
         { tag: ["@regression"] },
         async ({ page, user }) => {
           await loginUser(page, user.email, user.password);
+          await accessProfileBudget(page);
           const newEntry = { name: "entry 1", amount: "100" };
-
-          await page.getByTestId("nav-menu").click();
-          await page.getByTestId("profile-nav").click();
-          await expect(page).toHaveURL("/profile/budget");
 
           const entriesContainer = page.getByTestId("budget-data").filter({
             has: page
@@ -90,10 +88,8 @@ test.describe("Fixed incomes and charges", () => {
         async ({ page, user }) => {
           const existantEntry = await createFixedEntryInDb(user.id, table);
           await loginUser(page, user.email, user.password);
+          await accessProfileBudget(page);
           const updatedAmount = "500";
-
-          await page.getByTestId("nav-menu").click();
-          await page.getByTestId("profile-nav").click();
 
           const entriesContainer = page.getByTestId("budget-data").filter({
             has: page
@@ -159,8 +155,7 @@ test.describe("Fixed incomes and charges", () => {
             String(existantEntry.amount),
           );
 
-          await page.getByTestId("nav-menu").click();
-          await page.getByTestId("profile-nav").click();
+          await accessProfileBudget(page);
 
           const entryItem = page.getByTestId("data-item").filter({
             hasText: existantEntry.name,
@@ -188,19 +183,13 @@ test.describe("Fixed incomes and charges", () => {
         async ({ page, user }) => {
           const existantEntry = await createFixedEntryInDb(user.id, table);
           await loginUser(page, user.email, user.password);
-          const updatedAmount = "500";
-
-          await page.getByTestId("nav-menu").click();
-          await page.getByTestId("profile-nav").click();
+          await accessProfileBudget(page);
 
           const entriesContainer = page.getByTestId("budget-data").filter({
             has: page
               .getByTestId("budget-data-title")
               .getByText(name, { exact: false }),
           });
-          const previousTotal = await getCurrencyValue(
-            entriesContainer.getByTestId("total-data-amount"),
-          );
 
           const entryItem = page.getByTestId("data-item").filter({
             hasText: existantEntry.name,
@@ -212,6 +201,7 @@ test.describe("Fixed incomes and charges", () => {
           await page.getByTestId("confirm-delete-btn").click();
 
           await expect(entryItem).not.toBeVisible();
+          await expect(page.getByTestId("data-item")).toHaveCount(0);
 
           const updatedTotal = await getCurrencyValue(
             entriesContainer.getByTestId("total-data-amount"),
@@ -235,9 +225,7 @@ test.describe("Fixed incomes and charges", () => {
       }) => {
         const existantEntry = await createFixedEntryInDb(user.id, table);
         await loginUser(page, user.email, user.password);
-
-        await page.getByTestId("nav-menu").click();
-        await page.getByTestId("profile-nav").click();
+        await accessProfileBudget(page);
 
         const entriesContainer = page.getByTestId("budget-data").filter({
           has: page

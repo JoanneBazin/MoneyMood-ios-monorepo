@@ -28,7 +28,7 @@ test.describe("Authentication", () => {
       { tag: ["@smoke", "@regression"] },
       async ({ page }) => {
         await page.goto("/");
-        await page.click("[data-testid='signup-btn']");
+        await page.getByTestId("signup-btn").click();
         await expect(page).toHaveURL("/signup");
 
         await page.fill('input[name="name"]', user.name);
@@ -45,7 +45,7 @@ test.describe("Authentication", () => {
           email: user.email,
         });
 
-        const banner = page.locator("[data-testid='app-banner']");
+        const banner = page.getByTestId("app-banner");
         await expect(banner).toBeVisible();
         await expect(banner).toContainText(user.name);
       },
@@ -74,9 +74,7 @@ test.describe("Authentication", () => {
           await page.fill('input[name="password"]', password);
           await page.click('button[type="submit"]');
 
-          const errorMessage = page.locator(
-            `[data-testid='${field}-validation-error']`,
-          );
+          const errorMessage = page.getByTestId(`${field}-validation-error`);
           await expect(errorMessage).toBeVisible();
           await expect(page).toHaveURL("/signup");
         },
@@ -102,9 +100,7 @@ test.describe("Authentication", () => {
           await page.fill('input[name="password"]', password);
           await page.click('button[type="submit"]');
 
-          const errorMessage = page.locator(
-            `[data-testid='password-validation-error']`,
-          );
+          const errorMessage = page.getByTestId("password-validation-error");
           await expect(errorMessage).toBeVisible();
           await expect(page).toHaveURL("/signup");
         },
@@ -124,7 +120,7 @@ test.describe("Authentication", () => {
         await page.fill('input[name="password"]', "Password1234");
         await page.click('button[type="submit"]');
 
-        const errorMessage = page.locator("[data-testid='signup-error']");
+        const errorMessage = page.getByTestId("signup-error");
         await expect(errorMessage).toBeVisible();
         await expect(page).toHaveURL("/signup");
       },
@@ -150,7 +146,7 @@ test.describe("Authentication", () => {
           email: user.email,
         });
 
-        const banner = page.locator("[data-testid='app-banner']");
+        const banner = page.getByTestId("app-banner");
         await expect(banner).toBeVisible();
         await expect(banner).toContainText(user.name);
       },
@@ -163,7 +159,7 @@ test.describe("Authentication", () => {
       { tag: ["@smoke", "@regression"] },
       async ({ page, user }) => {
         await page.goto("/");
-        await page.click("[data-testid='login-btn']");
+        await page.getByTestId("login-btn").click();
         await expect(page).toHaveURL("/login");
 
         await page.fill('input[name="email"]', user.email);
@@ -179,7 +175,7 @@ test.describe("Authentication", () => {
           email: user.email,
         });
 
-        const banner = page.locator("[data-testid='app-banner']");
+        const banner = page.getByTestId("app-banner");
         await expect(banner).toBeVisible();
         await expect(banner).toContainText(user.name);
       },
@@ -195,7 +191,7 @@ test.describe("Authentication", () => {
         await page.fill('input[name="password"]', "WrongPassword1234");
         await page.click('button[type="submit"]');
 
-        const errorMessage = page.locator("[data-testid='login-error']");
+        const errorMessage = page.getByTestId("login-error");
         await expect(errorMessage).toBeVisible();
         await expect(page).toHaveURL("/login");
       },
@@ -211,7 +207,7 @@ test.describe("Authentication", () => {
         await page.fill('input[name="password"]', user.password);
         await page.click('button[type="submit"]');
 
-        const errorMessage = page.locator("[data-testid='login-error']");
+        const errorMessage = page.getByTestId("login-error");
         await expect(errorMessage).toBeVisible();
         await expect(page).toHaveURL("/login");
       },
@@ -234,9 +230,7 @@ test.describe("Authentication", () => {
         await page.fill('input[name="password"]', password);
         await page.click('button[type="submit"]');
 
-        const errorMessage = page.locator(
-          `[data-testid='${field}-validation-error']`,
-        );
+        const errorMessage = page.getByTestId(`${field}-validation-error`);
         await expect(errorMessage).toBeVisible();
         await expect(page).toHaveURL("/login");
       });
@@ -250,8 +244,8 @@ test.describe("Authentication", () => {
       async ({ page, user }) => {
         await loginUser(page, user.email, user.password);
 
-        await page.click('button[data-testid="nav-menu"]');
-        await page.click('button[data-testid="logout-btn"]');
+        await page.getByTestId("nav-menu").click();
+        await page.getByTestId("logout-btn").click();
 
         await page.waitForURL("/");
 
@@ -269,8 +263,8 @@ test.describe("Authentication", () => {
       async ({ page, user, context }) => {
         await loginUser(page, user.email, user.password);
 
-        await page.click('button[data-testid="nav-menu"]');
-        await page.click('button[data-testid="logout-btn"]');
+        await page.getByTestId("nav-menu").click();
+        await page.getByTestId("logout-btn").click();
         await page.waitForURL("/");
 
         const cookies = await context.cookies();
@@ -334,8 +328,8 @@ test.describe("Authentication", () => {
 
         await updateSessionExpirationInDb(user.id, new Date(Date.now() - 1000));
 
-        await page.click('[data-testid="budget-options-menu"]');
-        await page.click('[data-testid="update-budget-status"]');
+        await page.getByTestId("budget-options-menu").click();
+        await page.getByTestId("update-budget-status").click();
 
         await expect(page).toHaveURL("/login");
       },

@@ -1,10 +1,8 @@
 import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "helpers/auth";
+import { fillNewEntry, getProjectTotals } from "helpers/budget";
 import {
-  cleanSpecialBudgetDataInDb,
-  createSpecialBudgetInDB,
-  createSpecialCategoryInDB,
-  createSpecialExpenseInDB,
+  createSpecialBudgetWithCatAndExpenses,
   deleteAllSpecialBudgetsInDB,
 } from "helpers/db-helpers";
 import {
@@ -12,192 +10,397 @@ import {
   selectWhenStable,
 } from "helpers/special-budgets";
 
-test.describe("Special budgets", () => {
-  let specialBudget: Awaited<ReturnType<typeof createSpecialBudgetInDB>>;
+test.describe("Project expenses", () => {
+  let specialBudget: Awaited<
+    ReturnType<typeof createSpecialBudgetWithCatAndExpenses>
+  >;
 
-  test.beforeAll(async ({ user }) => {
-    specialBudget = await createSpecialBudgetInDB(user.id);
+  test.beforeEach(async ({ user }) => {
+    await deleteAllSpecialBudgetsInDB(user.id);
+    specialBudget = await createSpecialBudgetWithCatAndExpenses(user.id);
   });
 
-  test.beforeEach(async () => {
-    await cleanSpecialBudgetDataInDb(specialBudget.id);
-  });
   test.afterAll(async ({ user }) => {
     await deleteAllSpecialBudgetsInDB(user.id);
   });
 
-  test("should add a new expense without cat and update remaining budget", async ({
-    page,
-    user,
-  }) => {
-    await loginUser(page, user.email, user.password);
+  test(
+    "should add a new expense without cat and update remaining budget",
+    { tag: ["@regression"] },
+    async ({ page, user }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
 
-    const newExpense = { name: "expense 1", amount: "10" };
+      const newExpense = { name: "expense 1", amount: "10" };
 
-    await accessProjectDetails(page, specialBudget.name);
+      const remainingContainer = page.getByTestId("remaining-budget");
+      const expensesWithoutCatContainer = page.getByTestId("expenses-section");
 
-    await page
-      .locator('[data-testid="add-special-expense-input"]')
-      .first()
-      .click();
-    await page.fill(
-      '[data-testid="special-expense-name-input-0"]',
-      newExpense.name
-    );
-    await page.fill(
-      '[data-testid="special-expense-amount-input-0"]',
-      newExpense.amount
-    );
-    await page.click('[data-testid="submit-form-entry"]');
+      await expect(expensesWithoutCatContainer).toBeVisible();
+      const {
+        totalRemaining: previousRemaining,
+        totalExpenses: previousExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
 
-    await expect(page.locator('[data-testid="data-item"]')).toContainText(
-      newExpense.name
-    );
-    const remaining = specialBudget.remainingBudget - Number(newExpense.amount);
-    await expect(
-      page.locator('[data-testid="remaining-budget"]')
-    ).toContainText(String(remaining));
-  });
+      await fillNewEntry(
+        expensesWithoutCatContainer,
+        "special-expenses",
+        newExpense,
+      );
+      await page.getByTestId("submit-form-entry").click();
 
-  test("should add a new expense with cat and update remaining budget", async ({
-    page,
-    user,
-  }) => {
-    await loginUser(page, user.email, user.password);
-    const cat = await createSpecialCategoryInDB(specialBudget.id);
-    const newExpense = { name: "expense with cat", amount: "20" };
+      const expenseItem = expensesWithoutCatContainer
+        .getByTestId("data-item")
+        .filter({ hasText: newExpense.name });
+      await expect(expenseItem).toBeVisible();
 
-    await accessProjectDetails(page, specialBudget.name);
+      const {
+        totalRemaining: currentRemaining,
+        totalExpenses: currentExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
 
-    const catSection = page.locator('[data-testid="special-cat-section"]', {
-      hasText: cat.name,
+      expect(currentExpenses).toBe(
+        previousExpenses + Number(newExpense.amount),
+      );
+      expect(currentRemaining).toBe(
+        previousRemaining - Number(newExpense.amount),
+      );
+    },
+  );
+
+  test(
+    "should add a new expense with cat and update remaining budget",
+    { tag: ["@regression"] },
+    async ({ page, user }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
+
+      const newExpense = { name: "expense with cat 1", amount: "20" };
+
+      const remainingContainer = page.getByTestId("remaining-budget");
+      const catSection = page.getByTestId("special-cat-section").filter({
+        hasText: specialBudget.categories.name,
+      });
+      await expect(catSection).toBeVisible();
+
+      const {
+        totalRemaining: previousRemaining,
+        totalExpenses: previousExpenses,
+      } = await getProjectTotals(remainingContainer, catSection);
+
+      await fillNewEntry(catSection, "special-expenses", newExpense);
+      await page.getByTestId("submit-form-entry").click();
+
+      const expenseItem = catSection
+        .getByTestId("data-item")
+        .filter({ hasText: newExpense.name });
+      await expect(expenseItem).toBeVisible();
+
+      const {
+        totalRemaining: currentRemaining,
+        totalExpenses: currentExpenses,
+      } = await getProjectTotals(remainingContainer, catSection);
+      expect(currentExpenses).toBe(
+        previousExpenses + Number(newExpense.amount),
+      );
+      expect(currentRemaining).toBe(
+        previousRemaining - Number(newExpense.amount),
+      );
+    },
+  );
+
+  const creationCases = [
+    { value: "", issue: "empty" },
+    { value: "0", issue: "invalid" },
+  ];
+
+  for (const { value, issue } of creationCases) {
+    test(`should failed adding a new expense with ${issue} amount`, async ({
+      page,
+      user,
+    }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
+
+      const newExpense = { name: "expense 1", amount: value };
+
+      const remainingContainer = page.getByTestId("remaining-budget");
+      const expensesWithoutCatContainer = page.getByTestId("expenses-section");
+      await expect(expensesWithoutCatContainer).toBeVisible();
+
+      const {
+        totalRemaining: previousRemaining,
+        totalExpenses: previousExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
+
+      await fillNewEntry(
+        expensesWithoutCatContainer,
+        "special-expenses",
+        newExpense,
+      );
+      await page.getByTestId("submit-form-entry").click();
+
+      await expect(
+        expensesWithoutCatContainer.getByTestId("amount-input-error"),
+      ).toBeVisible();
+      const expenseItem = expensesWithoutCatContainer
+        .getByTestId("data-item")
+        .filter({ hasText: newExpense.name });
+      await expect(expenseItem).not.toBeVisible();
+
+      const {
+        totalRemaining: currentRemaining,
+        totalExpenses: currentExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
+
+      expect(currentExpenses).toBe(previousExpenses);
+      expect(currentRemaining).toBe(previousRemaining);
     });
 
-    await catSection
-      .locator('[data-testid="add-special-expense-input"]')
-      .click();
-    await page.fill(
-      '[data-testid="special-expense-name-input-0"]',
-      newExpense.name
-    );
-    await page.fill(
-      '[data-testid="special-expense-amount-input-0"]',
-      newExpense.amount
-    );
-    await page.click('[data-testid="submit-form-entry"]');
+    test(`should failed updating a new expense with ${issue} amount`, async ({
+      page,
+      user,
+    }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
 
-    await expect(catSection.locator('[data-testid="data-item"]')).toContainText(
-      newExpense.name
-    );
-    const remaining = specialBudget.remainingBudget - Number(newExpense.amount);
-    await expect(
-      page.locator('[data-testid="remaining-budget"]')
-    ).toContainText(String(remaining));
-  });
+      const expense = specialBudget.expenses;
 
-  test("should update expense category and update subtotals", async ({
-    page,
-    user,
-  }) => {
-    await loginUser(page, user.email, user.password);
-    const cat = await createSpecialCategoryInDB(specialBudget.id);
-    const expense = await createSpecialExpenseInDB(specialBudget.id);
-    if (!expense) return;
+      const expensesWithoutCatContainer = page.getByTestId("expenses-section");
+      const expenseItem = expensesWithoutCatContainer
+        .getByTestId("data-item")
+        .filter({ hasText: expense.name });
+      await expect(expenseItem).toBeVisible();
 
-    await accessProjectDetails(page, specialBudget.name);
+      await expenseItem.getByTestId("update-item-btn").click();
+      await expect(page.getByTestId("update-item-form")).toBeVisible();
 
-    await expect(
-      page.locator('[data-testid="total-data"]').first()
-    ).toContainText(String(expense.amount));
-    const expenseItem = page.locator('[data-testid="data-item"]', {
-      hasText: expense.name,
+      await page.getByTestId("update-amount-input").fill(value);
+      await page.getByTestId("update-btn").click();
+
+      await expect(page.getByTestId("amount-input-error")).toBeVisible();
+      await expect(page.getByTestId("update-item-form")).toBeVisible();
     });
-    await expenseItem.locator('[data-testid="update-item-btn"]').click();
+  }
 
-    await expect(
-      page.locator('[data-testid="update-item-form"]')
-    ).toBeVisible();
+  test(
+    "should update expense category and update subtotals",
+    { tag: ["@regression"] },
+    async ({ page, user }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
 
-    await selectWhenStable(page, "select#category", cat.name);
-    await page.click('[data-testid="update-btn"]');
+      const category = specialBudget.categories;
+      const expense = specialBudget.expenses;
 
-    const catSection = page.locator('[data-testid="special-cat-section"]', {
-      hasText: cat.name,
-    });
+      const remainingContainer = page.getByTestId("remaining-budget");
+      const expensesWithoutCatContainer = page.getByTestId("expenses-section");
+      await expect(expensesWithoutCatContainer).toBeVisible();
 
-    await expect(catSection.locator('[data-testid="data-item"]')).toContainText(
-      expense.name
-    );
-    await expect(
-      catSection.locator('[data-testid="total-data"]')
-    ).toContainText(String(expense.amount));
+      const expenseItem = expensesWithoutCatContainer
+        .getByTestId("data-item")
+        .filter({ hasText: expense.name });
+      await expect(expenseItem).toBeVisible();
 
-    await expect(
-      page.locator('[data-testid="total-data"]').first()
-    ).toContainText("0.00");
-  });
+      const catSection = page.getByTestId("special-cat-section").filter({
+        hasText: category.name,
+      });
+      await expect(catSection).toBeVisible();
 
-  test("should delete special category and all expenses on cascade", async ({
-    page,
-    user,
-  }) => {
-    await loginUser(page, user.email, user.password);
-    const cat = await createSpecialCategoryInDB(specialBudget.id);
+      const {
+        totalRemaining: previousRemaining,
+        totalExpenses: previousExpenses,
+        totalCatExpenses: previousCatExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+        catSection,
+      );
 
-    const expenseInCat = await createSpecialExpenseInDB(
-      specialBudget.id,
-      cat.id
-    );
-    if (!expenseInCat) return;
+      await expenseItem.getByTestId("update-item-btn").click();
+      await expect(page.getByTestId("update-item-form")).toBeVisible();
 
-    await accessProjectDetails(page, specialBudget.name);
+      await selectWhenStable(page, "select#category", category.name);
+      await page.getByTestId("update-btn").click();
 
-    const catSection = page.locator('[data-testid="special-cat-section"]', {
-      hasText: cat.name,
-    });
-    await catSection.locator('[data-testid="update-cat-btn"]').click();
+      await expect(
+        catSection.getByTestId("data-item").filter({
+          hasText: expense.name,
+        }),
+      ).toBeVisible();
 
-    await expect(page.locator('[data-testid="cat-form"]')).toBeVisible();
-    await page.click('[data-testid="delete-cat-btn"]');
-    await page.click('[data-testid="delete-cat-cascade"]');
+      const {
+        totalRemaining: currentRemaining,
+        totalExpenses: currentExpenses,
+        totalCatExpenses: currentCatExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+        catSection,
+      );
+      expect(currentExpenses).toBe(previousExpenses - expense.amount);
+      expect(currentCatExpenses).toBe(previousCatExpenses! + expense.amount);
+      expect(currentRemaining).toBe(previousRemaining);
+    },
+  );
 
-    await expect(catSection).not.toBeVisible();
-    await expect(
-      page.locator('[data-testid="data-item"]', { hasText: expenseInCat.name })
-    ).not.toBeVisible();
+  test(
+    "should update expense and update total and remaining budget",
+    { tag: ["@regression"] },
+    async ({ page, user }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
 
-    await expect(
-      page.locator('[data-testid="remaining-budget"]')
-    ).toContainText(String(specialBudget.totalBudget));
-  });
+      const expense = specialBudget.expenses;
+      const updatedExpense = { name: "Updated expense", amount: "40" };
 
-  test("should delete special category and update cat expenses", async ({
-    page,
-    user,
-  }) => {
-    await loginUser(page, user.email, user.password);
-    const cat = await createSpecialCategoryInDB(specialBudget.id);
+      const remainingContainer = page.getByTestId("remaining-budget");
+      const expensesWithoutCatContainer = page.getByTestId("expenses-section");
 
-    const expenseInCat = await createSpecialExpenseInDB(
-      specialBudget.id,
-      cat.id
-    );
-    if (!expenseInCat) return;
+      const expenseItem = expensesWithoutCatContainer
+        .getByTestId("data-item")
+        .filter({ hasText: expense.name });
+      await expect(expenseItem).toBeVisible();
 
-    await accessProjectDetails(page, specialBudget.name);
+      const {
+        totalRemaining: previousRemaining,
+        totalExpenses: previousExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
 
-    const catSection = page.locator('[data-testid="special-cat-section"]', {
-      hasText: cat.name,
-    });
-    await catSection.locator('[data-testid="update-cat-btn"]').click();
+      await expenseItem.getByTestId("update-item-btn").click();
+      await expect(page.getByTestId("update-item-form")).toBeVisible();
 
-    await expect(page.locator('[data-testid="cat-form"]')).toBeVisible();
-    await page.click('[data-testid="delete-cat-btn"]');
-    await page.click('[data-testid="delete-cat-only"]');
+      await page.getByTestId("update-name-input").fill(updatedExpense.name);
+      await page.getByTestId("update-amount-input").fill(updatedExpense.amount);
+      await page.getByTestId("update-btn").click();
 
-    await expect(catSection).not.toBeVisible();
-    await expect(
-      page.locator('[data-testid="data-item"]', { hasText: expenseInCat.name })
-    ).toBeVisible();
-  });
+      await expect(page.getByTestId("update-item-form")).not.toBeVisible();
+      await expect(expenseItem).toBeVisible();
+      await expect(
+        expensesWithoutCatContainer.getByTestId("data-item").filter({
+          hasText: updatedExpense.name,
+        }),
+      ).toBeVisible();
+
+      const {
+        totalRemaining: currentRemaining,
+        totalExpenses: currentExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
+
+      const expenseDifference = Number(updatedExpense.amount) - expense.amount;
+      expect(currentExpenses).toBe(previousExpenses + expenseDifference);
+      expect(currentRemaining).toBe(previousRemaining - expenseDifference);
+    },
+  );
+
+  test(
+    "should delete expense and update total and remaining budget",
+    { tag: ["@regression"] },
+    async ({ page, user }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
+
+      const expense = specialBudget.expenses;
+
+      const remainingContainer = page.getByTestId("remaining-budget");
+      const expensesWithoutCatContainer = page.getByTestId("expenses-section");
+
+      const expenseItem = expensesWithoutCatContainer
+        .getByTestId("data-item")
+        .filter({ hasText: expense.name });
+      await expect(expenseItem).toBeVisible();
+
+      const {
+        totalRemaining: previousRemaining,
+        totalExpenses: previousExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
+
+      await expenseItem.getByTestId("update-item-btn").click();
+      await expect(page.getByTestId("update-item-form")).toBeVisible();
+
+      await page.getByTestId("delete-btn").click();
+      await page.getByTestId("confirm-delete-btn").click();
+
+      await expect(expenseItem).not.toBeVisible();
+
+      const {
+        totalRemaining: currentRemaining,
+        totalExpenses: currentExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
+
+      expect(currentExpenses).toBe(previousExpenses - expense.amount);
+      expect(currentRemaining).toBe(previousRemaining + expense.amount);
+    },
+  );
+
+  test(
+    "should cancel expense deletion before request",
+    { tag: ["@regression"] },
+    async ({ page, user }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
+
+      const expense = specialBudget.expenses;
+
+      const remainingContainer = page.getByTestId("remaining-budget");
+      const expensesWithoutCatContainer = page.getByTestId("expenses-section");
+
+      const expenseItem = expensesWithoutCatContainer
+        .getByTestId("data-item")
+        .filter({ hasText: expense.name });
+      await expect(expenseItem).toBeVisible();
+
+      const {
+        totalRemaining: previousRemaining,
+        totalExpenses: previousExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
+
+      await expenseItem.getByTestId("update-item-btn").click();
+      await expect(page.getByTestId("update-item-form")).toBeVisible();
+
+      await page.getByTestId("delete-btn").click();
+      await page.getByTestId("cancel-delete-btn").click();
+      await page.getByTestId("dialog-close").click();
+
+      await expect(expenseItem).toBeVisible();
+
+      const {
+        totalRemaining: currentRemaining,
+        totalExpenses: currentExpenses,
+      } = await getProjectTotals(
+        remainingContainer,
+        expensesWithoutCatContainer,
+      );
+
+      expect(currentExpenses).toBe(previousExpenses);
+      expect(currentRemaining).toBe(previousRemaining);
+    },
+  );
 });

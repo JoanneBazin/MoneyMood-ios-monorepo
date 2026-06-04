@@ -59,7 +59,9 @@ export const UpdateEntryForm = ({
             </div>
           </div>
           {validationErrors && validationErrors.amount ? (
-            <p className="form-error">Montant invalide</p>
+            <p className="form-error" data-testid="amount-input-error">
+              Montant invalide
+            </p>
           ) : null}
         </div>
       </div>

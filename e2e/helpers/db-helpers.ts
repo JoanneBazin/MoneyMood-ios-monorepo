@@ -82,6 +82,8 @@ export const createMonthlyBudgetInDB = async (
     ...budget,
     remainingBudget: Number(budget.remainingBudget),
     weeklyBudget: Number(budget.weeklyBudget),
+    incomes: budget.incomes.map((i) => ({ ...i, amount: Number(i.amount) })),
+    charges: budget.incomes.map((i) => ({ ...i, amount: Number(i.amount) })),
   };
 };
 
@@ -218,25 +220,57 @@ export const createSpecialBudgetWithCatAndExpenses = async (userId: string) => {
       name: "Special project",
       totalBudget: 200,
       remainingBudget: 100,
+      expenses: {
+        create: [{ name: "expense without cat", amount: 40 }],
+      },
+      categories: {
+        create: [
+          {
+            name: "Project category",
+          },
+        ],
+      },
+    },
+    include: {
+      categories: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+      expenses: {
+        where: { specialCategoryId: null },
+        select: {
+          name: true,
+          amount: true,
+        },
+      },
     },
   });
 
-  const category = await createSpecialCategoryInDB(newBudget.id);
-  const expenseWithCat = await createSpecialExpenseInDB(
-    newBudget.id,
-    category.id,
-  );
-  const expenseWithoutCat = await createSpecialExpenseInDB(newBudget.id);
+  const expenseWithoutCat = newBudget.expenses[0];
+  const catExpense = await prisma.expense.create({
+    data: {
+      specialBudgetId: newBudget.id,
+      name: "cat expense",
+      amount: 60,
+      specialCategoryId: newBudget.categories[0].id,
+    },
+    select: { name: true, amount: true },
+  });
 
   return {
     ...newBudget,
     totalBudget: Number(newBudget.totalBudget),
     remainingBudget: Number(newBudget.remainingBudget),
-    category: {
-      name: category.name,
-      expense: expenseWithCat,
+    categories: {
+      name: newBudget.categories[0].name,
+      expense: { ...catExpense, amount: Number(catExpense.amount) },
     },
-    expenseWithoutCat,
+    expenses: {
+      ...expenseWithoutCat,
+      amount: Number(expenseWithoutCat.amount),
+    },
   };
 };
 
@@ -259,7 +293,7 @@ export const createMultipleSpecialBudgets = async (
     });
   }
 
-  const budgets = await prisma.specialBudget.createMany({
+  await prisma.specialBudget.createMany({
     data: budgetsData,
   });
 

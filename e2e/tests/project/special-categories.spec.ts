@@ -1,63 +1,334 @@
-import { test } from "fixtures/user.fixture";
-import { deleteAllSpecialBudgetsInDB } from "helpers/db-helpers";
+import { expect, test } from "fixtures/user.fixture";
+import { loginUser } from "helpers/auth";
+import { getCurrencyValue } from "helpers/budget";
+import {
+  createSpecialBudgetInDB,
+  createSpecialBudgetWithCatAndExpenses,
+  createSpecialCategoryInDB,
+  deleteAllSpecialBudgetsInDB,
+} from "helpers/db-helpers";
+import { accessProjectDetails } from "helpers/special-budgets";
 
-test.describe("Special categories", () => {
+test.describe("Project categories", () => {
   test.afterAll(async ({ user }) => {
     await deleteAllSpecialBudgetsInDB(user.id);
   });
 
-  test("should add a new category to a special budget", async ({
-    page,
-    user,
-  }) => {
-    await loginUser(page, user.email, user.password);
+  test.describe("Category creation", () => {
+    let specialBudget: Awaited<ReturnType<typeof createSpecialBudgetInDB>>;
 
-    const cat = { name: "New category" };
-
-    await accessProjectDetails(page, specialBudget.name);
-
-    await page.click('[data-testid="add-special-cat-btn"]');
-
-    await expect(page.locator('[data-testid="cat-form"]')).toBeVisible();
-    await page.fill('input[name="name"]', cat.name);
-    await page.click('[data-testid="create-cat"]');
-
-    const catSection = page.locator('[data-testid="special-cat-section"]', {
-      hasText: cat.name,
+    test.beforeEach(async ({ user }) => {
+      specialBudget = await createSpecialBudgetInDB(user.id);
+    });
+    test.afterEach(async ({ user }) => {
+      await deleteAllSpecialBudgetsInDB(user.id);
     });
 
-    await expect(catSection).toBeVisible();
-    await expect(
-      catSection.locator('[data-testid="add-special-expense-input"]'),
-    ).toBeVisible();
-    await expect(
-      catSection.locator('[data-testid="total-data"]'),
-    ).toBeVisible();
-  });
+    test(
+      "should add a new category to a project",
+      { tag: ["@regression"] },
+      async ({ page, user }) => {
+        await loginUser(page, user.email, user.password);
+        await accessProjectDetails(page, specialBudget.name);
 
-  test("should update a special category", async ({ page, user }) => {
-    await loginUser(page, user.email, user.password);
-    const existantCat = await createSpecialCategoryInDB(specialBudget.id);
-    const updatedCat = { name: "Updated category" };
+        const cat = { name: "New category" };
 
-    await accessProjectDetails(page, specialBudget.name);
+        await page.getByTestId("add-special-cat-btn").click();
 
-    const catSection = page.locator('[data-testid="special-cat-section"]', {
-      hasText: existantCat.name,
-    });
-    await catSection.locator('[data-testid="update-cat-btn"]').click();
+        await expect(page.getByTestId("cat-form")).toBeVisible();
+        await page.fill('input[name="name"]', cat.name);
+        await page.getByTestId("create-cat").click();
 
-    await expect(page.locator('[data-testid="cat-form"]')).toBeVisible();
-    await page.fill('input[name="name"]', updatedCat.name);
-    await page.click('[data-testid="update-cat"]');
+        const catSection = page.getByTestId("special-cat-section").filter({
+          hasText: cat.name,
+        });
 
-    const updatedCatSection = page.locator(
-      '[data-testid="special-cat-section"]',
-      {
-        hasText: updatedCat.name,
+        await expect(catSection).toBeVisible();
+        await expect(
+          catSection.getByTestId("add-special-expenses-input"),
+        ).toBeVisible();
+        await expect(catSection.getByTestId("data-item")).toHaveCount(0);
+        const totalCatExpenses = await getCurrencyValue(
+          catSection.getByTestId("total-data-amount"),
+        );
+        expect(totalCatExpenses).toBe(0);
       },
     );
-    await expect(catSection).not.toBeVisible();
-    await expect(updatedCatSection).toBeVisible();
+
+    test("should failed adding a new category with existant category name for this project", async ({
+      page,
+      user,
+    }) => {
+      const existantCat = await createSpecialCategoryInDB(specialBudget.id);
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
+
+      await page.getByTestId("add-special-cat-btn").click();
+
+      await expect(page.getByTestId("cat-form")).toBeVisible();
+      await page.fill('input[name="name"]', existantCat.name);
+      await page.getByTestId("create-cat").click();
+
+      await expect(page.getByTestId("error-message")).toBeVisible();
+      await expect(page.getByTestId("cat-form")).toBeVisible();
+    });
+
+    test("should failed adding a new category with empty name", async ({
+      page,
+      user,
+    }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
+
+      await page.getByTestId("add-special-cat-btn").click();
+
+      await expect(page.getByTestId("cat-form")).toBeVisible();
+      await page.getByTestId("create-cat").click();
+
+      await expect(page.getByTestId("name-validation-error")).toBeVisible();
+      await expect(page.getByTestId("cat-form")).toBeVisible();
+    });
+  });
+
+  test.describe("Category managment", () => {
+    let specialBudget: Awaited<
+      ReturnType<typeof createSpecialBudgetWithCatAndExpenses>
+    >;
+
+    test.beforeEach(async ({ user }) => {
+      specialBudget = await createSpecialBudgetWithCatAndExpenses(user.id);
+    });
+    test.afterEach(async ({ user }) => {
+      await deleteAllSpecialBudgetsInDB(user.id);
+    });
+
+    test(
+      "should update a project category",
+      { tag: ["@regression"] },
+      async ({ page, user }) => {
+        await loginUser(page, user.email, user.password);
+        await accessProjectDetails(page, specialBudget.name);
+
+        const category = specialBudget.categories;
+        const updatedName = "Updated category";
+
+        const catSection = page.getByTestId("special-cat-section").filter({
+          hasText: category.name,
+        });
+        await expect(catSection).toBeVisible();
+        const catExpense = catSection.getByTestId("data-item").filter({
+          hasText: category.expense.name,
+        });
+        await expect(catExpense).toBeVisible();
+
+        await catSection.getByTestId("update-cat-btn").click();
+
+        await expect(page.getByTestId("cat-form")).toBeVisible();
+        await page.fill('input[name="name"]', updatedName);
+        await page.getByTestId("update-cat").click();
+
+        await expect(page.getByTestId("cat-form")).not.toBeVisible();
+        await expect(catSection).not.toBeVisible();
+        const updatedCatSection = page
+          .getByTestId("special-cat-section")
+          .filter({
+            hasText: updatedName,
+          });
+        await expect(updatedCatSection).toBeVisible();
+        await expect(
+          updatedCatSection.getByTestId("data-item").filter({
+            hasText: category.expense.name,
+          }),
+        ).toBeVisible();
+      },
+    );
+
+    test("should failded updating with existant category name for this project", async ({
+      page,
+      user,
+    }) => {
+      const existantCat = await createSpecialCategoryInDB(specialBudget.id);
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
+
+      const category = specialBudget.categories;
+
+      const catSection = page.getByTestId("special-cat-section").filter({
+        hasText: category.name,
+      });
+      await expect(catSection).toBeVisible();
+
+      await catSection.getByTestId("update-cat-btn").click();
+
+      await expect(page.getByTestId("cat-form")).toBeVisible();
+      await page.fill('input[name="name"]', existantCat.name);
+      await page.getByTestId("update-cat").click();
+
+      await expect(page.getByTestId("error-message")).toBeVisible();
+      await expect(page.getByTestId("cat-form")).toBeVisible();
+    });
+
+    test("should failded updating with empty name", async ({ page, user }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
+
+      const category = specialBudget.categories;
+
+      const catSection = page.getByTestId("special-cat-section").filter({
+        hasText: category.name,
+      });
+      await expect(catSection).toBeVisible();
+
+      await catSection.getByTestId("update-cat-btn").click();
+
+      await expect(page.getByTestId("cat-form")).toBeVisible();
+      await page.fill('input[name="name"]', "");
+      await page.getByTestId("update-cat").click();
+
+      await expect(page.getByTestId("name-validation-error")).toBeVisible();
+      await expect(page.getByTestId("cat-form")).toBeVisible();
+    });
+
+    test(
+      "should delete a project category and update their expenses (uncategorised by default)",
+      { tag: ["@regression"] },
+      async ({ page, user }) => {
+        await loginUser(page, user.email, user.password);
+        await accessProjectDetails(page, specialBudget.name);
+
+        const category = specialBudget.categories;
+
+        const catSection = page.getByTestId("special-cat-section").filter({
+          hasText: category.name,
+        });
+        await expect(catSection).toBeVisible();
+        const catExpense = catSection.getByTestId("data-item").filter({
+          hasText: category.expense.name,
+        });
+        await expect(catExpense).toBeVisible();
+
+        const expensesWithoutCatContainer =
+          page.getByTestId("expenses-section");
+        const previousTotalExpensesWithoutCat = await getCurrencyValue(
+          expensesWithoutCatContainer.getByTestId("total-data-amount"),
+        );
+
+        await catSection.getByTestId("update-cat-btn").click();
+
+        await expect(page.getByTestId("cat-form")).toBeVisible();
+        await page.getByTestId("delete-cat-btn").click();
+
+        await expect(page.getByTestId("delete-cat-cascade")).toBeVisible();
+        await expect(page.getByTestId("delete-cat-only")).toBeVisible();
+        await expect(page.getByTestId("delete-cat-cancel")).toBeVisible();
+        await page.getByTestId("delete-cat-only").click();
+
+        await expect(page.getByTestId("cat-form")).not.toBeVisible();
+        await expect(catSection).not.toBeVisible();
+        await expect(catExpense).not.toBeVisible();
+
+        const expenseWithoutCat = expensesWithoutCatContainer
+          .getByTestId("data-item")
+          .filter({
+            hasText: category.expense.name,
+          });
+        await expect(expenseWithoutCat).toBeVisible();
+
+        const currentTotalExpensesWithoutCat = await getCurrencyValue(
+          expensesWithoutCatContainer.getByTestId("total-data-amount"),
+        );
+        expect(currentTotalExpensesWithoutCat).toBe(
+          previousTotalExpensesWithoutCat + category.expense.amount,
+        );
+      },
+    );
+
+    test(
+      "should delete a project category and all of their expenses in cascade",
+      { tag: ["@regression"] },
+      async ({ page, user }) => {
+        await loginUser(page, user.email, user.password);
+        await accessProjectDetails(page, specialBudget.name);
+
+        const category = specialBudget.categories;
+
+        const remainingContainer = page.getByTestId("remaining-budget");
+        const previousRemainingBudget = await getCurrencyValue(
+          remainingContainer.getByTestId("total-budget-amount"),
+        );
+
+        const catSection = page.getByTestId("special-cat-section").filter({
+          hasText: category.name,
+        });
+        await expect(catSection).toBeVisible();
+        const catExpense = catSection.getByTestId("data-item").filter({
+          hasText: category.expense.name,
+        });
+        await expect(catExpense).toBeVisible();
+
+        await catSection.getByTestId("update-cat-btn").click();
+
+        await expect(page.getByTestId("cat-form")).toBeVisible();
+        await page.getByTestId("delete-cat-btn").click();
+        await page.getByTestId("delete-cat-cascade").click();
+
+        await expect(page.getByTestId("cat-form")).not.toBeVisible();
+        await expect(catSection).not.toBeVisible();
+        await expect(catExpense).not.toBeVisible();
+
+        await expect(
+          page.getByTestId("data-item").filter({
+            hasText: category.expense.name,
+          }),
+        ).not.toBeVisible();
+
+        const currentRemainingBudget = await getCurrencyValue(
+          remainingContainer.getByTestId("total-budget-amount"),
+        );
+        expect(currentRemainingBudget).toBe(
+          previousRemainingBudget + category.expense.amount,
+        );
+      },
+    );
+
+    test("should cancel category deletion before request", async ({
+      page,
+      user,
+    }) => {
+      await loginUser(page, user.email, user.password);
+      await accessProjectDetails(page, specialBudget.name);
+
+      const category = specialBudget.categories;
+
+      const remainingContainer = page.getByTestId("remaining-budget");
+      const previousRemainingBudget = await getCurrencyValue(
+        remainingContainer.getByTestId("total-budget-amount"),
+      );
+
+      const catSection = page.getByTestId("special-cat-section").filter({
+        hasText: category.name,
+      });
+      await expect(catSection).toBeVisible();
+      const catExpense = catSection.getByTestId("data-item").filter({
+        hasText: category.expense.name,
+      });
+      await expect(catExpense).toBeVisible();
+
+      await catSection.getByTestId("update-cat-btn").click();
+
+      await expect(page.getByTestId("cat-form")).toBeVisible();
+      await page.getByTestId("delete-cat-btn").click();
+      await page.getByTestId("delete-cat-cancel").click();
+      await page.getByTestId("dialog-close").click();
+
+      await expect(page.getByTestId("cat-form")).not.toBeVisible();
+      await expect(catSection).toBeVisible();
+      await expect(catExpense).toBeVisible();
+
+      const currentRemainingBudget = await getCurrencyValue(
+        remainingContainer.getByTestId("total-budget-amount"),
+      );
+      expect(currentRemainingBudget).toBe(previousRemainingBudget);
+    });
   });
 });

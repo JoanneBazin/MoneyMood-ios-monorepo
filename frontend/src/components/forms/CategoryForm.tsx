@@ -29,7 +29,9 @@ export const CategoryForm = ({
             onChange={(e) => setCategory({ name: e.target.value })}
           />
           {validationErrors && validationErrors.name ? (
-            <p className="form-error">{validationErrors.name}</p>
+            <p className="form-error" data-testid="name-validation-error">
+              {validationErrors.name}
+            </p>
           ) : null}
         </div>
       </div>
@@ -81,6 +83,7 @@ export const CategoryForm = ({
               onClick={() => setConfirmDelete(false)}
               className="delete-item__button cancel"
               aria-label="Annuler"
+              data-testid="delete-cat-cancel"
             >
               <X size={16} />
             </button>

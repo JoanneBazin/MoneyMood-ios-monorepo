@@ -1,6 +1,6 @@
 import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "helpers/auth";
-import { getCurrencyValue } from "helpers/budget";
+import { getCurrencyValue, getProjectTotals } from "helpers/budget";
 import {
   createMultipleSpecialBudgets,
   createSpecialBudgetInDB,
@@ -64,46 +64,42 @@ test.describe("Special budgets", () => {
         );
 
         const remainingContainer = page.getByTestId("remaining-budget");
-        const remainingBudget = await getCurrencyValue(
-          remainingContainer.getByTestId("total-budget-amount"),
-        );
-        expect(remainingBudget).toBe(project.remainingBudget);
-
         const totalContainer = page.getByTestId("remaining-budget-base");
         const totalBudget = await getCurrencyValue(
           totalContainer.getByTestId("total-budget-amount"),
         );
-        expect(totalBudget).toBe(project.totalBudget);
-
         const expensesWithoutCatContainer =
           page.getByTestId("expenses-section");
         const expenseWithoutCat = expensesWithoutCatContainer
           .getByTestId("data-item")
           .filter({
-            hasText: project.expenseWithoutCat.name,
+            hasText: project.expenses.name,
           });
         await expect(expenseWithoutCat).toBeVisible();
-        const totalExpenses = await getCurrencyValue(
-          expensesWithoutCatContainer.getByTestId("total-data-amount"),
-        );
-        expect(totalExpenses).toBe(project.expenseWithoutCat.amount);
-
         const categoryContainer = page
           .getByTestId("special-cat-section")
           .filter({
-            hasText: project.category.name,
+            hasText: project.categories.name,
           });
         await expect(categoryContainer).toBeVisible();
         const expenseWithCat = categoryContainer
           .getByTestId("data-item")
           .filter({
-            hasText: project.category.expense.name,
+            hasText: project.categories.expense.name,
           });
         await expect(expenseWithCat).toBeVisible();
-        const totalCatExpenses = await getCurrencyValue(
-          categoryContainer.getByTestId("total-data-amount"),
-        );
-        expect(totalCatExpenses).toBe(project.category.expense.amount);
+
+        const { totalRemaining, totalExpenses, totalCatExpenses } =
+          await getProjectTotals(
+            remainingContainer,
+            expensesWithoutCatContainer,
+            categoryContainer,
+          );
+
+        expect(totalRemaining).toBe(project.remainingBudget);
+        expect(totalBudget).toBe(project.totalBudget);
+        expect(totalExpenses).toBe(project.expenses.amount);
+        expect(totalCatExpenses).toBe(project.categories.expense.amount);
       },
     );
   });

@@ -57,3 +57,17 @@ export const getProjectTotals = async (
 
   return { totalRemaining, totalExpenses, totalCatExpenses };
 };
+
+export const getMonthlyBudgetTotals = async (
+  remainingContainer: Locator,
+  weeklyContainer: Locator,
+) => {
+  const totalRemaining = await getCurrencyValue(
+    remainingContainer.getByTestId("total-budget-amount"),
+  );
+  const totalWeekly = await getCurrencyValue(
+    weeklyContainer.getByTestId("total-data-amount"),
+  );
+
+  return { totalRemaining, totalWeekly };
+};

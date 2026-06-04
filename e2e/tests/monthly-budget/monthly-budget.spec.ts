@@ -4,7 +4,12 @@ import {
   createMonthlyBudgetInDB,
   deleteAllMonthlyBudgetsInDB,
 } from "helpers/db-helpers";
-import { displayedDate, fillNewEntry, getCurrencyValue } from "helpers/budget";
+import {
+  displayedDate,
+  fillNewEntry,
+  getCurrencyValue,
+  getMonthlyBudgetTotals,
+} from "helpers/budget";
 
 test.describe("Monthly budget", () => {
   test.afterAll(async ({ user }) => {
@@ -62,7 +67,7 @@ test.describe("Monthly budget", () => {
 
     test(
       "should create new current budget and replace current one on dashboard",
-      { tag: ["@smoke, @regression"] },
+      { tag: ["@smoke", "@regression"] },
       async ({ page, user }) => {
         const currentBudget = await createMonthlyBudgetInDB(user.id);
         await loginUser(page, user.email, user.password);
@@ -198,30 +203,25 @@ test.describe("Monthly budget", () => {
 
     test(
       "dashboard should display user's current monthly budget if exists",
-      { tag: ["@smoke, @regression"] },
+      { tag: ["@smoke", "@regression"] },
       async ({ page, user }) => {
         await loginUser(page, user.email, user.password);
 
         const remainingBudget = page.getByTestId("remaining-budget");
-        const currentRemaining = await getCurrencyValue(
-          remainingBudget.getByTestId("total-budget-amount"),
-        );
         const chargesCard = page.getByTestId("total-card-charges");
         const incomesCard = page.getByTestId("total-card-revenus");
         const budgetData = page.getByTestId("budget-data");
+        const { totalRemaining, totalWeekly } = await getMonthlyBudgetTotals(
+          remainingBudget,
+          budgetData,
+        );
 
         await expect(remainingBudget).toBeVisible();
-        expect(currentRemaining).toBe(currentBudget.remainingBudget);
+        expect(totalRemaining).toBe(currentBudget.remainingBudget);
         await expect(chargesCard).toBeVisible();
         await expect(incomesCard).toBeVisible();
         await expect(budgetData).toBeVisible();
-
-        const weeklyBudget = await getCurrencyValue(
-          page.getByTestId("total-data-amount"),
-        );
-        expect(weeklyBudget).toBe(
-          currentRemaining / currentBudget.numberOfWeeks,
-        );
+        expect(totalWeekly).toBe(totalRemaining / currentBudget.numberOfWeeks);
       },
     );
 

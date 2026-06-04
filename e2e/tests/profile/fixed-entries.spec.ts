@@ -1,13 +1,13 @@
 import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "helpers/auth";
-import { fillNewEntry, getCurrencyValue } from "helpers/budget";
+import { fillNewEntry } from "helpers/budget";
 import {
   createFixedEntryInDb,
   deleteAllFixedEntriesInDB,
   PrismaModelSheets,
   deleteAllMonthlyBudgetsInDB,
 } from "helpers/db-helpers";
-import { accessProfileBudget } from "helpers/profile";
+import { accessProfileBudget, getTotalEntries } from "helpers/profile";
 
 interface ResourcesConfig {
   label: string;
@@ -54,9 +54,7 @@ test.describe("Fixed incomes and charges", () => {
               .getByTestId("budget-data-title")
               .getByText(name, { exact: false }),
           });
-          const previousTotal = await getCurrencyValue(
-            entriesContainer.getByTestId("total-data-amount"),
-          );
+          const previousTotal = await getTotalEntries(entriesContainer);
 
           await fillNewEntry(page, entryType, newEntry);
           await page.getByTestId(`add-${entryType}-btn`).click();
@@ -66,9 +64,7 @@ test.describe("Fixed incomes and charges", () => {
           });
           await expect(entryItem).toBeVisible();
           await expect(entryItem).toContainText(newEntry.name);
-          const updatedTotal = await getCurrencyValue(
-            entriesContainer.getByTestId("total-data-amount"),
-          );
+          const updatedTotal = await getTotalEntries(entriesContainer);
           expect(updatedTotal).toBe(previousTotal + Number(newEntry.amount));
 
           await page.goto("/app");
@@ -96,9 +92,7 @@ test.describe("Fixed incomes and charges", () => {
               .getByTestId("budget-data-title")
               .getByText(name, { exact: false }),
           });
-          const previousTotal = await getCurrencyValue(
-            entriesContainer.getByTestId("total-data-amount"),
-          );
+          const previousTotal = await getTotalEntries(entriesContainer);
 
           const entryItem = page.getByTestId("data-item").filter({
             hasText: existantEntry.name,
@@ -111,9 +105,7 @@ test.describe("Fixed incomes and charges", () => {
 
           await expect(entryItem).toContainText(updatedAmount);
 
-          const updatedTotal = await getCurrencyValue(
-            entriesContainer.getByTestId("total-data-amount"),
-          );
+          const updatedTotal = await getTotalEntries(entriesContainer);
           const entryDifference =
             Number(updatedAmount) - Number(existantEntry.amount);
           expect(updatedTotal).toBe(previousTotal + entryDifference);
@@ -203,9 +195,7 @@ test.describe("Fixed incomes and charges", () => {
           await expect(entryItem).not.toBeVisible();
           await expect(page.getByTestId("data-item")).toHaveCount(0);
 
-          const updatedTotal = await getCurrencyValue(
-            entriesContainer.getByTestId("total-data-amount"),
-          );
+          const updatedTotal = await getTotalEntries(entriesContainer);
           expect(updatedTotal).toBe(0);
 
           await page.goto("/app");
@@ -232,9 +222,7 @@ test.describe("Fixed incomes and charges", () => {
             .getByTestId("budget-data-title")
             .getByText(name, { exact: false }),
         });
-        const previousTotal = await getCurrencyValue(
-          entriesContainer.getByTestId("total-data-amount"),
-        );
+        const previousTotal = await getTotalEntries(entriesContainer);
 
         const entryItem = page.getByTestId("data-item").filter({
           hasText: existantEntry.name,
@@ -249,9 +237,7 @@ test.describe("Fixed incomes and charges", () => {
         await expect(page.getByTestId("update-item-form")).not.toBeVisible();
         await expect(entryItem).toBeVisible();
 
-        const updatedTotal = await getCurrencyValue(
-          entriesContainer.getByTestId("total-data-amount"),
-        );
+        const updatedTotal = await getTotalEntries(entriesContainer);
         expect(updatedTotal).toBe(previousTotal);
       });
     });

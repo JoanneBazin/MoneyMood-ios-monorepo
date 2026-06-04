@@ -38,9 +38,10 @@ test.describe("Monthly entries", () => {
       let currentBudget: Awaited<ReturnType<typeof createMonthlyBudgetInDB>>;
 
       test.beforeEach(async ({ user }) => {
+        await deleteAllMonthlyBudgetsInDB(user.id);
         currentBudget = await createMonthlyBudgetInDB(user.id);
       });
-      test.afterEach(async ({ user }) => {
+      test.afterAll(async ({ user }) => {
         await deleteAllMonthlyBudgetsInDB(user.id);
       });
 
@@ -214,6 +215,7 @@ test.describe("Monthly entries", () => {
           const entryItem = page.getByTestId("data-item").filter({
             hasText: existantEntry.name,
           });
+          await expect(entryItem).toBeVisible();
           await entryItem.getByTestId("update-item-btn").click();
           await expect(page.getByTestId("update-item-form")).toBeVisible();
 

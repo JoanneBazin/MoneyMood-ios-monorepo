@@ -23,7 +23,7 @@ test.describe("Monthly expenses", () => {
 
   test(
     "should add new expenses and update remaining and weekly budget",
-    { tag: ["@smoke, @regression"] },
+    { tag: ["@smoke", "@regression"] },
     async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
 
@@ -148,6 +148,66 @@ test.describe("Monthly expenses", () => {
       expect(updatedNextWeeklyTotal).toBe(nextWeeklyTotal);
     },
   );
+
+  const invalidAmountCases = [
+    { value: "", issue: "empty" },
+    { value: "0", issue: "invalid" },
+  ];
+
+  for (const { value, issue } of invalidAmountCases) {
+    test(`should failed adding a new expense with ${issue} amount`, async ({
+      page,
+      user,
+    }) => {
+      await loginUser(page, user.email, user.password);
+
+      const currentWeeklyTotal = await getCurrencyValue(
+        page.getByTestId("total-data-amount"),
+      );
+
+      const newExpense = { name: "expense 1", amount: value };
+
+      await fillNewEntry(page, "expenses", newExpense);
+      await page.getByTestId("add-expenses-btn").click();
+
+      await expect(page.getByTestId("amount-input-error")).toBeVisible();
+      await expect(
+        page.getByTestId("data-item").filter({
+          hasText: newExpense.name,
+        }),
+      ).not.toBeVisible();
+
+      const updatedCurrentWeeklyTotal = await getCurrencyValue(
+        page.getByTestId("total-data-amount"),
+      );
+      expect(updatedCurrentWeeklyTotal).toBe(currentWeeklyTotal);
+    });
+
+    test(`should failed updating expense with ${issue} amount`, async ({
+      page,
+      user,
+    }) => {
+      const existantExpense = await createMonthlyExpenseInDB(
+        currentBudget.id,
+        1,
+      );
+      await loginUser(page, user.email, user.password);
+
+      const expenseItem = page.getByTestId("data-item").filter({
+        hasText: existantExpense.name,
+      });
+      await expect(expenseItem).toBeVisible();
+
+      await expenseItem.getByTestId("update-item-btn").click();
+      await expect(page.getByTestId("update-item-form")).toBeVisible();
+
+      await page.getByTestId("update-amount-input").fill(value);
+      await page.getByTestId("update-btn").click();
+
+      await expect(page.getByTestId("amount-input-error")).toBeVisible();
+      await expect(page.getByTestId("update-item-form")).toBeVisible();
+    });
+  }
 
   //Problème synchro cache / database
   test(

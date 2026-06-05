@@ -7,6 +7,7 @@ export const useLoginMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: ["login"],
     mutationFn: ({ email, password }: LoginInput) => login({ email, password }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({

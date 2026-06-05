@@ -18,8 +18,12 @@ export const queryClient = new QueryClient({
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error: any) => {
-      if (error instanceof ApiError && error.status === 401) {
+    onError: (error: any, _variables, _context, mutation) => {
+      if (
+        error instanceof ApiError &&
+        error.status === 401 &&
+        mutation.options.mutationKey?.[0] !== "login"
+      ) {
         resetAppState(queryClient);
         window.location.href = "/login";
       }

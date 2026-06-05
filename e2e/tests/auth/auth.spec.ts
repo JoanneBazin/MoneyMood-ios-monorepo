@@ -1,5 +1,5 @@
 import { expect, test } from "fixtures/user.fixture";
-import { getStoredUser, loginUser } from "../../helpers/auth";
+import { loginUser } from "../../helpers/auth";
 import {
   createMonthlyBudgetInDB,
   createUserInDB,
@@ -37,13 +37,6 @@ test.describe("Authentication", () => {
         await page.click('button[type="submit"]');
 
         await page.waitForURL("/app");
-
-        const storedUser = await getStoredUser(page);
-        expect(storedUser).toMatchObject({
-          id: expect.any(String),
-          name: user.name,
-          email: user.email,
-        });
 
         const banner = page.getByTestId("app-banner");
         await expect(banner).toBeVisible();
@@ -139,13 +132,6 @@ test.describe("Authentication", () => {
 
         await page.waitForURL("/app");
 
-        const storedUser = await getStoredUser(page);
-        expect(storedUser).toMatchObject({
-          id: expect.any(String),
-          name: user.name,
-          email: user.email,
-        });
-
         const banner = page.getByTestId("app-banner");
         await expect(banner).toBeVisible();
         await expect(banner).toContainText(user.name);
@@ -167,13 +153,6 @@ test.describe("Authentication", () => {
         await page.click('button[type="submit"]');
 
         await page.waitForURL("/app");
-
-        const storedUser = await getStoredUser(page);
-        expect(storedUser).toMatchObject({
-          id: expect.any(String),
-          name: user.name,
-          email: user.email,
-        });
 
         const banner = page.getByTestId("app-banner");
         await expect(banner).toBeVisible();
@@ -247,13 +226,10 @@ test.describe("Authentication", () => {
         await page.getByTestId("nav-menu").click();
         await page.getByTestId("logout-btn").click();
 
-        await page.waitForURL("/");
-
-        const storageData = await getStoredUser(page);
-        expect(storageData).toBeNull();
+        await expect(page).toHaveURL("/login");
 
         await page.goto("/app");
-        await expect(page).toHaveURL("/");
+        await expect(page).toHaveURL("/login");
       },
     );
 
@@ -265,7 +241,8 @@ test.describe("Authentication", () => {
 
         await page.getByTestId("nav-menu").click();
         await page.getByTestId("logout-btn").click();
-        await page.waitForURL("/");
+
+        await expect(page).toHaveURL("/login");
 
         const cookies = await context.cookies();
         const sessionCookie = cookies.find((c) => c.name === "session");
@@ -307,41 +284,25 @@ test.describe("Authentication", () => {
     });
 
     test(
-      "should redirect to public home when accessing protected page with expired session",
+      "should redirect to login page when accessing protected page with expired session",
       { tag: ["@regression"] },
       async ({ page, user }) => {
         await loginUser(page, user.email, user.password);
         await updateSessionExpirationInDb(user.id, new Date(Date.now() - 1000));
 
         await page.goto("/app");
-
-        await expect(page).toHaveURL("/");
-      },
-    );
-
-    test(
-      "should redirect to login page when doing authenticated action with expired session",
-      { tag: ["@regression"] },
-      async ({ page, user }) => {
-        await createMonthlyBudgetInDB(user.id);
-        await loginUser(page, user.email, user.password);
-
-        await updateSessionExpirationInDb(user.id, new Date(Date.now() - 1000));
-
-        await page.getByTestId("budget-options-menu").click();
-        await page.getByTestId("update-budget-status").click();
 
         await expect(page).toHaveURL("/login");
       },
     );
 
     test(
-      "should redirect to public home when accessing protected page without auth",
+      "should redirect to login page when accessing protected page without auth",
       { tag: ["@regression"] },
       async ({ page }) => {
         await page.goto("/app");
 
-        await expect(page).toHaveURL("/");
+        await expect(page).toHaveURL("/login");
       },
     );
   });

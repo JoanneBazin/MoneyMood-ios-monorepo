@@ -13,7 +13,7 @@ export const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    mutate(undefined, { onSuccess: () => navigate("/") });
+    mutate(undefined, { onSuccess: () => navigate("/login") });
   };
   return (
     <header>

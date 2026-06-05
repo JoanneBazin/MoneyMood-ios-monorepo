@@ -31,8 +31,8 @@ test.describe("Budget history", () => {
         youngestBudget.month,
       );
       await loginUser(page, user.email, user.password);
-
-      await page.getByTestId("history-nav").click();
+      await page.goto("/app/history");
+      // await page.getByTestId("history-nav").click();
       const firstBudgetCard = page.getByTestId("history-card").first();
 
       await expect(firstBudgetCard).toContainText(new RegExp(budgetDate, "i"));

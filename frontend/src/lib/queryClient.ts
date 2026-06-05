@@ -1,4 +1,4 @@
-import { QueryCache, QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { resetAppState } from "./resetAppState";
 import { ApiError } from "./ApiError";
@@ -10,6 +10,14 @@ const isTest =
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
+    onError: (error: any) => {
+      if (error instanceof ApiError && error.status === 401) {
+        resetAppState(queryClient);
+        window.location.href = "/login";
+      }
+    },
+  }),
+  mutationCache: new MutationCache({
     onError: (error: any) => {
       if (error instanceof ApiError && error.status === 401) {
         resetAppState(queryClient);

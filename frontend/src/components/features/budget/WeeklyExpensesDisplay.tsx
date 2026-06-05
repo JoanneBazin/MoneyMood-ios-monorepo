@@ -12,7 +12,7 @@ import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import { MonthlyExpenseEntry, WeeklyExpensesDisplayProps } from "@/types";
 import { useWeeklyExpenses } from "@/hooks/useWeeklyExpenses";
 import { useWeeklyExpensesAction } from "@/hooks/actions";
-import { useAppStore } from "@/stores/appStore";
+import { useSessionQuery } from "@/hooks/queries";
 
 export const WeeklyExpensesDisplay = ({
   budgetId,
@@ -34,8 +34,7 @@ export const WeeklyExpensesDisplay = ({
   } = useWeeklyExpenses({ expenses, weeklyBudget, edit });
 
   const { actions, state, status } = useWeeklyExpensesAction({ budgetId });
-  const user = useAppStore((s) => s.user);
-
+  const { data: user } = useSessionQuery();
   useEffect(() => {
     setNewExpenses([]);
   }, [weekIndex]);

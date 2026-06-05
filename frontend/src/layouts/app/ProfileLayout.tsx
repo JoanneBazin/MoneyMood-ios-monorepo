@@ -4,9 +4,11 @@ import { Header, OfflineBanner, ProfileNavigation } from "../components";
 import { useAppStore } from "@/stores/appStore";
 import { useEffect } from "react";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
+import { useSessionQuery } from "@/hooks/queries";
 
 export const ProfileLayout = () => {
-  const { user, setPageTitle } = useAppStore();
+  const { setPageTitle } = useAppStore();
+  const { data: user } = useSessionQuery();
   const { isOffline } = useOfflineStatus();
 
   useEffect(() => {

@@ -1,10 +1,20 @@
-import { useAppStore } from "@/stores/appStore";
+import { useSessionQuery } from "@/hooks/queries";
 import { Navigate, Outlet } from "react-router-dom";
+import { Loader } from "../ui";
+import { ErrorState } from "@/layouts/components";
 
 export const RequireAuth = () => {
-  const user = useAppStore((s) => s.user);
+  const { data: user, isPending, error } = useSessionQuery();
 
-  if (!user) return <Navigate to="/" replace />;
+  if (isPending) {
+    return <Loader type="layout" />;
+  }
+
+  if (error) {
+    return <ErrorState />;
+  }
+
+  if (!user) return <Navigate to="/login" replace />;
 
   return <Outlet />;
 };

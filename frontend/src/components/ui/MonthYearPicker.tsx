@@ -9,6 +9,7 @@ export const MonthYearPicker = ({
   defaultInput = true,
 }: MonthYearPickerProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const minAllowedDate = new Date(2025, 0, 1);
 
   useEffect(() => {
     if (defaultInput) {
@@ -31,6 +32,7 @@ export const MonthYearPicker = ({
         selected={selectedDate}
         onChange={handleChange}
         dateFormat="MMMM yyyy"
+        minDate={minAllowedDate}
         showMonthYearPicker
         showFullMonthYearPicker
         locale={fr}

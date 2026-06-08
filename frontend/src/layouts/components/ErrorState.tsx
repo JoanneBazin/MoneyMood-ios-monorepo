@@ -6,8 +6,8 @@ export const ErrorState = () => {
   const goHome = () => {
     navigate("/");
   };
-  const goBack = () => {
-    navigate(-1);
+  const retry = () => {
+    navigate(0);
   };
 
   return (
@@ -19,7 +19,7 @@ export const ErrorState = () => {
           <button onClick={goHome} className="primary-btn">
             Retour à l'accueil
           </button>
-          <button onClick={goBack} className="secondary-btn">
+          <button onClick={retry} className="secondary-btn">
             Réessayer
           </button>
         </div>

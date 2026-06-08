@@ -1,37 +1,17 @@
 import { SpecialBudgetForm } from "@shared/schemas";
 import { SpecialBudget, SpecialBudgetItem } from "@/types";
-import { ApiError } from "@/lib/ApiError";
 import { apiFetch } from "@/lib/apiFetch";
 
 export const fetchAllSpecialBudgets = async (): Promise<
   SpecialBudgetItem[]
 > => {
-  const response = await fetch(`/api/special-budgets`, {
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(
-      response.status,
-      data.error || "Budgets non disponibles",
-    );
-  }
-  return response.json();
+  return apiFetch(`/api/special-budgets`);
 };
 
 export const fetchSpecialBudget = async (
   id: string,
 ): Promise<SpecialBudget> => {
-  const response = await fetch(`/api/special-budgets/${id}`, {
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Budget non disponible");
-  }
-  return response.json();
+  return apiFetch(`/api/special-budgets/${id}`);
 };
 
 export const addSpecialBudget = async (

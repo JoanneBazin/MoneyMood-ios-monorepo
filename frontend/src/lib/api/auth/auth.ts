@@ -1,3 +1,4 @@
+import { ApiError } from "@/lib/ApiError";
 import { apiFetch } from "@/lib/apiFetch";
 import { LoginInput, SignupInput } from "@shared/schemas";
 import { User } from "@shared/types";
@@ -27,17 +28,34 @@ export const logout = async (): Promise<void> => {
 };
 
 export const fetchSession = async () => {
-  const response = await fetch(`/api/auth/session`, {
-    credentials: "include",
-  });
+  try {
+    const response = await fetch(`/api/auth/session`, {
+      credentials: "include",
+    });
 
-  if (response.status === 401) {
-    return null;
+    if (response.status === 401) {
+      return null;
+    }
+
+    const contentType = response.headers.get("content-type");
+    const isJson = contentType && contentType.includes("application/json");
+
+    if (!response.ok) {
+      const data = isJson ? await response.json() : null;
+      throw new ApiError(
+        response.status,
+        data?.error || "Une erreur interne est survenue",
+      );
+    }
+
+    if (!isJson) {
+      throw new Error("Réponse du serveur invalide");
+    }
+    return response.json();
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, "Une erreur interne est survenue");
   }
-
-  if (!response.ok) {
-    throw new Error(`Erreur HTTP ${response.status}`);
-  }
-
-  return response.json();
 };

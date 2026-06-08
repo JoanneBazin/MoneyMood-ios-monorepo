@@ -1,24 +1,11 @@
 import { BaseEntryOutput } from "@shared/schemas";
 import { Entry, MonthlyEntryType } from "@/types";
-import { ApiError } from "@/lib/ApiError";
 import { apiFetch } from "@/lib/apiFetch";
 
 export const fetchFixedEntries = async (
   type: MonthlyEntryType,
 ): Promise<Entry[]> => {
-  const response = await fetch(`/api/fixed-${type}`, {
-    credentials: "include",
-  });
-
-  if (response.status === 404) {
-    return [];
-  }
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Données indisponibles");
-  }
-  return response.json();
+  return apiFetch(`/api/fixed-${type}`);
 };
 
 export const addFixedEntries = async (

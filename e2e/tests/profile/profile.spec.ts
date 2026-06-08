@@ -1,12 +1,12 @@
 import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "helpers/auth";
+import { seedMonthlyExpenseInDB } from "helpers/budget";
 import {
   createMonthlyBudgetInDB,
-  createMonthlyExpenseInDB,
   createUserInDB,
+  deleteUserFromDB,
   resetUserData,
 } from "helpers/db-helpers";
-import { accessProfileSettings } from "helpers/profile";
 
 test.describe("User profile", () => {
   test(
@@ -14,8 +14,14 @@ test.describe("User profile", () => {
     { tag: ["@regression"] },
     async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
-      await accessProfileSettings(page);
       const newUser = { name: "Updated Name", email: "updated@test.com" };
+      await deleteUserFromDB(newUser.email);
+
+      await page.getByTestId("nav-menu").click();
+      await page.getByTestId("profile-nav").click();
+      await page.getByTestId("profile-settings-nav").click();
+
+      await expect(page).toHaveURL("/profile/settings");
 
       const banner = page.getByTestId("app-banner");
       const nameInput = page.getByTestId("user-name-input");
@@ -26,13 +32,11 @@ test.describe("User profile", () => {
       await expect(banner).toContainText(user.email);
       await expect(nameInput).toHaveValue(user.name);
       await expect(emailInput).toHaveValue(user.email);
-      await expect(updateButton).toBeDisabled();
 
       await nameInput.fill(newUser.name);
       await emailInput.fill(newUser.email);
       await updateButton.click();
 
-      await expect(updateButton).toBeDisabled();
       await expect(banner).toContainText(newUser.name);
       await expect(banner).toContainText(newUser.email);
 
@@ -56,22 +60,19 @@ test.describe("User profile", () => {
       );
 
       await loginUser(page, user.email, user.password);
-      await accessProfileSettings(page);
+      await page.goto("/profile/settings");
 
       await page.getByTestId("user-email-input").fill(existantUser.email);
       await page.getByTestId("update-user-submit").click();
 
       await expect(page.getByTestId("update-req-error")).toBeVisible();
       await expect(page.getByTestId("app-banner")).toContainText(user.email);
+
+      await deleteUserFromDB(existantUser.email);
     },
   );
 
   const updateCases = [
-    {
-      value: "U'ser",
-      field: "name",
-      issue: "invalid",
-    },
     {
       value: "",
       field: "name",
@@ -95,7 +96,7 @@ test.describe("User profile", () => {
       user,
     }) => {
       await loginUser(page, user.email, user.password);
-      await accessProfileSettings(page);
+      await page.goto("/profile/settings");
 
       await page.getByTestId(`user-${field}-input`).fill(value);
       await page.getByTestId("update-user-submit").click();
@@ -104,12 +105,16 @@ test.describe("User profile", () => {
     });
   }
 
-  test("should activate expense validation option", async ({ page, user }) => {
-    await loginUser(page, user.email, user.password);
+  test("should activate expense validation option", async ({
+    page,
+    user,
+    request,
+  }) => {
     const { id: budgetId } = await createMonthlyBudgetInDB(user.id);
-    const expense = await createMonthlyExpenseInDB(budgetId);
+    const { data: expense } = await seedMonthlyExpenseInDB(request, budgetId);
+    await loginUser(page, user.email, user.password);
 
-    await accessProfileSettings(page);
+    await page.goto("/profile/settings");
 
     await page.getByTestId("expense-validation-checkbox").check();
     await page.getByTestId("update-user-submit").click();

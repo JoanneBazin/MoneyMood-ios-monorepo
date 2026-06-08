@@ -27,7 +27,7 @@ export const logout = async (): Promise<void> => {
   });
 };
 
-export const fetchSession = async () => {
+export const fetchSession = async (): Promise<User | null> => {
   try {
     const response = await fetch(`/api/auth/session`, {
       credentials: "include",

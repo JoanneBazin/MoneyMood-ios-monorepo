@@ -6,7 +6,7 @@ import { useOfflineStatus } from "../useOfflineStatus";
 export const useSessionQuery = () => {
   const { isOnline } = useOfflineStatus();
 
-  const query = useQuery<User>({
+  const query = useQuery<User | null>({
     queryKey: ["session"],
     queryFn: fetchSession,
     enabled: isOnline,

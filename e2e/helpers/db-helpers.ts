@@ -144,7 +144,8 @@ export const createFixedEntryInDb = async (
       amount: "100",
     },
   });
-  return { ...entry, amount: Number(entry.amount) };
+
+  return { name: entry.name, amount: Number(entry.amount) };
 };
 
 export const deleteAllFixedEntriesInDB = async (userId: string) => {

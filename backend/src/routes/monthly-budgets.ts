@@ -20,6 +20,7 @@ import {
   getLastBudgets,
   getMonthlyBudget,
   getMonthlyBudgetById,
+  seedTestBudgetData,
   updateExpense,
   updateExpenseValidation,
   updateMonthlyBudgetStatus,
@@ -41,7 +42,7 @@ router.post(
   "/",
   requireAuth,
   validateBody(monthlyBudgetServerSchema),
-  addMonthlyBudget
+  addMonthlyBudget,
 );
 router.get("/", requireAuth, validateQuery(queryDateSchema), getMonthlyBudget);
 router.get("/current", requireAuth, getCurrentMonthlyBudget);
@@ -51,7 +52,7 @@ router.patch(
   "/:id",
   requireAuth,
   validateBody(updateCurrentStatusSchema),
-  updateMonthlyBudgetStatus
+  updateMonthlyBudgetStatus,
 );
 router.delete("/:id", requireAuth, deleteMonthlyBudget);
 
@@ -61,20 +62,20 @@ router.post(
   requireAuth,
   checkBudgetAccess,
   validateBody(baseEntryServerSchema),
-  addMonthlyIncomes
+  addMonthlyIncomes,
 );
 router.put(
   "/:id/incomes/:incomeId",
   requireAuth,
   checkBudgetAccess,
   validateBody(baseEntryServerSchema),
-  updateMonthlyIncome
+  updateMonthlyIncome,
 );
 router.delete(
   "/:id/incomes/:incomeId",
   requireAuth,
   checkBudgetAccess,
-  deleteMonthlyIncome
+  deleteMonthlyIncome,
 );
 
 // Monthly charges
@@ -83,20 +84,20 @@ router.post(
   requireAuth,
   checkBudgetAccess,
   validateBody(baseEntryServerSchema),
-  addMonthlyCharges
+  addMonthlyCharges,
 );
 router.put(
   "/:id/charges/:chargeId",
   requireAuth,
   checkBudgetAccess,
   validateBody(baseEntryServerSchema),
-  updateMonthlyCharge
+  updateMonthlyCharge,
 );
 router.delete(
   "/:id/charges/:chargeId",
   requireAuth,
   checkBudgetAccess,
-  deleteMonthlyCharge
+  deleteMonthlyCharge,
 );
 
 // Monthly Expenses
@@ -106,7 +107,7 @@ router.post(
   checkBudgetAccess,
   validateBody(expenseServerSchema),
   resolveBudgetType,
-  addExpenses
+  addExpenses,
 );
 router.put(
   "/:id/expenses/:expenseId",
@@ -114,21 +115,23 @@ router.put(
   checkBudgetAccess,
   validateBody(baseEntryServerSchema),
   resolveBudgetType,
-  updateExpense
+  updateExpense,
 );
 router.patch(
   "/:id/expenses/:expenseId/cashed",
   requireAuth,
   checkBudgetAccess,
   resolveBudgetType,
-  updateExpenseValidation
+  updateExpenseValidation,
 );
 router.delete(
   "/:id/expenses/:expenseId",
   requireAuth,
   checkBudgetAccess,
   resolveBudgetType,
-  deleteExpense
+  deleteExpense,
 );
+
+router.post("/test/seed", seedTestBudgetData);
 
 export default router;

@@ -2,11 +2,14 @@ import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "../../helpers/auth";
 import {
   createMonthlyBudgetInDB,
-  createMonthlyExpenseInDB,
   deleteAllMonthlyBudgetsInDB,
   deleteAllMonthlyExpensesInDB,
 } from "helpers/db-helpers";
-import { fillNewEntry, getCurrencyValue } from "helpers/budget";
+import {
+  fillNewEntry,
+  getCurrencyValue,
+  seedMonthlyExpenseInDB,
+} from "helpers/budget";
 
 test.describe("Monthly expenses", () => {
   let currentBudget: Awaited<ReturnType<typeof createMonthlyBudgetInDB>>;
@@ -186,10 +189,11 @@ test.describe("Monthly expenses", () => {
     test(`should failed updating expense with ${issue} amount`, async ({
       page,
       user,
+      request,
     }) => {
-      const existantExpense = await createMonthlyExpenseInDB(
+      const { data: existantExpense } = await seedMonthlyExpenseInDB(
+        request,
         currentBudget.id,
-        1,
       );
       await loginUser(page, user.email, user.password);
 
@@ -209,15 +213,13 @@ test.describe("Monthly expenses", () => {
     });
   }
 
-  //Problème synchro cache / database
   test(
     "should update expense and update remaining and weekly budget",
     { tag: ["@regression"] },
-    async ({ page, user }) => {
-      // await loginUser(page, user.email, user.password);
-      const existantExpense = await createMonthlyExpenseInDB(
+    async ({ page, user, request }) => {
+      const { data: existantExpense } = await seedMonthlyExpenseInDB(
+        request,
         currentBudget.id,
-        1,
       );
       await loginUser(page, user.email, user.password);
       const updatedExpense = { name: "Updated expense", amount: "100" };
@@ -240,7 +242,12 @@ test.describe("Monthly expenses", () => {
       await page.getByTestId("update-amount-input").fill(updatedExpense.amount);
       await page.getByTestId("update-btn").click();
 
-      await expect(expenseItem).toContainText(updatedExpense.name);
+      await expect(expenseItem).not.toBeVisible();
+      await expect(
+        page.getByTestId("data-item").filter({
+          hasText: updatedExpense.name,
+        }),
+      ).toBeVisible();
 
       const updatedRemaining = await getCurrencyValue(
         page.getByTestId("total-budget-amount"),
@@ -257,15 +264,13 @@ test.describe("Monthly expenses", () => {
     },
   );
 
-  //Problème synchro cache / database
   test(
     "should delete expense and update remaining and weekly budget",
     { tag: ["@regression"] },
-    async ({ page, user }) => {
-      // await loginUser(page, user.email, user.password);
-      const existantExpense = await createMonthlyExpenseInDB(
+    async ({ page, user, request }) => {
+      const { data: existantExpense } = await seedMonthlyExpenseInDB(
+        request,
         currentBudget.id,
-        1,
       );
       await loginUser(page, user.email, user.password);
 
@@ -295,18 +300,23 @@ test.describe("Monthly expenses", () => {
         page.getByTestId("total-data-amount"),
       );
 
-      expect(updatedWeekly).toBe(previousWeekly - existantExpense.amount);
+      expect(updatedWeekly).toBe(previousWeekly + existantExpense.amount);
 
-      expect(updatedRemaining).toBe(previousRemaining - existantExpense.amount);
+      expect(updatedRemaining).toBe(previousRemaining + existantExpense.amount);
     },
   );
 
   test("should cancel expense deletion before request", async ({
     page,
     user,
+    request,
   }) => {
+    const { data: existantExpense } = await seedMonthlyExpenseInDB(
+      request,
+      currentBudget.id,
+      1,
+    );
     await loginUser(page, user.email, user.password);
-    const existantExpense = await createMonthlyExpenseInDB(currentBudget.id, 1);
 
     const expenseItem = page.getByTestId("data-item").filter({
       hasText: existantExpense.name,

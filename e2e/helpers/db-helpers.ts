@@ -120,28 +120,6 @@ export const createArchivedBudgets = async (
   };
 };
 
-export const createMonthlyExpenseInDB = async (
-  monthlyBudgetId: string,
-  weekNumber = 1,
-) => {
-  const newExpense = await prisma.expense.create({
-    data: {
-      monthlyBudgetId,
-      name: "Expense",
-      amount: 50,
-      weekNumber,
-    },
-    select: {
-      name: true,
-      amount: true,
-    },
-  });
-  return {
-    ...newExpense,
-    amount: Number(newExpense.amount),
-  };
-};
-
 export const deleteAllMonthlyBudgetsInDB = async (userId: string) => {
   await prisma.monthlyBudget.deleteMany({
     where: { userId },

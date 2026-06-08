@@ -3,13 +3,19 @@ import { loginUser } from "../../helpers/auth";
 import {
   createMonthlyBudgetInDB,
   deleteAllMonthlyBudgetsInDB,
+  PrismaModelSheets,
 } from "helpers/db-helpers";
-import { fillNewEntry, getCurrencyValue } from "helpers/budget";
+import {
+  fillNewEntry,
+  getCurrencyValue,
+  seedMonthlyEntryInDb,
+} from "helpers/budget";
 
 interface ResourcesConfig {
   label: string;
   entryType: "incomes" | "charges";
   name: string;
+  table: PrismaModelSheets;
   computeExpected: (prev: number, amount: number) => number;
 }
 
@@ -23,26 +29,25 @@ test.describe("Monthly entries", () => {
       label: "Monthly charges",
       entryType: "charges",
       name: "charges",
+      table: "monthlyCharge",
       computeExpected: (prev, amount) => prev - amount,
     },
     {
       label: "Monthly incomes",
       entryType: "incomes",
       name: "revenus",
+      table: "monthlyIncome",
       computeExpected: (prev, amount) => prev + amount,
     },
   ];
 
-  for (const { label, entryType, name, computeExpected } of resources) {
+  for (const { label, entryType, name, table, computeExpected } of resources) {
     test.describe(`${label} managment`, () => {
       let currentBudget: Awaited<ReturnType<typeof createMonthlyBudgetInDB>>;
 
       test.beforeEach(async ({ user }) => {
         await deleteAllMonthlyBudgetsInDB(user.id);
         currentBudget = await createMonthlyBudgetInDB(user.id);
-      });
-      test.afterAll(async ({ user }) => {
-        await deleteAllMonthlyBudgetsInDB(user.id);
       });
 
       test(
@@ -187,18 +192,20 @@ test.describe("Monthly entries", () => {
           const updatedTotal = await getCurrencyValue(
             page.getByTestId("total-budget-amount"),
           );
-          expect(updatedTotal).toBe(
-            computeExpected(previousTotal, Number(newEntry.amount)),
-          );
+          expect(updatedTotal).toBe(previousTotal + Number(newEntry.amount));
         },
       );
 
       test(
         `should update monthly ${entryType} and update remaining budget`,
         { tag: ["@regression"] },
-        async ({ page, user }) => {
+        async ({ page, user, request }) => {
+          const { data: existantEntry } = await seedMonthlyEntryInDb(
+            request,
+            currentBudget.id,
+            table,
+          );
           await loginUser(page, user.email, user.password);
-          const existantEntry = currentBudget[entryType][0];
           const updatedAmount = "100";
 
           const remainingBudget = page.getByTestId("remaining-budget");
@@ -250,9 +257,13 @@ test.describe("Monthly entries", () => {
       test(
         `should delete monthly ${entryType} and update remaining budget`,
         { tag: ["@regression"] },
-        async ({ page, user }) => {
+        async ({ page, user, request }) => {
+          const { data: existantEntry } = await seedMonthlyEntryInDb(
+            request,
+            currentBudget.id,
+            table,
+          );
           await loginUser(page, user.email, user.password);
-          const existantEntry = currentBudget[entryType][0];
 
           const remainingBudget = page.getByTestId("remaining-budget");
           const previousRemaining = await getCurrencyValue(

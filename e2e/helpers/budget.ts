@@ -1,4 +1,21 @@
-import { Locator, Page } from "@playwright/test";
+import { APIRequestContext, expect, Locator, Page } from "@playwright/test";
+import { PrismaModelSheets } from "./db-helpers";
+
+interface EntryResponse {
+  data: {
+    name: string;
+    amount: number;
+  };
+  remainingBudget: number;
+}
+
+interface ExpenseResponse extends EntryResponse {
+  data: {
+    name: string;
+    amount: number;
+    weekNumber: number;
+  };
+}
 
 export const displayedDate = (year: number, month: number) => {
   const date = new Date(year, month - 1);
@@ -70,4 +87,44 @@ export const getMonthlyBudgetTotals = async (
   );
 
   return { totalRemaining, totalWeekly };
+};
+
+export const seedMonthlyEntryInDb = async (
+  request: APIRequestContext,
+  monthlyBudgetId: string,
+  table: PrismaModelSheets,
+) => {
+  const createReq = await request.post("/api/monthly-budgets/test/seed", {
+    headers: {
+      Authorization: `Bearer ${process.env.E2E_TOKEN}`,
+    },
+    data: {
+      model: table,
+      data: { monthlyBudgetId, name: "Entry Test", amount: 300 },
+    },
+  });
+
+  expect(createReq.ok).toBeTruthy();
+  const response: EntryResponse = await createReq.json();
+  return response;
+};
+
+export const seedMonthlyExpenseInDB = async (
+  request: APIRequestContext,
+  monthlyBudgetId: string,
+  weekNumber = 1,
+) => {
+  const createReq = await request.post("/api/monthly-budgets/test/seed", {
+    headers: {
+      Authorization: `Bearer ${process.env.E2E_TOKEN}`,
+    },
+    data: {
+      model: "expense",
+      data: { monthlyBudgetId, name: "Expense Test", amount: 30, weekNumber },
+    },
+  });
+
+  expect(createReq.ok).toBeTruthy();
+  const response: ExpenseResponse = await createReq.json();
+  return response;
 };

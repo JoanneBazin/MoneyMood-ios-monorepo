@@ -1,14 +1,11 @@
 import { AnimatedDropdown, DeleteModalContent, Modal } from "@/components/ui";
-import {
-  useDeleteMonthlyBudgetMutation,
-  useUpdateBudgetStatusMutation,
-} from "@/hooks/queries/mutations";
+import { useMonthlyBudgetAction } from "@/hooks/actions";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { MonthlyBudgetOptionsProps } from "@/types";
 import { CalendarFold, Settings, Trash } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const MonthlyBudgetOptions = ({
   isCurrent,
@@ -20,24 +17,26 @@ export const MonthlyBudgetOptions = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isOffline } = useOfflineStatus();
 
-  const updateBudgetStatus = useUpdateBudgetStatusMutation();
-  const deleteMonthlyBudget = useDeleteMonthlyBudgetMutation();
+  const { actions, state, status } = useMonthlyBudgetAction();
+
+  useEffect(() => {
+    if (isModalOpen) {
+      actions.clearModalErrors();
+    }
+  }, [isModalOpen]);
 
   const handleUpdateBudget = () => {
-    updateBudgetStatus.mutate(
-      { budgetId, isCurrent: !isCurrent },
-      {
-        onError: () => {
-          setIsOptionsOpen(false);
-          onError();
-        },
-      },
-    );
+    actions.updateBudgetStatus(budgetId, !isCurrent);
+    setIsOptionsOpen(false);
   };
 
   const handleDeleteBudget = () => {
-    deleteMonthlyBudget.mutate(budgetId);
+    actions.deleteMonthlyBudget(budgetId);
   };
+
+  if (state.dashboardError) {
+    onError(state.dashboardError);
+  }
 
   return (
     <div className="budget-options" ref={dropdownRef}>
@@ -87,8 +86,8 @@ export const MonthlyBudgetOptions = ({
         <DeleteModalContent
           onDelete={handleDeleteBudget}
           onClose={() => setIsModalOpen(false)}
-          isPending={deleteMonthlyBudget.isPending}
-          isError={deleteMonthlyBudget.isError}
+          isPending={status.isDeleting}
+          reqError={state.modalError}
         />
       </Modal>
     </div>

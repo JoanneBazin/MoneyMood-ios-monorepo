@@ -20,9 +20,9 @@ export const baseEntrySchema = z.object({
           .number()
           .refine(
             (val) => !isNaN(val) && val > 0,
-            "Veuillez saisir un montant positif valide"
-          )
-      )
+            "Veuillez saisir un montant positif valide",
+          ),
+      ),
   ),
 });
 
@@ -77,7 +77,8 @@ export const monthlyBudgetServerSchema = monthlyBudgetSchema.extend({
   incomes: z.array(baseEntryServerSchema).default([]),
   charges: z.array(baseEntryServerSchema).default([]),
 });
-export type MonthlyBudgetForm = z.infer<typeof monthlyBudgetSchema>;
+export type MonthlyBudgetForm = z.input<typeof monthlyBudgetSchema>;
+export type MonthlyBudgetOutput = z.output<typeof monthlyBudgetSchema>;
 
 export const updateCurrentStatusSchema = monthlyBudgetSchema.pick({
   isCurrent: true,
@@ -106,11 +107,12 @@ export const specialBudgetSchema = z.object({
       .number()
       .refine(
         (val) => !isNaN(val) && val > 0,
-        "Veuillez saisir un montant positif valide"
-      )
+        "Veuillez saisir un montant positif valide",
+      ),
   ),
 });
-export type SpecialBudgetForm = z.infer<typeof specialBudgetSchema>;
+export type SpecialBudgetForm = z.input<typeof specialBudgetSchema>;
+export type SpecialBudgetOutput = z.output<typeof specialBudgetSchema>;
 
 export const categorySchema = z.object({
   name: z

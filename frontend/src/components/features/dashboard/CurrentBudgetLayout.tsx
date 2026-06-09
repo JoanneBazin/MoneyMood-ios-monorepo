@@ -66,11 +66,7 @@ export const CurrentBudgetLayout = ({
         <MonthlyBudgetOptions
           isCurrent={true}
           budgetId={budget.id}
-          onError={() =>
-            setBudgetError(
-              "Une erreur est survenue lors de la mise à jour du budget",
-            )
-          }
+          onError={(reqError) => setBudgetError(reqError)}
         />
       </div>
 

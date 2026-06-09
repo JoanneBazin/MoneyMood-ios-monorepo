@@ -31,7 +31,7 @@ export const ProjectExpenses = ({
   useEffect(() => {
     if (selectedEntry) {
       setSelectedCategory(selectedEntry.specialCategoryId ?? "");
-      actions.clearUpdateErrors();
+      actions.clearModalErrors();
     }
   }, [selectedEntry]);
 
@@ -84,7 +84,7 @@ export const ProjectExpenses = ({
 
       <AddEntriesForm
         initialData={newExpenses}
-        errors={state.addValidationErrors}
+        validationErrors={state.addValidationErrors}
         onChange={setNewExpenses}
         onResetErrors={() => actions.clearAddValidationErrors()}
         type="special-expenses"
@@ -111,10 +111,10 @@ export const ProjectExpenses = ({
           <UpdateEntryForm
             initialData={selectedEntry}
             validationErrors={state.updateValidationError}
-            genericError={state.modalError}
+            reqError={state.modalError}
             onSubmit={handleUpdateExpense}
             onDelete={handleDeleteExpense}
-            onResetErrors={() => actions.clearUpdateErrors()}
+            onResetErrors={() => actions.clearUpdateValidationErrors()}
           >
             <CategorySelect
               budgetId={budgetId}

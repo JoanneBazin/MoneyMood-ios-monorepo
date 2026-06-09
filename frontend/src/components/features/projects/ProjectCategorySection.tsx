@@ -1,19 +1,11 @@
 import { CategoryForm } from "@/components/forms";
 import { Modal } from "@/components/ui";
-import {
-  useDeleteSpecialCategorOnCascadeyMutation,
-  useDeleteSpecialCategoryMutation,
-  useUpdateSpecialCategoryMutation,
-} from "@/hooks/queries/mutations";
+import { useCategoriesAction } from "@/hooks/actions";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { ProjectCategorySectionProps } from "@/types";
-import {
-  CategoryEntryForm,
-  categorySchema,
-  validateWithSchema,
-} from "@shared/schemas";
+import { CategoryEntryForm } from "@shared/schemas";
 import { Pen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const ProjectCategorySection = ({
   budgetId,
@@ -21,78 +13,34 @@ export const ProjectCategorySection = ({
   children,
 }: ProjectCategorySectionProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [requestError, setRequestError] = useState<string | null>(null);
-  const [validationError, setValidationError] = useState<Record<
-    string,
-    string
-  > | null>(null);
   const { isOffline } = useOfflineStatus();
 
-  const updateCategory = useUpdateSpecialCategoryMutation();
-  const deleteCategory = useDeleteSpecialCategoryMutation();
-  const deleteCategoryOnCascade = useDeleteSpecialCategorOnCascadeyMutation();
+  const { actions, state, status } = useCategoriesAction({ budgetId });
+
+  useEffect(() => {
+    if (isEditModalOpen) {
+      actions.clearModalErrors();
+    }
+  }, [isEditModalOpen]);
 
   const handleUpdateCategory = (updatedCategory: CategoryEntryForm) => {
-    setValidationError(null);
-    setRequestError(null);
-
-    const { data, success, errors } = validateWithSchema(
-      categorySchema,
-      updatedCategory,
-    );
-
-    if (!success) {
-      setValidationError(errors);
-      return;
-    }
-
-    if (data.name === category?.name) {
+    if (updatedCategory.name === category?.name) {
       setIsEditModalOpen(false);
       return;
     }
 
-    updateCategory.mutate(
-      {
-        category: data,
-        categoryId: category.id,
-        budgetId,
-      },
-      {
-        onSuccess: () => setIsEditModalOpen(false),
-        onError: () =>
-          setRequestError("Une erreur est survenue lors de la mise à jour"),
-      },
+    actions.updateCategory(updatedCategory, category.id, () =>
+      setIsEditModalOpen(false),
     );
   };
 
   const handleDeleteCategory = (onCascade: boolean) => {
-    setValidationError(null);
-    setRequestError(null);
-
     if (onCascade) {
-      deleteCategoryOnCascade.mutate(
-        {
-          categoryId: category.id,
-          budgetId,
-        },
-        {
-          onSuccess: () => setIsEditModalOpen(false),
-          onError: () =>
-            setRequestError("Une erreur est survenue lors de la mise à jour"),
-        },
+      actions.deleteCategoryOnCascade(category.id, () =>
+        setIsEditModalOpen(false),
       );
     } else {
-      deleteCategory.mutate(
-        {
-          categoryId: category.id,
-          budgetId,
-        },
-        {
-          onSuccess: () => setIsEditModalOpen(false),
-          onError: () =>
-            setRequestError("Une erreur est survenue lors de la mise à jour"),
-        },
-      );
+      actions.deleteCategory(category.id, () => setIsEditModalOpen(false));
     }
   };
 
@@ -115,10 +63,12 @@ export const ProjectCategorySection = ({
             title={`Modifier la catégorie`}
           >
             <CategoryForm
-              validationErrors={validationError}
-              genericError={requestError}
+              validationErrors={state.updateValidationErrors}
+              reqError={state.modalError}
+              onResetErrors={() => actions.clearUpdateValidationErrors()}
               onSubmit={handleUpdateCategory}
               onDelete={handleDeleteCategory}
+              isPending={status.isUpdating}
               initialData={category.name}
               edit={true}
             />

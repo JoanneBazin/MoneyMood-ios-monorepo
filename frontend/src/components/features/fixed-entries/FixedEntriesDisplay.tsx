@@ -24,7 +24,7 @@ export const FixedEntriesDisplay = ({
 
   useEffect(() => {
     if (selectedEntry) {
-      actions.clearUpdateErrors();
+      actions.clearModalErrors();
     }
   }, [selectedEntry]);
 
@@ -58,8 +58,8 @@ export const FixedEntriesDisplay = ({
 
         <AddEntriesForm
           initialData={newEntries}
-          errors={state.addValidationErrors}
-          onResetErrors={() => actions.clearAddValidationErrors}
+          validationErrors={state.addValidationErrors}
+          onResetErrors={() => actions.clearAddValidationErrors()}
           onChange={setNewEntries}
           type={type}
         />
@@ -85,10 +85,10 @@ export const FixedEntriesDisplay = ({
             <UpdateEntryForm
               initialData={selectedEntry}
               validationErrors={state.updateValidationError}
-              genericError={state.modalError}
+              reqError={state.modalError}
               onSubmit={handleUpdateEntry}
               onDelete={handleDeleteEntry}
-              onResetErrors={() => actions.clearUpdateErrors()}
+              onResetErrors={() => actions.clearUpdateValidationErrors()}
             />
           </Modal>
         )}

@@ -47,7 +47,7 @@ export interface UpdateSpecialExpenseParams extends BaseExpenseParams {
 }
 export interface UpdateExpenseValidationParams extends BaseExpenseParams {
   cashed: boolean;
-  isCurrentBudget: boolean;
+  isCurrentBudget?: boolean;
 }
 
 export interface DeleteExpenseParams extends BaseExpenseParams {}

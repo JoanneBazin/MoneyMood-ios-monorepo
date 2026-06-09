@@ -1,4 +1,5 @@
 import { useLoginMutation } from "@/hooks/queries/mutations";
+import { getErrorMessage } from "@/lib/error-helpers";
 import { loginSchema, validateWithSchema } from "@shared/schemas";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -68,7 +69,7 @@ export const LoginForm = () => {
       </button>
       {error && (
         <p className="req-error" data-testid="login-error">
-          {error.message}
+          {getErrorMessage(error)}
         </p>
       )}
     </form>

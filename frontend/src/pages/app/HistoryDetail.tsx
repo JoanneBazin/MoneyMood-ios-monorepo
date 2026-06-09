@@ -52,11 +52,7 @@ export const HistoryDetail = () => {
             <MonthlyBudgetOptions
               budgetId={id}
               isCurrent={false}
-              onError={() =>
-                setMutationError(
-                  "Une erreur est survenue lors de la mise à jour du budget",
-                )
-              }
+              onError={(reqError) => setMutationError(reqError)}
             />
           </div>
           {mutationError && <ErrorMessage message={mutationError} />}

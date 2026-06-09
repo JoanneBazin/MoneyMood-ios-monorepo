@@ -1,4 +1,4 @@
-import { SpecialBudgetForm } from "@shared/schemas";
+import { SpecialBudgetOutput } from "@shared/schemas";
 import { SpecialBudget, SpecialBudgetItem } from "@/types";
 import { apiFetch } from "@/lib/apiFetch";
 
@@ -15,7 +15,7 @@ export const fetchSpecialBudget = async (
 };
 
 export const addSpecialBudget = async (
-  newBudget: SpecialBudgetForm,
+  newBudget: SpecialBudgetOutput,
 ): Promise<SpecialBudget> => {
   return apiFetch(`/api/special-budgets`, {
     method: "POST",
@@ -24,7 +24,7 @@ export const addSpecialBudget = async (
 };
 
 export const updateSpecialBudget = async (
-  budget: SpecialBudgetForm,
+  budget: SpecialBudgetOutput,
   id: string,
 ): Promise<SpecialBudget> => {
   return apiFetch(`/api/special-budgets/${id}`, {

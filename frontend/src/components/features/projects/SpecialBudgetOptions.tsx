@@ -1,17 +1,13 @@
 import { ProjectForm } from "@/components/forms";
 import { AnimatedDropdown, DeleteModalContent, Modal } from "@/components/ui";
-import {
-  useDeleteSpecialBudgetMutation,
-  useUpdateSpecialBudgetMutation,
-} from "@/hooks/queries/mutations";
+import { useSpecialBudgetAction } from "@/hooks/actions";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { SpecialBudgetOptionsProps } from "@/types";
 import { SpecialBudgetForm } from "@shared/schemas";
 import { Edit, Settings, Trash } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export const SpecialBudgetOptions = ({
   budgetId,
@@ -23,10 +19,15 @@ export const SpecialBudgetOptions = ({
     "edit" | "delete" | null
   >(null);
 
-  const updateSpecialBudget = useUpdateSpecialBudgetMutation();
-  const deleteSpecialBudget = useDeleteSpecialBudgetMutation();
-  const navigate = useNavigate();
+  const { actions, state, status } = useSpecialBudgetAction();
+
   const { isOffline } = useOfflineStatus();
+
+  useEffect(() => {
+    if (selectedAction) {
+      actions.clearModalErrors();
+    }
+  }, [selectedAction]);
 
   const handleUpdateBudget = (budget: SpecialBudgetForm) => {
     if (
@@ -37,22 +38,13 @@ export const SpecialBudgetOptions = ({
       return;
     }
 
-    updateSpecialBudget.mutate(
-      { budget, budgetId },
-      {
-        onSuccess: () => {
-          setSelectedAction(null);
-        },
-      },
+    actions.updateSpecialBudget(budget, budgetId, () =>
+      setSelectedAction(null),
     );
   };
 
   const handleDeleteBudget = () => {
-    deleteSpecialBudget.mutate(budgetId, {
-      onSuccess: () => {
-        navigate("/app/projects");
-      },
-    });
+    actions.deleteSpecialBudget(budgetId, () => setSelectedAction(null));
   };
 
   return (
@@ -103,8 +95,10 @@ export const SpecialBudgetOptions = ({
         {selectedAction === "edit" && (
           <ProjectForm
             onSubmit={handleUpdateBudget}
-            isPending={updateSpecialBudget.isPending}
-            isError={updateSpecialBudget.isError}
+            isPending={status.isUpdating}
+            validationErrors={state.updateValidationErrors}
+            reqError={state.modalError}
+            onResetErrors={() => actions.clearUpdateValidationErrors()}
             edit={true}
             initialData={updatableData}
           />
@@ -114,8 +108,8 @@ export const SpecialBudgetOptions = ({
           <DeleteModalContent
             onDelete={handleDeleteBudget}
             onClose={() => setSelectedAction(null)}
-            isPending={deleteSpecialBudget.isPending}
-            isError={deleteSpecialBudget.isError}
+            isPending={status.isDeleting}
+            reqError={state.modalError}
           />
         )}
       </Modal>

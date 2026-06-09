@@ -1,44 +1,25 @@
 import { CategoryForm } from "@/components/forms";
 import { Modal } from "@/components/ui";
-import { useAddSpecialCategoryMutation } from "@/hooks/queries/mutations";
+import { useCategoriesAction } from "@/hooks/actions";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
-import {
-  CategoryEntryForm,
-  categorySchema,
-  validateWithSchema,
-} from "@shared/schemas";
-import { useState } from "react";
+import { CategoryEntryForm } from "@shared/schemas";
+import { useEffect, useState } from "react";
 
 export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [validationError, setValidationError] = useState<Record<
-    string,
-    string
-  > | null>(null);
-  const [requestError, setRequestError] = useState<string | null>(null);
-  const { mutate, isPending } = useAddSpecialCategoryMutation();
   const { isOffline } = useOfflineStatus();
+  const { actions, state, status } = useCategoriesAction({ budgetId });
+
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      actions.clearModalErrors();
+    }
+  }, [isCreateModalOpen]);
 
   const handleAddCategory = (category: CategoryEntryForm) => {
-    setValidationError(null);
-    setRequestError(null);
-
-    const validation = validateWithSchema(categorySchema, category);
-
-    if (!validation.success) {
-      setValidationError(validation.errors);
-      return;
-    }
-
-    mutate(
-      { category: validation.data, budgetId },
-      {
-        onSuccess: () => setIsCreateModalOpen(false),
-        onError: () =>
-          setRequestError("Une erreur est survenue lors de la création"),
-      },
-    );
+    actions.addCategory(category, () => setIsCreateModalOpen(false));
   };
+
   return (
     <div className="flex-end">
       <button
@@ -56,10 +37,11 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
           title={`Nouvelle catégorie pour ce budget`}
         >
           <CategoryForm
-            validationErrors={validationError}
-            genericError={requestError}
+            validationErrors={state.addValidationErrors}
+            reqError={state.modalError}
+            onResetErrors={() => actions.clearAddValidationErrors()}
             onSubmit={handleAddCategory}
-            isPending={isPending}
+            isPending={status.isAdding}
           />
         </Modal>
       )}

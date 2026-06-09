@@ -1,6 +1,6 @@
 import { apiFetch } from "@/lib/apiFetch";
 import { LastMonthlyBudget, MonthlyBudget } from "@/types";
-import { MonthlyBudgetForm } from "@shared/schemas";
+import { MonthlyBudgetOutput } from "@shared/schemas";
 
 export const fetchCurrentBudget = async (): Promise<MonthlyBudget | null> => {
   return apiFetch(`/api/monthly-budgets/current`);
@@ -27,7 +27,7 @@ export const updateMonthlyBudgetStatus = async (
 };
 
 export const createMonthlyBudget = async (
-  budget: MonthlyBudgetForm,
+  budget: MonthlyBudgetOutput,
 ): Promise<MonthlyBudget> => {
   return apiFetch(`/api/monthly-budgets`, {
     method: "POST",

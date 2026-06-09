@@ -5,7 +5,7 @@ import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 
 export const AddEntriesForm = ({
   initialData,
-  errors,
+  validationErrors,
   onChange,
   onResetErrors,
   type,
@@ -22,6 +22,7 @@ export const AddEntriesForm = ({
     field: keyof BaseEntryForm,
     value: string,
   ) => {
+    onResetErrors();
     const updatedEntries = entries.map((entry, i) =>
       i === index
         ? {
@@ -30,7 +31,6 @@ export const AddEntriesForm = ({
           }
         : entry,
     );
-    onResetErrors();
     setEntries(updatedEntries);
     onChange(updatedEntries);
   };
@@ -65,9 +65,11 @@ export const AddEntriesForm = ({
                 value={entry.name}
                 onChange={(e) => handleUpdate(index, "name", e.target.value)}
               />
-              {errors && errors[index] && errors[index].name ? (
+              {validationErrors &&
+              validationErrors[index] &&
+              validationErrors[index].name ? (
                 <p className="form-error" data-testid="name-input-error">
-                  {errors[index].name}
+                  {validationErrors[index].name}
                 </p>
               ) : null}
             </div>
@@ -98,7 +100,9 @@ export const AddEntriesForm = ({
                   x
                 </button>
               </div>
-              {errors && errors[index] && errors[index].amount ? (
+              {validationErrors &&
+              validationErrors[index] &&
+              validationErrors[index].amount ? (
                 <p className="form-error" data-testid="amount-input-error">
                   Montant invalide
                 </p>

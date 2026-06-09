@@ -11,6 +11,7 @@ import {
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
+import { getErrorMessage } from "@/lib/error-helpers";
 
 export const useMonthlyEntriesAction = ({
   budgetId,
@@ -52,6 +53,7 @@ export const useMonthlyEntriesAction = ({
         onSuccess: () => {
           onSuccess?.();
         },
+        onError: (error) => setDashboardError(getErrorMessage(error)),
       },
     );
   };
@@ -80,8 +82,7 @@ export const useMonthlyEntriesAction = ({
         onSuccess: () => {
           onSuccess?.();
         },
-        onError: () =>
-          setModalError("Une erreur est survenue lors de la mise à jour"),
+        onError: (error) => setModalError(getErrorMessage(error)),
       },
     );
   };
@@ -96,8 +97,7 @@ export const useMonthlyEntriesAction = ({
         onSuccess: () => {
           onSuccess?.();
         },
-        onError: () =>
-          setModalError("Une erreur est survenue lors de la suppression"),
+        onError: (error) => setModalError(getErrorMessage(error)),
       },
     );
   };
@@ -108,7 +108,8 @@ export const useMonthlyEntriesAction = ({
       updateEntry,
       deleteEntry,
       clearAddValidationErrors: () => setAddValidationErrors(null),
-      clearUpdateErrors: () => {
+      clearUpdateValidationErrors: () => setUpdateValidationError(null),
+      clearModalErrors: () => {
         setUpdateValidationError(null);
         setModalError(null);
       },

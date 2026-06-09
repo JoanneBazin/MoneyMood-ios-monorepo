@@ -1,13 +1,12 @@
 import { Check, X } from "lucide-react";
 import { useState } from "react";
 import { UpdateEntryFormProps } from "@/types";
-import { ErrorMessage } from "../ui";
 import { BaseEntryForm } from "@shared/schemas";
 
 export const UpdateEntryForm = ({
   initialData,
   validationErrors,
-  genericError,
+  reqError,
   onSubmit,
   onDelete,
   onResetErrors,
@@ -27,7 +26,6 @@ export const UpdateEntryForm = ({
 
   return (
     <form data-testid="update-item-form">
-      {genericError && <ErrorMessage message={genericError} />}
       <div className="input-item">
         <div>
           <input
@@ -66,6 +64,12 @@ export const UpdateEntryForm = ({
         </div>
       </div>
       {children}
+
+      {reqError && (
+        <p className="req-error" data-testid="error-message">
+          {reqError}
+        </p>
+      )}
 
       <div className="flex-end">
         <button

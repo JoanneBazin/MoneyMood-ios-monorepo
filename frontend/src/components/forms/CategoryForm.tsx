@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { ErrorMessage } from "../ui";
 import { X } from "lucide-react";
 import { CategoryFormProps } from "@/types";
 
 export const CategoryForm = ({
   validationErrors,
-  genericError,
+  reqError,
+  onResetErrors,
   onSubmit,
   isPending,
   onDelete,
@@ -15,9 +15,13 @@ export const CategoryForm = ({
   const [category, setCategory] = useState({ name: initialData ?? "" });
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  const handleChange = (name: string) => {
+    onResetErrors();
+    setCategory({ name });
+  };
+
   return (
     <form data-testid="cat-form">
-      {genericError && <ErrorMessage message={genericError} />}
       <div className="input-item">
         <div>
           <input
@@ -26,7 +30,7 @@ export const CategoryForm = ({
             aria-label="Nom de la dépense"
             name="name"
             value={category.name}
-            onChange={(e) => setCategory({ name: e.target.value })}
+            onChange={(e) => handleChange(e.target.value)}
           />
           {validationErrors && validationErrors.name ? (
             <p className="form-error" data-testid="name-validation-error">
@@ -35,6 +39,12 @@ export const CategoryForm = ({
           ) : null}
         </div>
       </div>
+
+      {reqError && (
+        <p className="req-error" data-testid="error-message">
+          {reqError}
+        </p>
+      )}
 
       <div className="flex-end">
         {edit && (

@@ -31,7 +31,7 @@ export const MonthlyEntries = ({
 
   useEffect(() => {
     if (selectedEntry) {
-      actions.clearUpdateErrors();
+      actions.clearModalErrors();
     }
   }, [selectedEntry]);
 
@@ -70,9 +70,9 @@ export const MonthlyEntries = ({
 
           <AddEntriesForm
             initialData={newEntries}
-            errors={state.addValidationErrors}
+            validationErrors={state.addValidationErrors}
             onChange={setNewEntries}
-            onResetErrors={() => actions.clearAddValidationErrors}
+            onResetErrors={() => actions.clearAddValidationErrors()}
             type={type}
           />
           {newEntries.length > 0 && (
@@ -99,10 +99,10 @@ export const MonthlyEntries = ({
           <UpdateEntryForm
             initialData={selectedEntry}
             validationErrors={state.updateValidationError}
-            genericError={state.modalError}
+            reqError={state.modalError}
             onSubmit={handleUpdateEntry}
             onDelete={handleDeleteEntry}
-            onResetErrors={() => actions.clearUpdateErrors()}
+            onResetErrors={() => actions.clearUpdateValidationErrors()}
           />
         </Modal>
       )}

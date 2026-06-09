@@ -1,15 +1,10 @@
-import { useCreateBudgetMutation } from "@/hooks/queries/mutations";
-import { extractArrayErrors } from "@/lib/extractArrayErrors";
 import { getWeeksInMonth } from "@/lib/weeks-helpers";
 import { AddMonthlyBudgetFormProps } from "@/types";
-import {
-  BaseEntryForm,
-  monthlyBudgetSchema,
-  validateWithSchema,
-} from "@shared/schemas";
+import { BaseEntryForm } from "@shared/schemas";
 import { useState } from "react";
 import { BudgetDataCard, MonthYearPicker } from "../ui";
 import { AddEntriesForm } from "./AddEntriesForm";
+import { useMonthlyBudgetAction } from "@/hooks/actions";
 
 export const AddMonthlyBudgetForm = ({
   incomes,
@@ -26,13 +21,7 @@ export const AddMonthlyBudgetForm = ({
   );
   const [isCurrent, setIsCurrent] = useState(true);
 
-  const [incomesErrors, setIncomesErrors] = useState<
-    Record<string, string>[] | null
-  >(null);
-  const [chargesErrors, setChargesErrors] = useState<
-    Record<string, string>[] | null
-  >(null);
-  const { mutate, isPending, error: requestError } = useCreateBudgetMutation();
+  const { actions, state, status } = useMonthlyBudgetAction();
 
   const handleDateChange = (month: number, year: number) => {
     setMonth(month);
@@ -40,9 +29,6 @@ export const AddMonthlyBudgetForm = ({
   };
 
   const handleSubmit = () => {
-    setIncomesErrors(null);
-    setChargesErrors(null);
-
     if (!year || !month) return;
 
     const newBudget = {
@@ -54,14 +40,7 @@ export const AddMonthlyBudgetForm = ({
       numberOfWeeks: getWeeksInMonth(year, month).length,
     };
 
-    const validation = validateWithSchema(monthlyBudgetSchema, newBudget);
-    if (!validation.success) {
-      setIncomesErrors(extractArrayErrors(validation.errors, "incomes"));
-      setChargesErrors(extractArrayErrors(validation.errors, "charges"));
-      return;
-    }
-
-    mutate(validation.data);
+    actions.addMonthlyBudget(newBudget);
   };
 
   return (
@@ -70,26 +49,26 @@ export const AddMonthlyBudgetForm = ({
         <h2>Budget pour le mois de</h2>
         <MonthYearPicker onChange={handleDateChange} />
       </div>
-      {requestError && (
+      {state.dashboardError && (
         <p className="form-error my-md" data-testid="create-req-error">
-          {requestError.message}
+          {state.dashboardError}
         </p>
       )}
       <BudgetDataCard title="Revenus">
         <AddEntriesForm
           initialData={monthlyIncomes}
-          errors={incomesErrors}
+          validationErrors={state.addIncomesValidationErrors}
           onChange={setMonthlyIncomes}
-          onResetErrors={() => setIncomesErrors(null)}
+          onResetErrors={() => actions.clearAddIncomesValidationErrors()}
           type="incomes"
         />
       </BudgetDataCard>
       <BudgetDataCard title="Charges">
         <AddEntriesForm
           initialData={monthlyCharges}
-          errors={chargesErrors}
+          validationErrors={state.addChargesValidationErrors}
           onChange={setMonthlyCharges}
-          onResetErrors={() => setChargesErrors(null)}
+          onResetErrors={() => actions.clearAddChargesValidationErrors()}
           type="charges"
         />
       </BudgetDataCard>
@@ -112,7 +91,7 @@ export const AddMonthlyBudgetForm = ({
         onClick={handleSubmit}
         className="primary-btn item-end"
         data-testid="submit-monthly-budget"
-        disabled={isPending}
+        disabled={status.isAdding}
       >
         Valider
       </button>

@@ -5,6 +5,7 @@ import { useLogoutMutation } from "@/hooks/queries/mutations";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { AnimatedMenu } from "@/components/ui";
 import { AnimatePresence } from "motion/react";
+import { getErrorMessage } from "@/lib/error-helpers";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +65,9 @@ export const Header = () => {
                         Déconnexion
                       </button>
                     </li>
-                    {error && <p className="form-error">{error.message}</p>}
+                    {error && (
+                      <p className="form-error">{getErrorMessage(error)}</p>
+                    )}
                   </ul>
                 </nav>
               </div>

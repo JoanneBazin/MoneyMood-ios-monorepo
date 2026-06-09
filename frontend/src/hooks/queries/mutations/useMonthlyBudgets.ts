@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MonthlyBudgetForm } from "@shared/schemas";
+import { MonthlyBudgetOutput } from "@shared/schemas";
 
 import { useNavigate } from "react-router-dom";
 import { UpdateMonthlyBudgetParams } from "@/types";
@@ -15,7 +15,7 @@ export const useCreateBudgetMutation = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (budget: MonthlyBudgetForm) => createMonthlyBudget(budget),
+    mutationFn: (budget: MonthlyBudgetOutput) => createMonthlyBudget(budget),
     onSuccess: (budget) => {
       if (budget.isCurrent) {
         queryClient.setQueryData(["currentBudget"], {

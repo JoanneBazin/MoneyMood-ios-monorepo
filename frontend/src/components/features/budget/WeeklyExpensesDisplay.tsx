@@ -41,7 +41,7 @@ export const WeeklyExpensesDisplay = ({
 
   useEffect(() => {
     if (selectedEntry) {
-      actions.clearUpdateErrors();
+      actions.clearModalErrors();
     }
   }, [selectedEntry]);
 
@@ -109,7 +109,7 @@ export const WeeklyExpensesDisplay = ({
             />
             <AddEntriesForm
               initialData={newExpenses}
-              errors={state.addValidationErrors}
+              validationErrors={state.addValidationErrors}
               onResetErrors={() => actions.clearAddValidationErrors()}
               onChange={setNewExpenses}
               type="expenses"
@@ -147,10 +147,10 @@ export const WeeklyExpensesDisplay = ({
             <UpdateEntryForm
               initialData={selectedEntry}
               validationErrors={state.updateValidationError}
-              genericError={state.modalError}
+              reqError={state.modalError}
               onSubmit={handleUpdateExpense}
               onDelete={handleDeleteExpense}
-              onResetErrors={() => actions.clearUpdateErrors()}
+              onResetErrors={() => actions.clearUpdateValidationErrors()}
             />
           </Modal>
         )}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signupSchema, validateWithSchema } from "@shared/schemas/index";
 import { useSignupMutation } from "@/hooks/queries/mutations";
+import { getErrorMessage } from "@/lib/error-helpers";
 
 export const SignupForm = () => {
   const [user, setUser] = useState({ name: "", email: "", password: "" });
@@ -85,7 +86,7 @@ export const SignupForm = () => {
       </button>
       {error && (
         <p className="req-error" data-testid="signup-error">
-          {error.message}
+          {getErrorMessage(error)}
         </p>
       )}
     </form>

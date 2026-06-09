@@ -14,6 +14,7 @@ import {
 } from "../queries/mutations";
 import { useState } from "react";
 import { MonthlyExpenseEntry } from "@/types";
+import { getErrorMessage } from "@/lib/error-helpers";
 
 export const useWeeklyExpensesAction = ({ budgetId }: { budgetId: string }) => {
   const addMutation = useAddExpensesMutation();
@@ -50,6 +51,7 @@ export const useWeeklyExpensesAction = ({ budgetId }: { budgetId: string }) => {
         onSuccess: () => {
           onSuccess?.();
         },
+        onError: (error) => setDashboardError(getErrorMessage(error)),
       },
     );
   };
@@ -78,8 +80,7 @@ export const useWeeklyExpensesAction = ({ budgetId }: { budgetId: string }) => {
         onSuccess: () => {
           onSuccess?.();
         },
-        onError: () =>
-          setModalError("Une erreur est survenue lors de la mise à jour"),
+        onError: (error) => setModalError(getErrorMessage(error)),
       },
     );
   };
@@ -106,8 +107,7 @@ export const useWeeklyExpensesAction = ({ budgetId }: { budgetId: string }) => {
         onSuccess: () => {
           onSuccess?.();
         },
-        onError: () =>
-          setModalError("Une erreur est survenue lors de la suppression"),
+        onError: (error) => setModalError(getErrorMessage(error)),
       },
     );
   };
@@ -119,7 +119,8 @@ export const useWeeklyExpensesAction = ({ budgetId }: { budgetId: string }) => {
       updateExpenseValidation,
       deleteExpense,
       clearAddValidationErrors: () => setAddValidationErrors(null),
-      clearUpdateErrors: () => {
+      clearUpdateValidationErrors: () => setUpdateValidationError(null),
+      clearModalErrors: () => {
         setUpdateValidationError(null);
         setModalError(null);
       },

@@ -5,3 +5,5 @@ export * from "./useFixedEntries";
 export * from "./useMonthlyBudgets";
 export * from "./useMonthlyEntries";
 export * from "./useSpecialBudgets";
+export * from "./useCategories";
+export * from "./useSpecialExpenses";

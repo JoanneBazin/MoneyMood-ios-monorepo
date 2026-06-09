@@ -1,13 +1,14 @@
-import { specialBudgetSchema, validateWithSchema } from "@shared/schemas";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { ProjectFormProps } from "@/types";
-import { ErrorMessage } from "../ui";
+import { SpecialBudgetForm } from "@shared/schemas";
 
 export const ProjectForm = ({
   onSubmit,
   isPending,
-  isError,
+  validationErrors,
+  reqError,
+  onResetErrors,
   edit,
   initialData,
 }: ProjectFormProps) => {
@@ -15,26 +16,19 @@ export const ProjectForm = ({
     name: initialData ? initialData.name : "",
     totalBudget: initialData ? initialData.totalBudget : "",
   });
-  const [validationError, setValidationError] = useState<Record<
-    string,
-    string
-  > | null>(null);
+
+  const handleChange = (field: keyof SpecialBudgetForm, value: string) => {
+    onResetErrors();
+    setSpecialBudget({ ...specialBudget, [field]: value });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setValidationError(null);
-
-    const validation = validateWithSchema(specialBudgetSchema, specialBudget);
-    if (!validation.success) {
-      setValidationError(validation.errors);
-      return;
-    }
-    onSubmit(validation.data);
+    onSubmit(specialBudget);
   };
 
   return (
     <form className="gap-lg" data-testid="project-form">
-      {isError && <ErrorMessage message="Une erreur est survenue" />}
       <div className="labelled-input">
         <label htmlFor="name">Nom du budget</label>
         <input
@@ -42,13 +36,11 @@ export const ProjectForm = ({
           id="name"
           name="name"
           value={specialBudget.name}
-          onChange={(e) =>
-            setSpecialBudget({ ...specialBudget, name: e.target.value })
-          }
+          onChange={(e) => handleChange("name", e.target.value)}
         />
-        {validationError && validationError.name && (
+        {validationErrors && validationErrors.name && (
           <p className="form-error" data-testid="name-validation-error">
-            {validationError.name}
+            {validationErrors.name}
           </p>
         )}
       </div>
@@ -61,21 +53,22 @@ export const ProjectForm = ({
             id="amount"
             name="amount"
             value={specialBudget.totalBudget}
-            onChange={(e) =>
-              setSpecialBudget({
-                ...specialBudget,
-                totalBudget: e.target.value,
-              })
-            }
+            onChange={(e) => handleChange("totalBudget", e.target.value)}
           />
         </div>
 
-        {validationError && validationError.totalBudget && (
+        {validationErrors && validationErrors.totalBudget && (
           <p className="form-error" data-testid="amount-validation-error">
             Montant invalide
           </p>
         )}
       </div>
+
+      {reqError && (
+        <p className="req-error" data-testid="error-message">
+          {reqError}
+        </p>
+      )}
 
       <button
         onClick={handleSubmit}

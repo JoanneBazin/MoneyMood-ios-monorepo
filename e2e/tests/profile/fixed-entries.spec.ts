@@ -1,6 +1,6 @@
 import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "helpers/auth";
-import { fillNewEntry } from "helpers/budget";
+import { fillNewEntry, fillUpdateEntryForm } from "helpers/budget";
 import {
   createFixedEntryInDb,
   deleteAllFixedEntriesInDB,
@@ -103,10 +103,10 @@ for (const { label, entryType, name, table } of resources) {
         const previousTotal = await getTotalEntries(entriesContainer);
 
         await entryItem.getByTestId("update-item-btn").click();
-        await expect(page.getByTestId("update-item-form")).toBeVisible();
-
-        await page.getByTestId("update-amount-input").fill(updatedAmount);
-        await page.getByTestId("update-btn").click();
+        await fillUpdateEntryForm(page, {
+          name: existantEntry.name,
+          amount: updatedAmount,
+        });
 
         await expect(entryItem).toContainText(updatedAmount);
 
@@ -158,10 +158,11 @@ for (const { label, entryType, name, table } of resources) {
           hasText: existantEntry.name,
         });
         await entryItem.getByTestId("update-item-btn").click();
-        await expect(page.getByTestId("update-item-form")).toBeVisible();
+        await fillUpdateEntryForm(page, {
+          name: existantEntry.name,
+          amount: updatedAmount,
+        });
 
-        await page.getByTestId("update-amount-input").fill(updatedAmount);
-        await page.getByTestId("update-btn").click();
         await expect(entryItem).toContainText(updatedAmount);
 
         await page.goto("/app");

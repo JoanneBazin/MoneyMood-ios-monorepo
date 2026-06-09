@@ -126,12 +126,6 @@ export const deleteAllMonthlyBudgetsInDB = async (userId: string) => {
   });
 };
 
-export const deleteAllMonthlyExpensesInDB = async (monthlyBudgetId: string) => {
-  await prisma.expense.deleteMany({
-    where: { monthlyBudgetId },
-  });
-};
-
 export const createFixedEntryInDb = async (
   userId: string,
   table: PrismaModelSheets,
@@ -280,28 +274,6 @@ export const createMultipleSpecialBudgets = async (
   return budgetsData;
 };
 
-export const createSpecialExpenseInDB = async (
-  specialBudgetId: string,
-  catId?: string,
-) => {
-  const newExpense = await prisma.expense.create({
-    data: {
-      specialBudgetId,
-      name: "Expense",
-      amount: 50,
-      specialCategoryId: catId,
-    },
-    select: {
-      name: true,
-      amount: true,
-    },
-  });
-  return {
-    ...newExpense,
-    amount: Number(newExpense.amount),
-  };
-};
-
 export const deleteAllSpecialBudgetsInDB = async (userId: string) => {
   await prisma.specialBudget.deleteMany({
     where: { userId },
@@ -316,17 +288,4 @@ export const createSpecialCategoryInDB = async (specialBudgetId: string) => {
     },
     select: { name: true, id: true },
   });
-};
-
-export const cleanSpecialBudgetDataInDb = async (specialBudgetId: string) => {
-  await prisma.$transaction([
-    prisma.specialBudgetCategory.deleteMany({
-      where: {
-        specialBudgetId,
-      },
-    }),
-    prisma.expense.deleteMany({
-      where: { specialBudgetId },
-    }),
-  ]);
 };

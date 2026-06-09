@@ -3,10 +3,10 @@ import { loginUser } from "../../helpers/auth";
 import {
   createMonthlyBudgetInDB,
   deleteAllMonthlyBudgetsInDB,
-  deleteAllMonthlyExpensesInDB,
 } from "helpers/db-helpers";
 import {
   fillNewEntry,
+  fillUpdateEntryForm,
   getCurrencyValue,
   seedMonthlyExpenseInDB,
 } from "helpers/budget";
@@ -14,13 +14,11 @@ import {
 test.describe("Monthly expenses", () => {
   let currentBudget: Awaited<ReturnType<typeof createMonthlyBudgetInDB>>;
 
-  test.beforeAll(async ({ user }) => {
+  test.beforeEach(async ({ user }) => {
     currentBudget = await createMonthlyBudgetInDB(user.id);
   });
-  test.beforeEach(async () => {
-    await deleteAllMonthlyExpensesInDB(currentBudget.id);
-  });
-  test.afterAll(async ({ user }) => {
+
+  test.afterEach(async ({ user }) => {
     await deleteAllMonthlyBudgetsInDB(user.id);
   });
 
@@ -65,50 +63,49 @@ test.describe("Monthly expenses", () => {
     },
   );
 
-  test(
-    "should update expenses list after API confirmation",
-    { tag: ["@regression"] },
-    async ({ page, user }) => {
-      let receiveResponse = (value?: unknown) => {};
-      const blockPromise = new Promise((resolve) => {
-        receiveResponse = resolve;
-      });
+  test("should update expenses list after API confirmation", async ({
+    page,
+    user,
+  }) => {
+    let receiveResponse = (value?: unknown) => {};
+    const blockPromise = new Promise((resolve) => {
+      receiveResponse = resolve;
+    });
 
-      await page.route(
-        `${process.env.API_URL}/api/monthly-budgets/${currentBudget.id}/expenses`,
-        async (route) => {
-          await blockPromise;
-          await route.continue();
-        },
-      );
+    await page.route(
+      `${process.env.API_URL}/api/monthly-budgets/${currentBudget.id}/expenses`,
+      async (route) => {
+        await blockPromise;
+        await route.continue();
+      },
+    );
 
-      await loginUser(page, user.email, user.password);
+    await loginUser(page, user.email, user.password);
 
-      const newExpense = { name: "expense 1", amount: "10" };
+    const newExpense = { name: "expense 1", amount: "10" };
 
-      await fillNewEntry(page, "expenses", newExpense);
-      await page.getByTestId("add-expenses-btn").click();
+    await fillNewEntry(page, "expenses", newExpense);
+    await page.getByTestId("add-expenses-btn").click();
 
-      const temporaryWeeklyTotal = await getCurrencyValue(
-        page.getByTestId("total-data-amount"),
-      );
-      expect(temporaryWeeklyTotal).toBe(currentBudget.weeklyBudget);
-      const entryItem = page.getByTestId("data-item").filter({
-        hasText: newExpense.name,
-      });
-      await expect(entryItem).not.toBeVisible();
+    const temporaryWeeklyTotal = await getCurrencyValue(
+      page.getByTestId("total-data-amount"),
+    );
+    expect(temporaryWeeklyTotal).toBe(currentBudget.weeklyBudget);
+    const entryItem = page.getByTestId("data-item").filter({
+      hasText: newExpense.name,
+    });
+    await expect(entryItem).not.toBeVisible();
 
-      receiveResponse();
+    receiveResponse();
 
-      await expect(entryItem).toBeVisible();
-      const updatedWeeklyTotal = await getCurrencyValue(
-        page.getByTestId("total-data-amount"),
-      );
-      expect(updatedWeeklyTotal).toBe(
-        currentBudget.weeklyBudget - Number(newExpense.amount),
-      );
-    },
-  );
+    await expect(entryItem).toBeVisible();
+    const updatedWeeklyTotal = await getCurrencyValue(
+      page.getByTestId("total-data-amount"),
+    );
+    expect(updatedWeeklyTotal).toBe(
+      currentBudget.weeklyBudget - Number(newExpense.amount),
+    );
+  });
 
   test(
     "should add new expense and update only current weekly budget",
@@ -203,10 +200,10 @@ test.describe("Monthly expenses", () => {
       await expect(expenseItem).toBeVisible();
 
       await expenseItem.getByTestId("update-item-btn").click();
-      await expect(page.getByTestId("update-item-form")).toBeVisible();
-
-      await page.getByTestId("update-amount-input").fill(value);
-      await page.getByTestId("update-btn").click();
+      await fillUpdateEntryForm(page, {
+        name: existantExpense.name,
+        amount: value,
+      });
 
       await expect(page.getByTestId("amount-input-error")).toBeVisible();
       await expect(page.getByTestId("update-item-form")).toBeVisible();
@@ -236,11 +233,7 @@ test.describe("Monthly expenses", () => {
       );
 
       await expenseItem.getByTestId("update-item-btn").click();
-      await expect(page.getByTestId("update-item-form")).toBeVisible();
-
-      await page.getByTestId("update-name-input").fill(updatedExpense.name);
-      await page.getByTestId("update-amount-input").fill(updatedExpense.amount);
-      await page.getByTestId("update-btn").click();
+      await fillUpdateEntryForm(page, updatedExpense);
 
       await expect(expenseItem).not.toBeVisible();
       await expect(

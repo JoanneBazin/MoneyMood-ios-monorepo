@@ -7,7 +7,7 @@ import {
   createSpecialBudgetWithCatAndExpenses,
   deleteAllSpecialBudgetsInDB,
 } from "helpers/db-helpers";
-import { accessProjectDetails } from "helpers/special-budgets";
+import { fillProjectForm } from "helpers/special-budgets";
 
 test.describe("Special budgets", () => {
   test.afterAll(async ({ user }) => {
@@ -73,19 +73,19 @@ test.describe("Special budgets", () => {
         const expenseWithoutCat = expensesWithoutCatContainer
           .getByTestId("data-item")
           .filter({
-            hasText: project.expenses.name,
+            hasText: project.expenseWithoutCat.name,
           });
         await expect(expenseWithoutCat).toBeVisible();
         const categoryContainer = page
           .getByTestId("special-cat-section")
           .filter({
-            hasText: project.categories.name,
+            hasText: project.category.name,
           });
         await expect(categoryContainer).toBeVisible();
         const expenseWithCat = categoryContainer
           .getByTestId("data-item")
           .filter({
-            hasText: project.categories.expense.name,
+            hasText: project.category.expense.name,
           });
         await expect(expenseWithCat).toBeVisible();
 
@@ -98,8 +98,8 @@ test.describe("Special budgets", () => {
 
         expect(totalRemaining).toBe(project.remainingBudget);
         expect(totalBudget).toBe(project.totalBudget);
-        expect(totalExpenses).toBe(project.expenses.amount);
-        expect(totalCatExpenses).toBe(project.categories.expense.amount);
+        expect(totalExpenses).toBe(project.expenseWithoutCat.amount);
+        expect(totalCatExpenses).toBe(project.category.expense.amount);
       },
     );
   });
@@ -117,13 +117,9 @@ test.describe("Special budgets", () => {
 
         const newProject = { name: "Project 1", totalBudget: "100" };
 
-        await page.getByTestId("projects-nav").click();
+        await page.goto("/app/projects");
         await page.getByTestId("create-project-btn").click();
-
-        await expect(page.getByTestId("project-form")).toBeVisible();
-        await page.fill('input[name="name"]', newProject.name);
-        await page.fill('input[name="amount"]', newProject.totalBudget);
-        await page.getByTestId("create-project").click();
+        await fillProjectForm(page, "create", newProject);
 
         await expect(page).toHaveURL(/\/app\/projects\/.+/);
         await expect(page.getByTestId("app-banner")).toContainText(
@@ -152,13 +148,9 @@ test.describe("Special budgets", () => {
 
       const newProject = { name: existantBudget.name, totalBudget: "100" };
 
-      await page.getByTestId("projects-nav").click();
+      await page.goto("/app/projects");
       await page.getByTestId("create-project-btn").click();
-
-      await expect(page.getByTestId("project-form")).toBeVisible();
-      await page.fill('input[name="name"]', newProject.name);
-      await page.fill('input[name="amount"]', newProject.totalBudget);
-      await page.getByTestId("create-project").click();
+      await fillProjectForm(page, "create", newProject);
 
       await expect(page.getByTestId("project-form")).toBeVisible();
       await expect(page.getByTestId("error-message")).toBeVisible();
@@ -187,13 +179,9 @@ test.describe("Special budgets", () => {
       }) => {
         await loginUser(page, user.email, user.password);
 
-        await page.getByTestId("projects-nav").click();
+        await page.goto("/app/projects");
         await page.getByTestId("create-project-btn").click();
-
-        await expect(page.getByTestId("project-form")).toBeVisible();
-        await page.fill('input[name="name"]', name);
-        await page.fill('input[name="amount"]', amount);
-        await page.getByTestId("create-project").click();
+        await fillProjectForm(page, "create", { name, totalBudget: amount });
 
         await expect(page.getByTestId("project-form")).toBeVisible();
         await expect(
@@ -221,15 +209,11 @@ test.describe("Special budgets", () => {
 
         const updatedBudget = { name: "Updated Project", totalBudget: "200" };
 
-        await accessProjectDetails(page, specialBudget.name);
+        await page.goto(`/app/projects/${specialBudget.id}`);
 
         await page.getByTestId("special-budget-options").click();
         await page.getByTestId("update-special-budget-btn").click();
-
-        await expect(page.getByTestId("project-form")).toBeVisible();
-        await page.fill('input[name="name"]', updatedBudget.name);
-        await page.fill('input[name="amount"]', updatedBudget.totalBudget);
-        await page.getByTestId("edit-project").click();
+        await fillProjectForm(page, "edit", updatedBudget);
 
         await expect(page.getByTestId("app-banner")).toContainText(
           updatedBudget.name,
@@ -247,21 +231,20 @@ test.describe("Special budgets", () => {
       page,
       user,
     }) => {
-      const existantProject = await createSpecialBudgetInDB(
+      const { name, totalBudget } = await createSpecialBudgetInDB(
         user.id,
         "Older project",
       );
       await loginUser(page, user.email, user.password);
 
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
       await page.getByTestId("special-budget-options").click();
       await page.getByTestId("update-special-budget-btn").click();
-
-      await expect(page.getByTestId("project-form")).toBeVisible();
-      await page.fill('input[name="name"]', existantProject.name);
-
-      await page.getByTestId("edit-project").click();
+      await fillProjectForm(page, "edit", {
+        name,
+        totalBudget: String(totalBudget),
+      });
 
       await expect(page.getByTestId("project-form")).toBeVisible();
       await expect(page.getByTestId("error-message")).toBeVisible();
@@ -289,15 +272,11 @@ test.describe("Special budgets", () => {
       }) => {
         await loginUser(page, user.email, user.password);
 
-        await accessProjectDetails(page, specialBudget.name);
+        await page.goto(`/app/projects/${specialBudget.id}`);
 
         await page.getByTestId("special-budget-options").click();
         await page.getByTestId("update-special-budget-btn").click();
-
-        await expect(page.getByTestId("project-form")).toBeVisible();
-        await page.fill('input[name="name"]', name);
-        await page.fill('input[name="amount"]', amount);
-        await page.getByTestId("edit-project").click();
+        await fillProjectForm(page, "edit", { name, totalBudget: amount });
 
         await expect(page.getByTestId("project-form")).toBeVisible();
         await expect(
@@ -312,7 +291,7 @@ test.describe("Special budgets", () => {
       async ({ page, user }) => {
         await loginUser(page, user.email, user.password);
 
-        await accessProjectDetails(page, specialBudget.name);
+        await page.goto(`/app/projects/${specialBudget.id}`);
 
         await page.getByTestId("special-budget-options").click();
         await page.getByTestId("delete-special-budget-btn").click();
@@ -332,7 +311,7 @@ test.describe("Special budgets", () => {
     test("should cancel project deletion", async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
 
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
       await page.getByTestId("special-budget-options").click();
       await page.getByTestId("delete-special-budget-btn").click();

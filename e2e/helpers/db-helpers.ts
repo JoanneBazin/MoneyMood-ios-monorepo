@@ -239,14 +239,15 @@ export const createSpecialBudgetWithCatAndExpenses = async (userId: string) => {
   });
 
   return {
-    ...newBudget,
+    id: newBudget.id,
+    name: newBudget.name,
     totalBudget: Number(newBudget.totalBudget),
     remainingBudget: Number(newBudget.remainingBudget),
-    categories: {
+    category: {
       name: newBudget.categories[0].name,
       expense: { ...catExpense, amount: Number(catExpense.amount) },
     },
-    expenses: {
+    expenseWithoutCat: {
       ...expenseWithoutCat,
       amount: Number(expenseWithoutCat.amount),
     },

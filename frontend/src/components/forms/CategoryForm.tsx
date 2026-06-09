@@ -51,7 +51,7 @@ export const CategoryForm = ({
           type="button"
           onClick={() => onSubmit(category)}
           className="primary-btn"
-          data-testid={edit ? "update-cat" : "create-cat"}
+          data-testid={edit ? "edit-cat" : "create-cat"}
           disabled={isPending}
         >
           {edit ? "Mettre à jour" : "Créer"}

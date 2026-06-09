@@ -51,6 +51,14 @@ export const fillNewEntry = async (
     .fill(data.amount);
 };
 
+export const fillUpdateEntryForm = async (page: Page, data: DataType) => {
+  await expect(page.getByTestId("update-item-form")).toBeVisible();
+
+  await page.getByTestId("update-name-input").fill(data.name);
+  await page.getByTestId("update-amount-input").fill(data.amount);
+  await page.getByTestId("update-btn").click();
+};
+
 export const getProjectTotals = async (
   remainingContainer: Locator,
   totalExpensesContainer: Locator,

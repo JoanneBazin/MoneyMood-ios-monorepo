@@ -7,7 +7,7 @@ import {
   createSpecialCategoryInDB,
   deleteAllSpecialBudgetsInDB,
 } from "helpers/db-helpers";
-import { accessProjectDetails } from "helpers/special-budgets";
+import { fillCategoryForm } from "helpers/special-budgets";
 
 test.describe("Project categories", () => {
   test.afterAll(async ({ user }) => {
@@ -29,15 +29,12 @@ test.describe("Project categories", () => {
       { tag: ["@regression"] },
       async ({ page, user }) => {
         await loginUser(page, user.email, user.password);
-        await accessProjectDetails(page, specialBudget.name);
+        await page.goto(`/app/projects/${specialBudget.id}`);
 
         const cat = { name: "New category" };
 
         await page.getByTestId("add-special-cat-btn").click();
-
-        await expect(page.getByTestId("cat-form")).toBeVisible();
-        await page.fill('input[name="name"]', cat.name);
-        await page.getByTestId("create-cat").click();
+        await fillCategoryForm(page, "create", cat);
 
         const catSection = page.getByTestId("special-cat-section").filter({
           hasText: cat.name,
@@ -61,13 +58,10 @@ test.describe("Project categories", () => {
     }) => {
       const existantCat = await createSpecialCategoryInDB(specialBudget.id);
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
       await page.getByTestId("add-special-cat-btn").click();
-
-      await expect(page.getByTestId("cat-form")).toBeVisible();
-      await page.fill('input[name="name"]', existantCat.name);
-      await page.getByTestId("create-cat").click();
+      await fillCategoryForm(page, "create", { name: existantCat.name });
 
       await expect(page.getByTestId("error-message")).toBeVisible();
       await expect(page.getByTestId("cat-form")).toBeVisible();
@@ -78,12 +72,10 @@ test.describe("Project categories", () => {
       user,
     }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
       await page.getByTestId("add-special-cat-btn").click();
-
-      await expect(page.getByTestId("cat-form")).toBeVisible();
-      await page.getByTestId("create-cat").click();
+      await fillCategoryForm(page, "create", { name: "" });
 
       await expect(page.getByTestId("name-validation-error")).toBeVisible();
       await expect(page.getByTestId("cat-form")).toBeVisible();
@@ -107,9 +99,9 @@ test.describe("Project categories", () => {
       { tag: ["@regression"] },
       async ({ page, user }) => {
         await loginUser(page, user.email, user.password);
-        await accessProjectDetails(page, specialBudget.name);
+        await page.goto(`/app/projects/${specialBudget.id}`);
 
-        const category = specialBudget.categories;
+        const category = specialBudget.category;
         const updatedName = "Updated category";
 
         const catSection = page.getByTestId("special-cat-section").filter({
@@ -122,10 +114,7 @@ test.describe("Project categories", () => {
         await expect(catExpense).toBeVisible();
 
         await catSection.getByTestId("update-cat-btn").click();
-
-        await expect(page.getByTestId("cat-form")).toBeVisible();
-        await page.fill('input[name="name"]', updatedName);
-        await page.getByTestId("update-cat").click();
+        await fillCategoryForm(page, "edit", { name: updatedName });
 
         await expect(page.getByTestId("cat-form")).not.toBeVisible();
         await expect(catSection).not.toBeVisible();
@@ -149,9 +138,9 @@ test.describe("Project categories", () => {
     }) => {
       const existantCat = await createSpecialCategoryInDB(specialBudget.id);
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
-      const category = specialBudget.categories;
+      const category = specialBudget.category;
 
       const catSection = page.getByTestId("special-cat-section").filter({
         hasText: category.name,
@@ -159,10 +148,7 @@ test.describe("Project categories", () => {
       await expect(catSection).toBeVisible();
 
       await catSection.getByTestId("update-cat-btn").click();
-
-      await expect(page.getByTestId("cat-form")).toBeVisible();
-      await page.fill('input[name="name"]', existantCat.name);
-      await page.getByTestId("update-cat").click();
+      await fillCategoryForm(page, "edit", { name: existantCat.name });
 
       await expect(page.getByTestId("error-message")).toBeVisible();
       await expect(page.getByTestId("cat-form")).toBeVisible();
@@ -170,9 +156,9 @@ test.describe("Project categories", () => {
 
     test("should failded updating with empty name", async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
-      const category = specialBudget.categories;
+      const category = specialBudget.category;
 
       const catSection = page.getByTestId("special-cat-section").filter({
         hasText: category.name,
@@ -180,10 +166,7 @@ test.describe("Project categories", () => {
       await expect(catSection).toBeVisible();
 
       await catSection.getByTestId("update-cat-btn").click();
-
-      await expect(page.getByTestId("cat-form")).toBeVisible();
-      await page.fill('input[name="name"]', "");
-      await page.getByTestId("update-cat").click();
+      await fillCategoryForm(page, "edit", { name: "" });
 
       await expect(page.getByTestId("name-validation-error")).toBeVisible();
       await expect(page.getByTestId("cat-form")).toBeVisible();
@@ -194,9 +177,9 @@ test.describe("Project categories", () => {
       { tag: ["@regression"] },
       async ({ page, user }) => {
         await loginUser(page, user.email, user.password);
-        await accessProjectDetails(page, specialBudget.name);
+        await page.goto(`/app/projects/${specialBudget.id}`);
 
-        const category = specialBudget.categories;
+        const category = specialBudget.category;
 
         const catSection = page.getByTestId("special-cat-section").filter({
           hasText: category.name,
@@ -248,9 +231,9 @@ test.describe("Project categories", () => {
       { tag: ["@regression"] },
       async ({ page, user }) => {
         await loginUser(page, user.email, user.password);
-        await accessProjectDetails(page, specialBudget.name);
+        await page.goto(`/app/projects/${specialBudget.id}`);
 
-        const category = specialBudget.categories;
+        const category = specialBudget.category;
 
         const remainingContainer = page.getByTestId("remaining-budget");
         const previousRemainingBudget = await getCurrencyValue(
@@ -296,9 +279,9 @@ test.describe("Project categories", () => {
       user,
     }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
-      const category = specialBudget.categories;
+      const category = specialBudget.category;
 
       const remainingContainer = page.getByTestId("remaining-budget");
       const previousRemainingBudget = await getCurrencyValue(

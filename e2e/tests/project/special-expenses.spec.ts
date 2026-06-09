@@ -1,14 +1,15 @@
 import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "helpers/auth";
-import { fillNewEntry, getProjectTotals } from "helpers/budget";
+import {
+  fillNewEntry,
+  fillUpdateEntryForm,
+  getProjectTotals,
+} from "helpers/budget";
 import {
   createSpecialBudgetWithCatAndExpenses,
   deleteAllSpecialBudgetsInDB,
 } from "helpers/db-helpers";
-import {
-  accessProjectDetails,
-  selectWhenStable,
-} from "helpers/special-budgets";
+import { selectWhenStable } from "helpers/special-budgets";
 
 test.describe("Project expenses", () => {
   let specialBudget: Awaited<
@@ -16,11 +17,9 @@ test.describe("Project expenses", () => {
   >;
 
   test.beforeEach(async ({ user }) => {
-    await deleteAllSpecialBudgetsInDB(user.id);
     specialBudget = await createSpecialBudgetWithCatAndExpenses(user.id);
   });
-
-  test.afterAll(async ({ user }) => {
+  test.afterEach(async ({ user }) => {
     await deleteAllSpecialBudgetsInDB(user.id);
   });
 
@@ -29,7 +28,7 @@ test.describe("Project expenses", () => {
     { tag: ["@regression"] },
     async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
       const newExpense = { name: "expense 1", amount: "10" };
 
@@ -79,13 +78,13 @@ test.describe("Project expenses", () => {
     { tag: ["@regression"] },
     async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
       const newExpense = { name: "expense with cat 1", amount: "20" };
 
       const remainingContainer = page.getByTestId("remaining-budget");
       const catSection = page.getByTestId("special-cat-section").filter({
-        hasText: specialBudget.categories.name,
+        hasText: specialBudget.category.name,
       });
       await expect(catSection).toBeVisible();
 
@@ -126,7 +125,7 @@ test.describe("Project expenses", () => {
       user,
     }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
       const newExpense = { name: "expense 1", amount: value };
 
@@ -174,9 +173,9 @@ test.describe("Project expenses", () => {
       user,
     }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
-      const expense = specialBudget.expenses;
+      const expense = specialBudget.expenseWithoutCat;
 
       const expensesWithoutCatContainer = page.getByTestId("expenses-section");
       const expenseItem = expensesWithoutCatContainer
@@ -185,10 +184,7 @@ test.describe("Project expenses", () => {
       await expect(expenseItem).toBeVisible();
 
       await expenseItem.getByTestId("update-item-btn").click();
-      await expect(page.getByTestId("update-item-form")).toBeVisible();
-
-      await page.getByTestId("update-amount-input").fill(value);
-      await page.getByTestId("update-btn").click();
+      await fillUpdateEntryForm(page, { name: expense.name, amount: value });
 
       await expect(page.getByTestId("amount-input-error")).toBeVisible();
       await expect(page.getByTestId("update-item-form")).toBeVisible();
@@ -200,10 +196,10 @@ test.describe("Project expenses", () => {
     { tag: ["@regression"] },
     async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
-      const category = specialBudget.categories;
-      const expense = specialBudget.expenses;
+      const category = specialBudget.category;
+      const expense = specialBudget.expenseWithoutCat;
 
       const remainingContainer = page.getByTestId("remaining-budget");
       const expensesWithoutCatContainer = page.getByTestId("expenses-section");
@@ -261,9 +257,9 @@ test.describe("Project expenses", () => {
     { tag: ["@regression"] },
     async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
-      const expense = specialBudget.expenses;
+      const expense = specialBudget.expenseWithoutCat;
       const updatedExpense = { name: "Updated expense", amount: "40" };
 
       const remainingContainer = page.getByTestId("remaining-budget");
@@ -283,14 +279,10 @@ test.describe("Project expenses", () => {
       );
 
       await expenseItem.getByTestId("update-item-btn").click();
-      await expect(page.getByTestId("update-item-form")).toBeVisible();
-
-      await page.getByTestId("update-name-input").fill(updatedExpense.name);
-      await page.getByTestId("update-amount-input").fill(updatedExpense.amount);
-      await page.getByTestId("update-btn").click();
+      await fillUpdateEntryForm(page, updatedExpense);
 
       await expect(page.getByTestId("update-item-form")).not.toBeVisible();
-      await expect(expenseItem).toBeVisible();
+      await expect(expenseItem).not.toBeVisible();
       await expect(
         expensesWithoutCatContainer.getByTestId("data-item").filter({
           hasText: updatedExpense.name,
@@ -316,9 +308,9 @@ test.describe("Project expenses", () => {
     { tag: ["@regression"] },
     async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
-      const expense = specialBudget.expenses;
+      const expense = specialBudget.expenseWithoutCat;
 
       const remainingContainer = page.getByTestId("remaining-budget");
       const expensesWithoutCatContainer = page.getByTestId("expenses-section");
@@ -362,9 +354,9 @@ test.describe("Project expenses", () => {
     { tag: ["@regression"] },
     async ({ page, user }) => {
       await loginUser(page, user.email, user.password);
-      await accessProjectDetails(page, specialBudget.name);
+      await page.goto(`/app/projects/${specialBudget.id}`);
 
-      const expense = specialBudget.expenses;
+      const expense = specialBudget.expenseWithoutCat;
 
       const remainingContainer = page.getByTestId("remaining-budget");
       const expensesWithoutCatContainer = page.getByTestId("expenses-section");

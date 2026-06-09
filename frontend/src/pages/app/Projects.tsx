@@ -29,15 +29,14 @@ export const Projects = () => {
       {!isPending && !error && (
         <div>
           {!isOffline && (
-            <div
-              role="button"
+            <button
               onClick={() => setIsCreateModalOpen(true)}
               className="flex-start gap-sm"
               data-testid="create-project-btn"
             >
               <Plus />
               <p>Créer un budget spécifique</p>
-            </div>
+            </button>
           )}
 
           {specialBudgets && (

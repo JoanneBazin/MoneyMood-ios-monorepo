@@ -34,7 +34,7 @@ router.post(
   "/",
   requireAuth,
   validateBody(specialBudgetSchema),
-  addSpecialBudget
+  addSpecialBudget,
 );
 router.get("/", requireAuth, getAllSpecialBudgets);
 router.get("/:id", requireAuth, getSpecialBudgetDetails);
@@ -42,7 +42,7 @@ router.put(
   "/:id",
   requireAuth,
   validateBody(specialBudgetSchema),
-  updateSpecialBudget
+  updateSpecialBudget,
 );
 router.delete("/:id", requireAuth, deleteSpecialBudget);
 
@@ -50,27 +50,28 @@ router.delete("/:id", requireAuth, deleteSpecialBudget);
 router.post(
   "/:id/categories",
   requireAuth,
+  checkSpecialBudgetAccess,
   validateBody(categorySchema),
-  addSpecialCategory
+  addSpecialCategory,
 );
 router.patch(
   "/:id/categories/:categoryId",
   requireAuth,
   checkSpecialBudgetAccess,
   validateBody(categorySchema),
-  updateSpecialCategoryName
+  updateSpecialCategoryName,
 );
 router.delete(
   "/:id/categories/:categoryId",
   requireAuth,
   checkSpecialBudgetAccess,
-  deleteSpecialCategory
+  deleteSpecialCategory,
 );
 router.delete(
   "/:id/categories/:categoryId/cascade",
   requireAuth,
   checkSpecialBudgetAccess,
-  deleteSpecialCategoryOnCascade
+  deleteSpecialCategoryOnCascade,
 );
 
 // Special Expenses
@@ -80,7 +81,7 @@ router.post(
   checkSpecialBudgetAccess,
   validateBody(specialExpenseServerSchema),
   resolveBudgetType,
-  addExpenses
+  addExpenses,
 );
 router.put(
   "/:id/expenses/:expenseId",
@@ -88,21 +89,21 @@ router.put(
   checkSpecialBudgetAccess,
   validateBody(specialExpenseServerSchema),
   resolveBudgetType,
-  updateExpense
+  updateExpense,
 );
 router.patch(
   "/:id/expenses/:expenseId/cashed",
   requireAuth,
   checkSpecialBudgetAccess,
   resolveBudgetType,
-  updateExpenseValidation
+  updateExpenseValidation,
 );
 router.delete(
   "/:id/expenses/:expenseId",
   requireAuth,
   checkSpecialBudgetAccess,
   resolveBudgetType,
-  deleteExpense
+  deleteExpense,
 );
 
 export default router;

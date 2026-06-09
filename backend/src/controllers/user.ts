@@ -23,7 +23,7 @@ export const updateCurrentUser = async (
         where: { email: updates.email },
       });
       if (existingUser && existingUser.id !== userId) {
-        return next(new HttpError(400, "Cet email est déjà utilisé"));
+        return next(new HttpError(409, "Cet email est déjà utilisé"));
       }
     }
 

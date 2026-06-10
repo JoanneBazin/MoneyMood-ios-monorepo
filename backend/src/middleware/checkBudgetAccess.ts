@@ -4,7 +4,7 @@ import { getUserId, HttpError, prisma } from "../lib";
 export const checkBudgetAccess = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -18,7 +18,12 @@ export const checkBudgetAccess = async (
       select: { userId: true },
     });
     if (!budget || budget.userId !== userId) {
-      return next(new HttpError(403, "Accès interdit à ce budget"));
+      return next(
+        new HttpError(
+          404,
+          "Budget non trouvé ou vous n'avez pas les droits d'accès.",
+        ),
+      );
     }
     next();
   } catch (error) {
@@ -29,7 +34,7 @@ export const checkBudgetAccess = async (
 export const checkSpecialBudgetAccess = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -43,7 +48,12 @@ export const checkSpecialBudgetAccess = async (
       select: { userId: true },
     });
     if (!budget || budget.userId !== userId) {
-      return next(new HttpError(403, "Accès interdit à ce budget"));
+      return next(
+        new HttpError(
+          404,
+          "Budget non trouvé ou vous n'avez pas les droits d'accès.",
+        ),
+      );
     }
     next();
   } catch (error) {

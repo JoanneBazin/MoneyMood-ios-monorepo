@@ -193,12 +193,15 @@ export const getMonthlyBudgetById = async (
       where: {
         userId,
         id: monthlyBudgetId,
+        isCurrent: false,
       },
       select: monthlyBudgetSelect,
     });
 
     if (!monthlyBudget) {
-      return next(new HttpError(404, "Budget mensuel introuvable"));
+      return next(
+        new HttpError(404, "Budget mensuel introuvable dans l'historique"),
+      );
     }
 
     return res.status(200).json(normalizeDecimalFields(monthlyBudget));

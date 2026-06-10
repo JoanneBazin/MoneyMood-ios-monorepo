@@ -11,6 +11,7 @@ import {
   getCurrencyValue,
   seedMonthlyEntryInDb,
 } from "helpers/budget";
+import { qase } from "playwright-qase-reporter";
 
 interface ResourcesConfig {
   label: string;
@@ -18,6 +19,7 @@ interface ResourcesConfig {
   name: string;
   table: PrismaModelSheets;
   computeExpected: (prev: number, amount: number) => number;
+  qaseIds: Record<string, number | number[]>;
 }
 
 test.describe("Monthly entries", () => {
@@ -28,6 +30,15 @@ test.describe("Monthly entries", () => {
       name: "charges",
       table: "monthlyCharge",
       computeExpected: (prev, amount) => prev - amount,
+      qaseIds: {
+        addEntry: 70,
+        updateEntry: 72,
+        deleteEntry: [73, 74],
+        cancelEntryDeletion: 75,
+        displayWithoutData: 80,
+        updateAfterApi: 85,
+        addWithFloat: 86,
+      },
     },
     {
       label: "Monthly incomes",
@@ -35,10 +46,26 @@ test.describe("Monthly entries", () => {
       name: "revenus",
       table: "monthlyIncome",
       computeExpected: (prev, amount) => prev + amount,
+      qaseIds: {
+        addEntry: 89,
+        updateEntry: 90,
+        deleteEntry: [91, 92],
+        cancelEntryDeletion: 93,
+        displayWithoutData: 98,
+        updateAfterApi: 102,
+        addWithFloat: 103,
+      },
     },
   ];
 
-  for (const { label, entryType, name, table, computeExpected } of resources) {
+  for (const {
+    label,
+    entryType,
+    name,
+    table,
+    computeExpected,
+    qaseIds,
+  } of resources) {
     test.describe(`${label} managment`, () => {
       let currentBudget: Awaited<ReturnType<typeof createMonthlyBudgetInDB>>;
 
@@ -54,6 +81,11 @@ test.describe("Monthly entries", () => {
         `should add monthly ${entryType} and update remaining budget`,
         { tag: ["@regression"] },
         async ({ page, user }) => {
+          qase.id(qaseIds.addEntry);
+          qase.title(
+            `${name} mensuel(le) - Création avec données valides - Ajout réussi`,
+          );
+
           await loginUser(page, user.email, user.password);
           const newEntry = { name: "entry 1", amount: "100" };
 
@@ -102,6 +134,11 @@ test.describe("Monthly entries", () => {
         page,
         user,
       }) => {
+        qase.id(qaseIds.addWithFloat);
+        qase.title(
+          `${name} mensuel(le) - Création multiple avec décimaux - Précision numérique sur l'interface`,
+        );
+
         await loginUser(page, user.email, user.password);
         const newEntries = [
           { name: "entry 1", amount: "0.10" },
@@ -152,6 +189,11 @@ test.describe("Monthly entries", () => {
         page,
         user,
       }) => {
+        qase.id(qaseIds.updateAfterApi);
+        qase.title(
+          `${name} mensuel(le) - Création réussie - Mise à jour de l'interface après confirmation API`,
+        );
+
         let receiveResponse = (value?: unknown) => {};
         const blockPromise = new Promise((resolve) => {
           receiveResponse = resolve;
@@ -199,6 +241,11 @@ test.describe("Monthly entries", () => {
         `should update monthly ${entryType} and update remaining budget`,
         { tag: ["@regression"] },
         async ({ page, user, request }) => {
+          qase.id(qaseIds.updateEntry);
+          qase.title(
+            `${name} mensuel(le) - Modification avec données valides - Mise à jour réussie`,
+          );
+
           const { data: existantEntry } = await seedMonthlyEntryInDb(
             request,
             currentBudget.id,
@@ -257,6 +304,11 @@ test.describe("Monthly entries", () => {
         `should delete monthly ${entryType} and update remaining budget`,
         { tag: ["@regression"] },
         async ({ page, user, request }) => {
+          qase.id(qaseIds.deleteEntry);
+          qase.title(
+            `${name} mensuel(le) - Suppression - Demande de confirmation -- Suppression réussie`,
+          );
+
           const { data: existantEntry } = await seedMonthlyEntryInDb(
             request,
             currentBudget.id,
@@ -313,6 +365,11 @@ test.describe("Monthly entries", () => {
         page,
         user,
       }) => {
+        qase.id(qaseIds.cancelEntryDeletion);
+        qase.title(
+          `${name} mensuel(le) -  Confirmation de la suppression - Suppression annulée`,
+        );
+
         await loginUser(page, user.email, user.password);
 
         const remainingBudget = page.getByTestId("remaining-budget");
@@ -354,6 +411,9 @@ test.describe("Monthly entries", () => {
         page,
         user,
       }) => {
+        qase.id(qaseIds.displayWithoutData);
+        qase.title(`${name} mensuel(le) - Aucune entrée - Totaux mis à jour`);
+
         await loginUser(page, user.email, user.password);
 
         await page.getByTestId(`total-card-${name}`).click();

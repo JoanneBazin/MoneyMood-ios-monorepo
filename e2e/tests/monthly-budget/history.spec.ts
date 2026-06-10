@@ -6,6 +6,7 @@ import {
   createMonthlyBudgetInDB,
   deleteAllMonthlyBudgetsInDB,
 } from "helpers/db-helpers";
+import { qase } from "playwright-qase-reporter";
 
 test.describe("Budget history", () => {
   test.beforeEach(async ({ user }) => {
@@ -19,6 +20,11 @@ test.describe("Budget history", () => {
     "should display previous monthly budget details",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id(133);
+      qase.title(
+        "Consultation historique - Budgets non-actifs - Affichage de la liste",
+      );
+
       await createMonthlyBudgetInDB(user.id, 4, 2025, false);
       const youngestBudget = await createMonthlyBudgetInDB(
         user.id,
@@ -55,6 +61,11 @@ test.describe("Budget history", () => {
     "should display only the 6 most recent budgets and filter by date",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id([135, 136]);
+      qase.title(
+        "Consultation historique - Budgets non-actifs - Limitation de l'affichage -- Recherche par date",
+      );
+
       const { year, months } = await createArchivedBudgets(user.id);
       const visiblesMonths = months.slice(0, 6);
       const oldestMonth = months[6];
@@ -95,6 +106,11 @@ test.describe("Budget history", () => {
     page,
     user,
   }) => {
+    qase.id(141);
+    qase.title(
+      "Modification historique - Réactivation budget archivé - Mise à jour statut",
+    );
+
     const oldBudget = await createMonthlyBudgetInDB(user.id, 6, 2025, false);
     const currentBudget = await createMonthlyBudgetInDB(user.id);
     await loginUser(page, user.email, user.password);

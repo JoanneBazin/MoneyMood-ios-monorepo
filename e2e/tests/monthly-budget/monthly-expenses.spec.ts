@@ -10,6 +10,7 @@ import {
   getCurrencyValue,
   seedMonthlyExpenseInDB,
 } from "helpers/budget";
+import { qase } from "playwright-qase-reporter";
 
 test.describe("Monthly expenses", () => {
   let currentBudget: Awaited<ReturnType<typeof createMonthlyBudgetInDB>>;
@@ -26,6 +27,11 @@ test.describe("Monthly expenses", () => {
     "should add new expenses and update remaining and weekly budget",
     { tag: ["@smoke", "@regression"] },
     async ({ page, user }) => {
+      qase.id(106);
+      qase.title(
+        "Dépense mensuelle - Création avec données valides - Ajout réussi",
+      );
+
       await loginUser(page, user.email, user.password);
 
       const newExpenses = [
@@ -67,6 +73,11 @@ test.describe("Monthly expenses", () => {
     page,
     user,
   }) => {
+    qase.id(119);
+    qase.title(
+      "Dépense mensuelle - Création réussie - Mise à jour de l'interface après confirmation API",
+    );
+
     let receiveResponse = (value?: unknown) => {};
     const blockPromise = new Promise((resolve) => {
       receiveResponse = resolve;
@@ -111,6 +122,11 @@ test.describe("Monthly expenses", () => {
     "should add new expense and update only current weekly budget",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id(123);
+      qase.title(
+        "Dépense mensuelle - Création réussie - Pas d'impact sur les budgets hebdomadaires des autres semaines",
+      );
+
       await loginUser(page, user.email, user.password);
 
       const currentWeeklyTotal = await getCurrencyValue(
@@ -159,6 +175,11 @@ test.describe("Monthly expenses", () => {
       page,
       user,
     }) => {
+      qase.id(111);
+      qase.title(
+        "Dépense mensuelle - Création avec montant invalide - Erreur de validation",
+      );
+
       await loginUser(page, user.email, user.password);
 
       const currentWeeklyTotal = await getCurrencyValue(
@@ -188,6 +209,11 @@ test.describe("Monthly expenses", () => {
       user,
       request,
     }) => {
+      qase.id(114);
+      qase.title(
+        "Dépense mensuelle - Modification avec montant invalide - Erreur de validation",
+      );
+
       const { data: existantExpense } = await seedMonthlyExpenseInDB(
         request,
         currentBudget.id,
@@ -214,6 +240,11 @@ test.describe("Monthly expenses", () => {
     "should update expense and update remaining and weekly budget",
     { tag: ["@regression"] },
     async ({ page, user, request }) => {
+      qase.id(107);
+      qase.title(
+        "Dépense mensuelle - Modification avec données valides - Mise à jour réussie",
+      );
+
       const { data: existantExpense } = await seedMonthlyExpenseInDB(
         request,
         currentBudget.id,
@@ -261,6 +292,11 @@ test.describe("Monthly expenses", () => {
     "should delete expense and update remaining and weekly budget",
     { tag: ["@regression"] },
     async ({ page, user, request }) => {
+      qase.id([108, 109]);
+      qase.title(
+        "Dépense mensuelle - Suppression d'une dépense - Demande de confirmation -- Suppression réussie",
+      );
+
       const { data: existantExpense } = await seedMonthlyExpenseInDB(
         request,
         currentBudget.id,
@@ -304,6 +340,11 @@ test.describe("Monthly expenses", () => {
     user,
     request,
   }) => {
+    qase.id(110);
+    qase.title(
+      "Dépense mensuelle - Confirmation de la suppression - Suppression annulée",
+    );
+
     const { data: existantExpense } = await seedMonthlyExpenseInDB(
       request,
       currentBudget.id,

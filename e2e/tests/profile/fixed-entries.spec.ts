@@ -8,12 +8,14 @@ import {
   deleteAllMonthlyBudgetsInDB,
 } from "helpers/db-helpers";
 import { getTotalEntries } from "helpers/profile";
+import { qase } from "playwright-qase-reporter";
 
 interface ResourcesConfig {
   label: string;
   entryType: "incomes" | "charges";
   name: string;
   table: PrismaModelSheets;
+  qaseIds: Record<string, number | number[]>;
 }
 
 const resources: ResourcesConfig[] = [
@@ -22,16 +24,30 @@ const resources: ResourcesConfig[] = [
     entryType: "charges",
     name: "charges",
     table: "fixedCharge",
+    qaseIds: {
+      addEntry: 149,
+      updateEntry: 150,
+      deleteEntry: [151, 152],
+      cancelEntryDeletion: 153,
+      updateWithoutImpact: 176,
+    },
   },
   {
     label: "Fixed incomes",
     entryType: "incomes",
     name: "revenus",
     table: "fixedIncome",
+    qaseIds: {
+      addEntry: 167,
+      updateEntry: 168,
+      deleteEntry: [169, 170],
+      cancelEntryDeletion: 171,
+      updateWithoutImpact: 177,
+    },
   },
 ];
 
-for (const { label, entryType, name, table } of resources) {
+for (const { label, entryType, name, table, qaseIds } of resources) {
   test.describe(`${label} managment`, () => {
     test.beforeEach(async ({ user }) => {
       await deleteAllFixedEntriesInDB(user.id);
@@ -43,6 +59,11 @@ for (const { label, entryType, name, table } of resources) {
       `should add fixed ${entryType} and update monthly budget creation fields`,
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(qaseIds.addEntry);
+        qase.title(
+          `${name} fixe - Création avec données valides - Ajout réussi`,
+        );
+
         await loginUser(page, user.email, user.password);
         const newEntry = { name: "entry 1", amount: "100" };
 
@@ -83,6 +104,11 @@ for (const { label, entryType, name, table } of resources) {
       `should update fixed ${entryType} and update monthly budget creation fields`,
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(qaseIds.updateEntry);
+        qase.title(
+          `${name} fixe - Modification avec données valides - Mise à jour réussie`,
+        );
+
         const existantEntry = await createFixedEntryInDb(user.id, table);
         await loginUser(page, user.email, user.password);
         await page.goto("/profile/budget");
@@ -130,6 +156,11 @@ for (const { label, entryType, name, table } of resources) {
       `should update fixed ${entryType} without impacting existant budgets`,
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(qaseIds.updateWithoutImpact);
+        qase.title(
+          `${name} fixe - Modification réussie - Pas d'effet rétroactif`,
+        );
+
         const existantEntry = await createFixedEntryInDb(user.id, table);
         await loginUser(page, user.email, user.password);
         const updatedAmount = "500";
@@ -179,6 +210,11 @@ for (const { label, entryType, name, table } of resources) {
       `should delete fixed ${entryType} and update monthly budget creation fields`,
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(qaseIds.deleteEntry);
+        qase.title(
+          `${name} fixe - Suppression - Demande de confirmation -- Suppression réussie`,
+        );
+
         const existantEntry = await createFixedEntryInDb(user.id, table);
         await loginUser(page, user.email, user.password);
         await page.goto("/profile/budget");
@@ -218,6 +254,11 @@ for (const { label, entryType, name, table } of resources) {
       page,
       user,
     }) => {
+      qase.id(qaseIds.cancelEntryDeletion);
+      qase.title(
+        `${name} fixe -  Confirmation de la suppression - Suppression annulée`,
+      );
+
       const existantEntry = await createFixedEntryInDb(user.id, table);
       await loginUser(page, user.email, user.password);
       await page.goto("/profile/budget");

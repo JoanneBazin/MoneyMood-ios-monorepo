@@ -8,6 +8,7 @@ import {
   deleteAllSpecialBudgetsInDB,
 } from "helpers/db-helpers";
 import { fillCategoryForm } from "helpers/special-budgets";
+import { qase } from "playwright-qase-reporter";
 
 test.describe("Project categories", () => {
   test.afterAll(async ({ user }) => {
@@ -28,6 +29,11 @@ test.describe("Project categories", () => {
       "should add a new category to a project",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(195);
+        qase.title(
+          "Gestion catégorie - Création avec données valides - Création réussie",
+        );
+
         await loginUser(page, user.email, user.password);
         await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -56,6 +62,11 @@ test.describe("Project categories", () => {
       page,
       user,
     }) => {
+      qase.id(202);
+      qase.title(
+        "Gestion catégorie - Création avec nom existant - Création refusée",
+      );
+
       const existantCat = await createSpecialCategoryInDB(specialBudget.id);
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
@@ -71,6 +82,11 @@ test.describe("Project categories", () => {
       page,
       user,
     }) => {
+      qase.id(201);
+      qase.title(
+        "Gestion catégorie - Création avec nom vide - Erreur de validation",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -98,6 +114,11 @@ test.describe("Project categories", () => {
       "should update a project category",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(196);
+        qase.title(
+          "Gestion catégorie - Modification avec données valides - Mise à jour réussie",
+        );
+
         await loginUser(page, user.email, user.password);
         await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -136,6 +157,11 @@ test.describe("Project categories", () => {
       page,
       user,
     }) => {
+      qase.id(204);
+      qase.title(
+        "Gestion catégorie - Modification avec nom existant - Mise à jour refusée",
+      );
+
       const existantCat = await createSpecialCategoryInDB(specialBudget.id);
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
@@ -155,6 +181,10 @@ test.describe("Project categories", () => {
     });
 
     test("should failded updating with empty name", async ({ page, user }) => {
+      qase.id(203);
+      qase.title(
+        "Gestion catégorie - Modification avec nom vide - Erreur de validation",
+      );
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -176,6 +206,11 @@ test.describe("Project categories", () => {
       "should delete a project category and update their expenses (uncategorised by default)",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id([197, 199]);
+        qase.title(
+          "Gestion catégorie - Suppression d'une catégorie - Options de suppression -- Suppression catégorie seule réussie",
+        );
+
         await loginUser(page, user.email, user.password);
         await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -230,6 +265,11 @@ test.describe("Project categories", () => {
       "should delete a project category and all of their expenses in cascade",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(198);
+        qase.title(
+          "Gestion catégorie - Confirmation de la suppression - Suppression en cascade réussie",
+        );
+
         await loginUser(page, user.email, user.password);
         await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -278,6 +318,10 @@ test.describe("Project categories", () => {
       page,
       user,
     }) => {
+      qase.id(200);
+      qase.title(
+        "Gestion catégorie - Confirmation de la suppression - Suppression annulée",
+      );
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 

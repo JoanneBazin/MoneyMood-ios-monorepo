@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
+    "playwright-qase-reporter": "^2.5.4",
     "typescript": "^5.0.0"
   }
 }

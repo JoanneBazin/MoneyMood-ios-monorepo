@@ -8,6 +8,7 @@ import {
   deleteAllSpecialBudgetsInDB,
 } from "helpers/db-helpers";
 import { fillProjectForm } from "helpers/special-budgets";
+import { qase } from "playwright-qase-reporter";
 
 test.describe("Special budgets", () => {
   test.afterAll(async ({ user }) => {
@@ -23,6 +24,9 @@ test.describe("Special budgets", () => {
       page,
       user,
     }) => {
+      qase.id(178);
+      qase.title("Consultation projet - Projets créés - Affichage de la liste");
+
       const budgetCount = 3;
       const specialBudgets = await createMultipleSpecialBudgets(
         user.id,
@@ -47,6 +51,11 @@ test.describe("Special budgets", () => {
       "should display special budget details",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(180);
+        qase.title(
+          "Consultation projet - Détails d'un projet - Affichage des données",
+        );
+
         const project = await createSpecialBudgetWithCatAndExpenses(user.id);
         await loginUser(page, user.email, user.password);
 
@@ -113,6 +122,11 @@ test.describe("Special budgets", () => {
       "should create a new project",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(182);
+        qase.title(
+          "Gestion projet - Création avec données valides - Création réussie",
+        );
+
         await loginUser(page, user.email, user.password);
 
         const newProject = { name: "Project 1", totalBudget: "100" };
@@ -143,6 +157,11 @@ test.describe("Special budgets", () => {
       page,
       user,
     }) => {
+      qase.id(194);
+      qase.title(
+        "Gestion projet - Création avec nom existant - Création refusée",
+      );
+
       const existantBudget = await createSpecialBudgetInDB(user.id);
       await loginUser(page, user.email, user.password);
 
@@ -177,6 +196,11 @@ test.describe("Special budgets", () => {
         page,
         user,
       }) => {
+        qase.id(193);
+        qase.title(
+          "Gestion projet - Création avec données invalides - Erreur de validation",
+        );
+
         await loginUser(page, user.email, user.password);
 
         await page.goto("/app/projects");
@@ -205,6 +229,11 @@ test.describe("Special budgets", () => {
       "should update a special budget",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(183);
+        qase.title(
+          "Gestion projet - Modification avec données valides - Mise à jour réussie",
+        );
+
         await loginUser(page, user.email, user.password);
 
         const updatedBudget = { name: "Updated Project", totalBudget: "200" };
@@ -231,6 +260,11 @@ test.describe("Special budgets", () => {
       page,
       user,
     }) => {
+      qase.id(187);
+      qase.title(
+        "Gestion projet - Modification avec nom existant - Modification refusée",
+      );
+
       const { name, totalBudget } = await createSpecialBudgetInDB(
         user.id,
         "Older project",
@@ -270,6 +304,11 @@ test.describe("Special budgets", () => {
         page,
         user,
       }) => {
+        qase.id(188);
+        qase.title(
+          "Gestion projet - Modification avec données invalides - Erreur de validation",
+        );
+
         await loginUser(page, user.email, user.password);
 
         await page.goto(`/app/projects/${specialBudget.id}`);
@@ -289,6 +328,11 @@ test.describe("Special budgets", () => {
       "should delete a special budget",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id([184, 185]);
+        qase.title(
+          "Gestion projet - Suppression d'un projet - Demande de confirmation -- Suppression réussie",
+        );
+
         await loginUser(page, user.email, user.password);
 
         await page.goto(`/app/projects/${specialBudget.id}`);
@@ -309,6 +353,10 @@ test.describe("Special budgets", () => {
     );
 
     test("should cancel project deletion", async ({ page, user }) => {
+      qase.id(186);
+      qase.title(
+        "Gestion projet - Confirmation de la suppression - Suppression annulée",
+      );
       await loginUser(page, user.email, user.password);
 
       await page.goto(`/app/projects/${specialBudget.id}`);

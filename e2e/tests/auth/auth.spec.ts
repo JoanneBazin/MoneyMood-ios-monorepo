@@ -1,12 +1,12 @@
 import { expect, test } from "fixtures/user.fixture";
 import { loginUser } from "../../helpers/auth";
 import {
-  createMonthlyBudgetInDB,
   createUserInDB,
   deleteUserFromDB,
   getSession,
   updateSessionExpirationInDb,
 } from "helpers/db-helpers";
+import { qase } from "playwright-qase-reporter";
 
 test.describe("Authentication", () => {
   const user = {
@@ -27,6 +27,9 @@ test.describe("Authentication", () => {
       "should signup user and redirect to dashboard",
       { tag: ["@smoke", "@regression"] },
       async ({ page }) => {
+        qase.id(1);
+        qase.title("Inscription - Données valides - Compte créé");
+
         await page.goto("/");
         await page.getByTestId("signup-btn").click();
         await expect(page).toHaveURL("/signup");
@@ -60,6 +63,9 @@ test.describe("Authentication", () => {
         `shouldn't signup user with a missing ${field}`,
         { tag: ["@regression"] },
         async ({ page }) => {
+          qase.id(2);
+          qase.title("Inscription - Champ vide - Erreur de validation");
+
           await page.goto("/signup");
 
           await page.fill('input[name="name"]', name);
@@ -86,6 +92,11 @@ test.describe("Authentication", () => {
         `shouldn't signup user with an invalid password - ${issue}`,
         { tag: ["@regression"] },
         async ({ page }) => {
+          qase.id(5);
+          qase.title(
+            "Inscription - Format mdp invalide - Erreur de validation",
+          );
+
           await page.goto("/signup");
 
           await page.fill('input[name="name"]', user.name);
@@ -104,6 +115,9 @@ test.describe("Authentication", () => {
       "shouldn't signup user with an existant email",
       { tag: ["@regression"] },
       async ({ page }) => {
+        qase.id(11);
+        qase.title("Inscription - Email existant - Inscription rejetée");
+
         await createUserInDB(user.name, user.email, user.password);
 
         await page.goto("/signup");
@@ -123,6 +137,11 @@ test.describe("Authentication", () => {
       "should signup user with special char in password and redirect to dashboard",
       { tag: ["@regression"] },
       async ({ page }) => {
+        qase.id(54);
+        qase.title(
+          "Inscription - Caractères spéciaux légitimes dans mdp - Compte créé",
+        );
+
         await page.goto("/signup");
 
         await page.fill('input[name="name"]', user.name);
@@ -144,6 +163,9 @@ test.describe("Authentication", () => {
       "should login user and redirect to dashboard",
       { tag: ["@smoke", "@regression"] },
       async ({ page, user }) => {
+        qase.id(16);
+        qase.title("Connexion - Identifiants valides - Connexion réussie");
+
         await page.goto("/");
         await page.getByTestId("login-btn").click();
         await expect(page).toHaveURL("/login");
@@ -164,6 +186,8 @@ test.describe("Authentication", () => {
       "shouldn't login user with invalid password",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(17);
+        qase.title("Connexion - Mdp incorrect - Echec de connexion");
         await page.goto("/login");
 
         await page.fill('input[name="email"]', user.email);
@@ -180,6 +204,9 @@ test.describe("Authentication", () => {
       "shouldn't login user with invalid email",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(18);
+        qase.title("Connexion - Email inexistant - Echec de connexion");
+
         await page.goto("/login");
 
         await page.fill('input[name="email"]', "test@example.com");
@@ -203,6 +230,9 @@ test.describe("Authentication", () => {
 
     for (const { email, password, field } of connectionCases) {
       test(`shouldn't login user with an empty ${field}`, async ({ page }) => {
+        qase.id(19);
+        qase.title("Connexion - Champ vide - Erreur de validation");
+
         await page.goto("/login");
 
         await page.fill('input[name="email"]', email);
@@ -221,6 +251,11 @@ test.describe("Authentication", () => {
       "should logout user and blocks access to protected pages ",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id([24, 25]);
+        qase.title(
+          "Déconnexion - User connecté - Déconnexion réussie -- Accès refusé aux pages protégées",
+        );
+
         await loginUser(page, user.email, user.password);
 
         await page.getByTestId("nav-menu").click();
@@ -237,6 +272,10 @@ test.describe("Authentication", () => {
       "logout should delete session cookie",
       { tag: ["@regression"] },
       async ({ page, user, context }) => {
+        qase.id(62);
+        qase.title(
+          "Déconnexion - Après déconnexion - Cookie de session supprimé",
+        );
         await loginUser(page, user.email, user.password);
 
         await page.getByTestId("nav-menu").click();
@@ -256,6 +295,9 @@ test.describe("Authentication", () => {
       "should refresh session expiration when doing authenticated action (< 7 days)",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(26);
+        qase.title("Session - Expiration < 7 jours - Prolongation de session");
+
         const expiry = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
 
         await loginUser(page, user.email, user.password);
@@ -272,6 +314,10 @@ test.describe("Authentication", () => {
       page,
       user,
     }) => {
+      qase.id(27);
+      qase.title(
+        "Session - Expiration > 7 jours - Non-prolongation de session",
+      );
       const expiry = new Date(Date.now() + 9 * 24 * 60 * 60 * 1000);
 
       await loginUser(page, user.email, user.password);
@@ -287,6 +333,8 @@ test.describe("Authentication", () => {
       "should redirect to login page when accessing protected page with expired session",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(28);
+        qase.title("Session - Expiration de session - Déconnexion automatique");
         await loginUser(page, user.email, user.password);
         await updateSessionExpirationInDb(user.id, new Date(Date.now() - 1000));
 
@@ -300,6 +348,10 @@ test.describe("Authentication", () => {
       "should redirect to login page when accessing protected page without auth",
       { tag: ["@regression"] },
       async ({ page }) => {
+        qase.id([29, 30]);
+        qase.title(
+          "Session - Pas de session - Accès non autorisé aux pages protégées -- Accès pages publiques",
+        );
         await page.goto("/app");
 
         await expect(page).toHaveURL("/login");

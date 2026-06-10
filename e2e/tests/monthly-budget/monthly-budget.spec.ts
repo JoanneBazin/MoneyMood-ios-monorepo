@@ -10,6 +10,7 @@ import {
   getCurrencyValue,
   getMonthlyBudgetTotals,
 } from "helpers/budget";
+import { qase } from "playwright-qase-reporter";
 
 test.describe("Monthly budget", () => {
   test.afterAll(async ({ user }) => {
@@ -25,6 +26,9 @@ test.describe("Monthly budget", () => {
       "should create first current budget and update dashboard with it",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(31);
+        qase.title("Création budget - Données valides - Création réussie");
+
         await loginUser(page, user.email, user.password);
 
         const charge = { name: "charge 1", amount: "100.5" };
@@ -69,6 +73,11 @@ test.describe("Monthly budget", () => {
       "should create new current budget and replace current one on dashboard",
       { tag: ["@smoke", "@regression"] },
       async ({ page, user }) => {
+        qase.id(32);
+        qase.title(
+          "Création budget - Budget mensuel existant - Remplacer budget actif auto par la création",
+        );
+
         const currentBudget = await createMonthlyBudgetInDB(user.id);
         await loginUser(page, user.email, user.password);
 
@@ -137,6 +146,11 @@ test.describe("Monthly budget", () => {
       "should failed creating monthly budget if already exists for this month",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(35);
+        qase.title(
+          "Création budget - Sélection d'une date existante - Création refusée",
+        );
+
         await loginUser(page, user.email, user.password);
         const currentDate = new Date();
         await createMonthlyBudgetInDB(
@@ -160,11 +174,15 @@ test.describe("Monthly budget", () => {
       page,
       user,
     }) => {
+      qase.id(40);
+      qase.title(
+        "Création budget - Champ de saisi vide - Erreur de validation",
+      );
       await loginUser(page, user.email, user.password);
 
       await page.getByTestId("create-nav").click();
 
-      await page.getByTestId("add-incomes-input").click();
+      await page.getByTestId("add-charges-input").click();
       await page.getByTestId("submit-monthly-budget").click();
 
       await expect(page).toHaveURL("app/create");
@@ -176,6 +194,10 @@ test.describe("Monthly budget", () => {
       page,
       user,
     }) => {
+      qase.id(41);
+      qase.title(
+        "Création budget - Champ de saisi invalide - Erreur de validation",
+      );
       await loginUser(page, user.email, user.password);
 
       const invalidEntry = { name: " ", amount: "-10" };
@@ -205,6 +227,9 @@ test.describe("Monthly budget", () => {
       "dashboard should display user's current monthly budget if exists",
       { tag: ["@smoke", "@regression"] },
       async ({ page, user }) => {
+        qase.id(43);
+        qase.title("Consultation budget - Dashboard - Affichage budget actif");
+
         await loginUser(page, user.email, user.password);
 
         const remainingBudget = page.getByTestId("remaining-budget");
@@ -229,6 +254,10 @@ test.describe("Monthly budget", () => {
       "authenticated user should be redirected to their dashboard when accessing the app",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id(44);
+        qase.title(
+          "Consultation budget - Session en cours - Redirection vers le dashboard à l'ouverture de l'application",
+        );
         await loginUser(page, user.email, user.password);
 
         await page.goto("/");
@@ -251,6 +280,11 @@ test.describe("Monthly budget", () => {
       "should delete current budget and dashboard should display action buttons",
       { tag: ["@regression"] },
       async ({ page, user }) => {
+        qase.id([126, 127]);
+        qase.title(
+          "Gestion budget - Suppression d'un budget - Demande de confirmation -- Suppression réussie",
+        );
+
         await loginUser(page, user.email, user.password);
 
         await page.getByTestId("budget-options-menu").click();
@@ -269,6 +303,11 @@ test.describe("Monthly budget", () => {
       page,
       user,
     }) => {
+      qase.id(128);
+      qase.title(
+        "Gestion budget - Confirmation de la suppression - Suppression annulée",
+      );
+
       await loginUser(page, user.email, user.password);
 
       await page.getByTestId("budget-options-menu").click();
@@ -285,6 +324,11 @@ test.describe("Monthly budget", () => {
       page,
       user,
     }) => {
+      qase.id(129);
+      qase.title(
+        "Gestion budget - Archivage d'un budget - Mise à jour dashboard / historique",
+      );
+
       await loginUser(page, user.email, user.password);
 
       await page.getByTestId("budget-options-menu").click();

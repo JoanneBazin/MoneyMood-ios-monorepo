@@ -10,6 +10,7 @@ import {
   deleteAllSpecialBudgetsInDB,
 } from "helpers/db-helpers";
 import { selectWhenStable } from "helpers/special-budgets";
+import { qase } from "playwright-qase-reporter";
 
 test.describe("Project expenses", () => {
   let specialBudget: Awaited<
@@ -27,6 +28,11 @@ test.describe("Project expenses", () => {
     "should add a new expense without cat and update remaining budget",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id(215);
+      qase.title(
+        "Dépense projet - Création avec données valides - Ajout réussi",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -77,6 +83,11 @@ test.describe("Project expenses", () => {
     "should add a new expense with cat and update remaining budget",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id(234);
+      qase.title(
+        "Dépense projet - Création avec données valides et catégorie - Ajout réussi",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -124,6 +135,11 @@ test.describe("Project expenses", () => {
       page,
       user,
     }) => {
+      qase.id(220);
+      qase.title(
+        "Dépense projet - Création avec montant invalide - Erreur de validation",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -172,6 +188,11 @@ test.describe("Project expenses", () => {
       page,
       user,
     }) => {
+      qase.id(223);
+      qase.title(
+        "Dépense projet - Modification avec montant invalide - Erreur de validation",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -195,6 +216,11 @@ test.describe("Project expenses", () => {
     "should update expense category and update subtotals",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id(235);
+      qase.title(
+        "Dépense projet - Modification de la catégorie - Mise à jour réussie",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -256,6 +282,11 @@ test.describe("Project expenses", () => {
     "should update expense and update total and remaining budget",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id(216);
+      qase.title(
+        "Dépense projet - Modification avec données valides - Mise à jour réussie",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -307,6 +338,11 @@ test.describe("Project expenses", () => {
     "should delete expense and update total and remaining budget",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id([217, 218]);
+      qase.title(
+        "Dépense projet - Suppression d'une dépense - Demande de confirmation -- Suppression réussie",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 
@@ -353,6 +389,11 @@ test.describe("Project expenses", () => {
     "should cancel expense deletion before request",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id(219);
+      qase.title(
+        "Dépense projet -  Confirmation de la suppression - Suppression annulée",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto(`/app/projects/${specialBudget.id}`);
 

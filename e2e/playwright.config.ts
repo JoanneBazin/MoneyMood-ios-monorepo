@@ -20,7 +20,24 @@ export default defineConfig({
   },
   retries: isCI ? 2 : 0,
   workers: isCI ? 2 : 1,
-  reporter: isCI ? [["html"], ["github"]] : [["html"], ["list"]],
+  reporter: isCI
+    ? [["html"], ["github"]]
+    : [
+        ["html"],
+        ["list"],
+        [
+          "playwright-qase-reporter",
+          {
+            mode: "testops",
+            testops: {
+              api: {
+                token: process.env.QASE_API_TOKEN,
+              },
+              project: "MONEYMOOD",
+            },
+          },
+        ],
+      ],
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:5173",
     trace: "on-first-retry",

@@ -7,12 +7,18 @@ import {
   deleteUserFromDB,
   resetUserData,
 } from "helpers/db-helpers";
+import { qase } from "playwright-qase-reporter";
 
 test.describe("User profile", () => {
   test(
     "should update user name and email",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id(143);
+      qase.title(
+        "Modification user - Modification avec données valides - Mise à jour réussie",
+      );
+
       await loginUser(page, user.email, user.password);
       const newUser = { name: "Updated Name", email: "updated@test.com" };
       await deleteUserFromDB(newUser.email);
@@ -48,6 +54,11 @@ test.describe("User profile", () => {
     "should fail update if using existant email",
     { tag: ["@regression"] },
     async ({ page, user }) => {
+      qase.id(144);
+      qase.title(
+        "Modification user - Modification avec email existant - Mise à jour refusée",
+      );
+
       const existantUser = {
         name: "Existant User",
         email: "test@example.com",
@@ -95,6 +106,11 @@ test.describe("User profile", () => {
       page,
       user,
     }) => {
+      qase.id(145);
+      qase.title(
+        "Modification user - Modification avec donnée invalide - Mise à jour refusée",
+      );
+
       await loginUser(page, user.email, user.password);
       await page.goto("/profile/settings");
 
@@ -110,6 +126,10 @@ test.describe("User profile", () => {
     user,
     request,
   }) => {
+    qase.id(148);
+    qase.title(
+      "Modification user - Activation de la validation des dépenses  - Mise à jour réussie",
+    );
     const { id: budgetId } = await createMonthlyBudgetInDB(user.id);
     const { data: expense } = await seedMonthlyExpenseInDB(request, budgetId);
     await loginUser(page, user.email, user.password);

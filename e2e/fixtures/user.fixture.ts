@@ -8,7 +8,8 @@ export const test = baseTest.extend<
   { user: { email: string; password: string; name: string; id: string } }
 >({
   user: [
-    async (_, use) => {
+    // eslint-disable-next-line no-empty-pattern
+    async ({}, use) => {
       const workerIndex = test.info().workerIndex;
       const testUser = {
         name: `User Worker ${workerIndex}`,

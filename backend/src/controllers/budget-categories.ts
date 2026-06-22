@@ -10,6 +10,7 @@ import {
   specialExpenseEntrySelect,
 } from "../lib";
 import { updateSpecialBudgetRemaining } from "../services";
+import { Prisma } from "@prisma/client";
 
 export const addSpecialCategory = async (
   req: Request,
@@ -143,7 +144,7 @@ export const deleteSpecialCategoryOnCascade = async (
   const { id: specialBudgetId, categoryId } = params;
 
   try {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.expense.deleteMany({
         where: { specialBudgetId, specialCategoryId: categoryId },
       });

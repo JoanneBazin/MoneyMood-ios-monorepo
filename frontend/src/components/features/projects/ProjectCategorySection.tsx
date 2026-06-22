@@ -5,7 +5,7 @@ import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { ProjectCategorySectionProps } from "@/types";
 import { CategoryEntryForm } from "@shared/schemas";
 import { Pen } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const ProjectCategorySection = ({
   budgetId,
@@ -17,11 +17,10 @@ export const ProjectCategorySection = ({
 
   const { actions, state, status } = useCategoriesAction({ budgetId });
 
-  useEffect(() => {
-    if (isEditModalOpen) {
-      actions.clearModalErrors();
-    }
-  }, [isEditModalOpen]);
+  const handleOpenModal = () => {
+    actions.clearModalErrors();
+    setIsEditModalOpen(true);
+  };
 
   const handleUpdateCategory = (updatedCategory: CategoryEntryForm) => {
     if (updatedCategory.name === category?.name) {
@@ -49,7 +48,7 @@ export const ProjectCategorySection = ({
       <div className="flex-between">
         <h2 className="cat-title">{category.name}</h2>
         <button
-          onClick={() => setIsEditModalOpen(true)}
+          onClick={handleOpenModal}
           aria-label="Modifier la catégorie"
           data-testid="update-cat-btn"
           disabled={isOffline}

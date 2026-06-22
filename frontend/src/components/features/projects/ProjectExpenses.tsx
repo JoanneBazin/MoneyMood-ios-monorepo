@@ -10,7 +10,7 @@ import { useSpecialExpensesAction } from "@/hooks/actions";
 import { useSessionQuery } from "@/hooks/queries";
 import { ProjectExpensesProp, SpecialExpenseEntry } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 export const ProjectExpenses = ({
   budgetId,
@@ -28,12 +28,11 @@ export const ProjectExpenses = ({
     return expenses.reduce((acc, curr) => acc + curr.amount, 0);
   }, [expenses]);
 
-  useEffect(() => {
-    if (selectedEntry) {
-      setSelectedCategory(selectedEntry.specialCategoryId ?? "");
-      actions.clearModalErrors();
-    }
-  }, [selectedEntry]);
+  const handleSelectEntry = (entry: SpecialExpenseEntry) => {
+    actions.clearModalErrors();
+    setSelectedEntry(entry);
+    setSelectedCategory(entry.specialCategoryId ?? "");
+  };
 
   const handleAddExpenses = () => {
     const expenses = categoryId
@@ -79,7 +78,7 @@ export const ProjectExpenses = ({
         data={expenses}
         enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
         validateExpense={handleExpenseValidation}
-        setSelectedEntry={setSelectedEntry}
+        setSelectedEntry={handleSelectEntry}
       />
 
       <AddEntriesForm

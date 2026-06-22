@@ -10,7 +10,7 @@ const isTest =
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       if (error instanceof ApiError && error.status === 401) {
         resetAppState(queryClient);
         window.location.href = "/login";
@@ -18,7 +18,7 @@ export const queryClient = new QueryClient({
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error: any, _variables, _context, mutation) => {
+    onError: (error: unknown, _variables, _context, mutation) => {
       if (
         error instanceof ApiError &&
         error.status === 401 &&
@@ -36,7 +36,7 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
       networkMode: isTest ? "online" : "offlineFirst",
-      retry: (failureCount, error) => {
+      retry: (failureCount) => {
         if (!navigator.onLine) return false;
         return failureCount < 1;
       },

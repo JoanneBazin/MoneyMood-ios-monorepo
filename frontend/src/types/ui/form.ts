@@ -14,7 +14,6 @@ export interface AddMonthlyBudgetFormProps {
 
 export interface MonthYearPickerProps {
   onChange: (month: number, year: number) => void;
-  defaultInput?: boolean;
 }
 
 export interface AddEntriesFormProps {

@@ -18,10 +18,9 @@ export const DateDisplay = ({
       ? getWeeksInMonth(oldYear, oldMonth)
       : undefined;
 
-  if (!weeks) return;
   const formattedWeeks = useMemo(
     () =>
-      weeks.map((w) => ({
+      weeks?.map((w) => ({
         start: w.start.toLocaleDateString("fr-FR", {
           day: "2-digit",
           month: "2-digit",
@@ -33,6 +32,8 @@ export const DateDisplay = ({
       })),
     [weeks],
   );
+
+  if (!weeks || !formattedWeeks) return null;
 
   return (
     <div className="week-selector">

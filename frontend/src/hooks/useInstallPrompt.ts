@@ -1,28 +1,41 @@
 import { useEffect, useState } from "react";
 
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
+
 export const useInstallPrompt = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [canPrompt, setCanPrompt] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
       setCanPrompt(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handler as any);
+    window.addEventListener("beforeinstallprompt", handler as EventListener);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler as any);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handler as EventListener,
+      );
     };
   }, []);
 
   const promptInstall = async () => {
     if (!deferredPrompt) return;
-    (deferredPrompt as any).prompt();
+    deferredPrompt.prompt();
 
-    const result = await (deferredPrompt as any).userChoice;
+    const result = await deferredPrompt.userChoice;
     if (result.outcome === "accepted") {
       console.log("App added to home screen");
       setCanPrompt(false);

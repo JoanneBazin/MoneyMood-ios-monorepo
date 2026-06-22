@@ -1,5 +1,5 @@
 import { formatDateTitle } from "@/lib/formatDateTitle";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   BackArrow,
   RemainingBudgetDisplay,
@@ -8,12 +8,12 @@ import {
   AnimatedView,
 } from "@/components/ui";
 import { MonthlyBudgetWithWeeks } from "@/types";
-import { useAppStore } from "@/stores/appStore";
 import {
   MonthlyBudgetOptions,
   WeeklyExpensesDisplay,
   MonthlyEntries,
 } from "../budget";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 type View = "app" | "charges" | "incomes";
 
@@ -22,7 +22,6 @@ export const CurrentBudgetLayout = ({
 }: {
   budget: MonthlyBudgetWithWeeks;
 }) => {
-  const setPageTitle = useAppStore((s) => s.setPageTitle);
   const dateTitle = formatDateTitle(budget.year, budget.month);
   const title = dateTitle.charAt(0).toUpperCase() + dateTitle.slice(1);
   const [view, setView] = useState<View>("app");
@@ -37,9 +36,7 @@ export const CurrentBudgetLayout = ({
     0,
   );
 
-  useEffect(() => {
-    setPageTitle(title);
-  }, []);
+  usePageTitle(title);
 
   if (view !== "app")
     return (

@@ -3,18 +3,17 @@ import { Modal } from "@/components/ui";
 import { useCategoriesAction } from "@/hooks/actions";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { CategoryEntryForm } from "@shared/schemas";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { isOffline } = useOfflineStatus();
   const { actions, state, status } = useCategoriesAction({ budgetId });
 
-  useEffect(() => {
-    if (isCreateModalOpen) {
-      actions.clearModalErrors();
-    }
-  }, [isCreateModalOpen]);
+  const handleOpenModal = () => {
+    actions.clearModalErrors();
+    setIsCreateModalOpen(true);
+  };
 
   const handleAddCategory = (category: CategoryEntryForm) => {
     actions.addCategory(category, () => setIsCreateModalOpen(false));
@@ -23,7 +22,7 @@ export const CreateSpecialCategory = ({ budgetId }: { budgetId: string }) => {
   return (
     <div className="flex-end">
       <button
-        onClick={() => setIsCreateModalOpen(true)}
+        onClick={handleOpenModal}
         className="cat-button"
         data-testid="add-special-cat-btn"
         disabled={isOffline}

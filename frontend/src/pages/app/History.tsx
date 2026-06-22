@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getBudgetByDate } from "@/lib/api";
 import { Search } from "lucide-react";
 import { useLastBudgetsQuery } from "@/hooks/queries";
@@ -11,12 +11,11 @@ import {
 import { LastMonthlyBudget } from "@/types";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { ApiError } from "@/lib/ApiError";
-import { useAppStore } from "@/stores/appStore";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export const History = () => {
   const { data: lastBudgets, isPending, error } = useLastBudgetsQuery();
   const { isOffline } = useOfflineStatus();
-  const setPageTitle = useAppStore((s) => s.setPageTitle);
 
   const [searchedBudget, setSearchedBudget] =
     useState<LastMonthlyBudget | null>(null);
@@ -24,9 +23,7 @@ export const History = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setPageTitle("Historique des budgets mensuels");
-  }, []);
+  usePageTitle("Historique des budgets mensuels");
 
   const handleDateChange = async (month: number, year: number) => {
     try {
@@ -51,7 +48,7 @@ export const History = () => {
       {!isOffline && (
         <div className="date-picker-container">
           <p>Rechercher par mois</p>
-          <MonthYearPicker onChange={handleDateChange} defaultInput={false} />
+          <MonthYearPicker onChange={handleDateChange} />
         </div>
       )}
 

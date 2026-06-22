@@ -1,17 +1,12 @@
 import app from "../../app";
-import { prisma } from "../../lib/prismaClient";
 import { authenticatedRequest, createTestUser } from "../helpers/auth-helpers";
-import {
-  createMonthlyBudget,
-  createSpecialBudget,
-  createSpecialCategory,
-} from "../helpers/db-helpers";
+import { createMonthlyBudget } from "../helpers/db-helpers";
 import request from "supertest";
 
 describe("Budget History Routes", () => {
   let authCookie: string;
   let userId: string;
-  let budget: any;
+  let budget: Awaited<ReturnType<typeof createMonthlyBudget>>;
 
   beforeAll(async () => {
     const { response, cookie } = await createTestUser("history@test.com");
@@ -25,7 +20,7 @@ describe("Budget History Routes", () => {
   it("should return budget by date", async () => {
     const authReq = authenticatedRequest(authCookie);
     const res = await authReq.get(
-      `/api/monthly-budgets?month=${budget.month}&year=${budget.year}`
+      `/api/monthly-budgets?month=${budget.month}&year=${budget.year}`,
     );
 
     expect(res.status).toBe(200);

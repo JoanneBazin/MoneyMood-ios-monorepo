@@ -194,6 +194,7 @@ test.describe("Monthly entries", () => {
           `${name} mensuel(le) - Création réussie - Mise à jour de l'interface après confirmation API`,
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         let receiveResponse = (value?: unknown) => {};
         const blockPromise = new Promise((resolve) => {
           receiveResponse = resolve;

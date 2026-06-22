@@ -1,25 +1,18 @@
 import { fetchSpecialBudget } from "@/lib/api";
-import { useAppStore } from "@/stores/appStore";
 import { SpecialBudget } from "@/types";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 
-export const useBudgetDetailsQuery = (id: string) => {
-  const setPageTitle = useAppStore((s) => s.setPageTitle);
-
+export const useBudgetDetailsQuery = (id: string | undefined) => {
   const query = useQuery<SpecialBudget>({
     queryKey: ["specialBudget", id],
-    queryFn: () => fetchSpecialBudget(id),
+    queryFn: () => fetchSpecialBudget(id!),
+    enabled: !!id,
   });
 
-  useEffect(() => {
-    if (query.data) setPageTitle(query.data.name);
-  }, [query.data]);
   return query;
 };
 
-export const getCategories = (id: string) => {
-  const queryClient = useQueryClient();
+export const getCategories = (id: string, queryClient: QueryClient) => {
   const budget = queryClient.getQueryData([
     "specialBudget",
     id,

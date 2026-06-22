@@ -17,7 +17,6 @@ import {
   updateMonthlyBudgetRemaining,
 } from "../services";
 import { Prisma } from "@prisma/client";
-import { log } from "console";
 
 export const addMonthlyBudget = async (
   req: Request,
@@ -313,6 +312,7 @@ export const seedTestBudgetData = async (
   const { data, model } = reqBody;
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dbModel = prisma[model] as any;
 
     const createdItem = await dbModel.create({

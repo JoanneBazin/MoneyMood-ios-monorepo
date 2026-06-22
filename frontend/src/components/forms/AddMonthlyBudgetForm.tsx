@@ -10,8 +10,8 @@ export const AddMonthlyBudgetForm = ({
   incomes,
   charges,
 }: AddMonthlyBudgetFormProps) => {
-  const [month, setMonth] = useState<number | null>(null);
-  const [year, setYear] = useState<number | null>(null);
+  const [month, setMonth] = useState<number | null>(new Date().getMonth() + 1);
+  const [year, setYear] = useState<number | null>(new Date().getFullYear());
 
   const [monthlyCharges, setMonthlyCharges] = useState<BaseEntryForm[]>(
     charges.map((c) => ({ ...c, amount: c.amount.toString() })),

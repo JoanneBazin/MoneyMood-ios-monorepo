@@ -130,6 +130,7 @@ export const createFixedEntryInDb = async (
   userId: string,
   table: PrismaModelSheets,
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dbModel = prisma[table] as any;
   const entry = await dbModel.create({
     data: {

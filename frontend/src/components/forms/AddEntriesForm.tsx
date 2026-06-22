@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AddEntriesFormProps } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
@@ -10,12 +10,8 @@ export const AddEntriesForm = ({
   onResetErrors,
   type,
 }: AddEntriesFormProps) => {
-  const [entries, setEntries] = useState<BaseEntryForm[]>(initialData || []);
+  const [entries, setEntries] = useState<BaseEntryForm[]>(initialData ?? []);
   const { isOffline } = useOfflineStatus();
-
-  useEffect(() => {
-    setEntries([...(initialData || [])]);
-  }, [initialData]);
 
   const handleUpdate = (
     index: number,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BaseEntryForm } from "@shared/schemas";
 import {
   BudgetDataCard,
@@ -21,13 +21,14 @@ export const WeeklyExpensesDisplay = ({
   edit = true,
   oldDate,
 }: WeeklyExpensesDisplayProps) => {
-  const [newExpenses, setNewExpenses] = useState<BaseEntryForm[]>([]);
   const [selectedEntry, setSelectedEntry] =
     useState<MonthlyExpenseEntry | null>(null);
 
   const {
     weekIndex,
-    setWeekIndex,
+    newExpenses,
+    setNewExpenses,
+    handleWeekChange,
     weeklyExpenses,
     remainingWeeklyBudget,
     currentWeekNumber,
@@ -35,15 +36,11 @@ export const WeeklyExpensesDisplay = ({
 
   const { actions, state, status } = useWeeklyExpensesAction({ budgetId });
   const { data: user } = useSessionQuery();
-  useEffect(() => {
-    setNewExpenses([]);
-  }, [weekIndex]);
 
-  useEffect(() => {
-    if (selectedEntry) {
-      actions.clearModalErrors();
-    }
-  }, [selectedEntry]);
+  const handleSelectEntry = (entry: MonthlyExpenseEntry) => {
+    actions.clearModalErrors();
+    setSelectedEntry(entry);
+  };
 
   const handleAddExpenses = () => {
     const newWeeklyExpenses = newExpenses.map((exp) => ({
@@ -86,13 +83,13 @@ export const WeeklyExpensesDisplay = ({
         {edit ? (
           <DateDisplay
             weekIndex={weekIndex}
-            setIndex={setWeekIndex}
+            setIndex={handleWeekChange}
             isCurrentBudget={true}
           />
         ) : (
           <DateDisplay
             weekIndex={weekIndex}
-            setIndex={setWeekIndex}
+            setIndex={handleWeekChange}
             isCurrentBudget={false}
             oldMonth={oldDate?.month}
             oldYear={oldDate?.year}
@@ -105,7 +102,7 @@ export const WeeklyExpensesDisplay = ({
               data={weeklyExpenses}
               enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
               validateExpense={handleExpenseValidation}
-              setSelectedEntry={setSelectedEntry}
+              setSelectedEntry={handleSelectEntry}
             />
             <AddEntriesForm
               initialData={newExpenses}

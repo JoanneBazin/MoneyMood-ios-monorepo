@@ -11,6 +11,7 @@ export const updateCurrentUser = async (
   const allowedFields = ["name", "email", "enabledExpenseValidation"];
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updates: any = {};
     for (const key of Object.keys(req.body)) {
       if (allowedFields.includes(key)) {

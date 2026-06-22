@@ -1,21 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { fr } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import { MonthYearPickerProps } from "@/types";
 
-export const MonthYearPicker = ({
-  onChange,
-  defaultInput = true,
-}: MonthYearPickerProps) => {
+export const MonthYearPicker = ({ onChange }: MonthYearPickerProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const minAllowedDate = new Date(2025, 0, 1);
-
-  useEffect(() => {
-    if (defaultInput) {
-      onChange(selectedDate.getMonth() + 1, selectedDate.getFullYear());
-    }
-  }, []);
 
   const handleChange = (date: Date | null) => {
     if (date) {

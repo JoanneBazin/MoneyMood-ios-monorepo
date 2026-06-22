@@ -1,4 +1,3 @@
-import { useCurrentBudgetQuery } from "@/hooks/queries";
 import { WeekProps } from "@/types";
 import {
   addDays,
@@ -19,8 +18,8 @@ export const getWeeksInMonth = (year: number, month: number): WeekProps[] => {
   const weeks: WeekProps[] = [];
 
   while (current <= end) {
-    let weekStart = current;
-    let weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
+    const weekStart = current;
+    const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
 
     let daysInMonth = 0;
     for (let i = 0; i < 7; i++) {
@@ -43,14 +42,11 @@ export const getWeeksInMonth = (year: number, month: number): WeekProps[] => {
   return weeks;
 };
 
-export const getCurrentWeek = () => {
-  const { data } = useCurrentBudgetQuery();
-  if (!data) return 0;
-
+export const getCurrentWeek = (weeks: WeekProps[]) => {
   const currentDay = new Date();
 
-  const currentWeekIndex = data.weeksInMonth.findIndex(
-    (w) => currentDay >= w.start && currentDay <= w.end
+  const currentWeekIndex = weeks.findIndex(
+    (w) => currentDay >= w.start && currentDay <= w.end,
   );
 
   return currentWeekIndex === -1 ? 0 : currentWeekIndex;

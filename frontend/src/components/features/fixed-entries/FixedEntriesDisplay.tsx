@@ -9,7 +9,7 @@ import {
 import { useFixedEntriesAction } from "@/hooks/actions";
 import { Entry, FixedEntriesDisplayProps } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const FixedEntriesDisplay = ({
   entries,
@@ -22,11 +22,10 @@ export const FixedEntriesDisplay = ({
 
   const { actions, state, status } = useFixedEntriesAction({ type });
 
-  useEffect(() => {
-    if (selectedEntry) {
-      actions.clearModalErrors();
-    }
-  }, [selectedEntry]);
+  const handleSelectEntry = (entry: Entry) => {
+    actions.clearModalErrors();
+    setSelectedEntry(entry);
+  };
 
   const handleAddEntries = () => {
     actions.addEntries(newEntries, () => setNewEntries([]));
@@ -54,7 +53,7 @@ export const FixedEntriesDisplay = ({
       <BudgetDataCard
         title={type === "incomes" ? "Mes revenus fixes" : "Mes charges fixes"}
       >
-        <EntriesList data={entries} setSelectedEntry={setSelectedEntry} />
+        <EntriesList data={entries} setSelectedEntry={handleSelectEntry} />
 
         <AddEntriesForm
           initialData={newEntries}

@@ -7,19 +7,16 @@ import {
 } from "@/components/ui";
 import { useSpecialBudgetsQuery } from "@/hooks/queries";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
-import { useAppStore } from "@/stores/appStore";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const Projects = () => {
-  const setPageTitle = useAppStore((s) => s.setPageTitle);
   const { data: specialBudgets, isPending, error } = useSpecialBudgetsQuery();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { isOffline } = useOfflineStatus();
 
-  useEffect(() => {
-    setPageTitle("Gérer des budgets ponctuels");
-  }, []);
+  usePageTitle("Gérer des budgets ponctuels");
 
   return (
     <section className="my-2xl">

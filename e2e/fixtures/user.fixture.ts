@@ -8,7 +8,7 @@ export const test = baseTest.extend<
   { user: { email: string; password: string; name: string; id: string } }
 >({
   user: [
-    async ({}, use) => {
+    async (_, use) => {
       const workerIndex = test.info().workerIndex;
       const testUser = {
         name: `User Worker ${workerIndex}`,

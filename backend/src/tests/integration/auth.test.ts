@@ -5,7 +5,7 @@ import { createUserInDb, deleteUserFromDb } from "../helpers/db-helpers";
 import { authenticatedRequest, createTestUser } from "../helpers/auth-helpers";
 
 describe("Auth Routes", () => {
-  let user = {
+  const user = {
     email: "auth@test.com",
     password: "Pass1234",
     name: "Test User",

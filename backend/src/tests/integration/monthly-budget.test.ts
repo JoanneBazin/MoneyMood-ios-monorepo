@@ -184,7 +184,7 @@ describe("Monthly Budget Routes", () => {
 
     it("should return 400 if adding expense without weekNumber", async () => {
       const budget = await createMonthlyBudget(userId);
-      const { weekNumber: _, ...reqBody } = newExpense;
+      const reqBody = { name: newExpense.name, amount: newExpense.amount };
 
       const authReq = authenticatedRequest(authCookie);
       const res = await authReq
@@ -293,6 +293,7 @@ describe("Monthly Budget Routes", () => {
           computeExpected(budget.remainingBudget, newEntry.amount),
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const dbModel = prisma[table] as any;
         const entryInDb = await dbModel.findFirst({
           where: { name: newEntry.name, monthlyBudgetId: budget.id },

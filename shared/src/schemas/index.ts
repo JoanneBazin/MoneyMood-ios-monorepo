@@ -1,4 +1,4 @@
-import { z, ZodTypeAny } from "zod";
+import { ZodTypeAny } from "zod";
 import { ArrayValidationResult, ValidationResult } from "./types";
 
 export * from "./auth";
@@ -6,16 +6,19 @@ export * from "./budget";
 
 export const validateWithSchema = <T extends ZodTypeAny>(
   schema: T,
-  data: unknown
+  data: unknown,
 ): ValidationResult<T> => {
   const result = schema.safeParse(data);
 
   if (!result.success) {
-    const errors = result.error.issues.reduce((acc, error) => {
-      const path = error.path.join(".");
-      acc[path] = error.message;
-      return acc;
-    }, {} as Record<string, string>);
+    const errors = result.error.issues.reduce(
+      (acc, error) => {
+        const path = error.path.join(".");
+        acc[path] = error.message;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
 
     return {
       success: false,
@@ -33,7 +36,7 @@ export const validateWithSchema = <T extends ZodTypeAny>(
 
 export const validateArrayWithSchema = <T extends ZodTypeAny>(
   schema: T,
-  data: unknown[]
+  data: unknown[],
 ): ArrayValidationResult<T> => {
   const validateItems: T[] = [];
   const itemErrors: Record<number, Record<string, string>> = {};
@@ -68,7 +71,7 @@ export const validateArrayWithSchema = <T extends ZodTypeAny>(
 
 export const validateInput = <T extends ZodTypeAny>(
   schema: T,
-  data: unknown
+  data: unknown,
 ) => {
   if (Array.isArray(data)) {
     return validateArrayWithSchema(schema, data);

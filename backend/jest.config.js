@@ -1,7 +1,9 @@
-require("dotenv").config({ path: ".env.test" });
+import { config } from "dotenv";
+
+config({ path: ".env.test" });
 
 /** @type {import("jest").Config} **/
-module.exports = {
+export default {
   preset: "ts-jest",
   testEnvironment: "node",
 

@@ -7,7 +7,7 @@ import { SpecialBudgetOptionsProps } from "@/types";
 import { SpecialBudgetForm } from "@shared/schemas";
 import { Edit, Settings, Trash } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const SpecialBudgetOptions = ({
   budgetId,
@@ -23,11 +23,10 @@ export const SpecialBudgetOptions = ({
 
   const { isOffline } = useOfflineStatus();
 
-  useEffect(() => {
-    if (selectedAction) {
-      actions.clearModalErrors();
-    }
-  }, [selectedAction]);
+  const handleOpenModal = (action: "edit" | "delete") => {
+    actions.clearModalErrors();
+    setSelectedAction(action);
+  };
 
   const handleUpdateBudget = (budget: SpecialBudgetForm) => {
     if (
@@ -61,7 +60,7 @@ export const SpecialBudgetOptions = ({
           <AnimatedDropdown menu="options">
             <div className="budget-options__content">
               <button
-                onClick={() => setSelectedAction("edit")}
+                onClick={() => handleOpenModal("edit")}
                 data-testid="update-special-budget-btn"
                 disabled={isOffline}
               >
@@ -71,7 +70,7 @@ export const SpecialBudgetOptions = ({
               </button>
               <button
                 className="red-error"
-                onClick={() => setSelectedAction("delete")}
+                onClick={() => handleOpenModal("delete")}
                 data-testid="delete-special-budget-btn"
                 disabled={isOffline}
               >

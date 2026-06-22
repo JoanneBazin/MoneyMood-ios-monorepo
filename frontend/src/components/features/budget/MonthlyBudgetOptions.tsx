@@ -5,7 +5,7 @@ import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { MonthlyBudgetOptionsProps } from "@/types";
 import { CalendarFold, Settings, Trash } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const MonthlyBudgetOptions = ({
   isCurrent,
@@ -19,11 +19,10 @@ export const MonthlyBudgetOptions = ({
 
   const { actions, state, status } = useMonthlyBudgetAction();
 
-  useEffect(() => {
-    if (isModalOpen) {
-      actions.clearModalErrors();
-    }
-  }, [isModalOpen]);
+  const handleOpenModal = () => {
+    actions.clearModalErrors();
+    setIsModalOpen(true);
+  };
 
   const handleUpdateBudget = () => {
     actions.updateBudgetStatus(budgetId, !isCurrent);
@@ -67,7 +66,7 @@ export const MonthlyBudgetOptions = ({
               <button
                 className="red-error"
                 data-testid="delete-budget-btn"
-                onClick={() => setIsModalOpen(true)}
+                onClick={handleOpenModal}
                 disabled={isOffline}
               >
                 <Trash size={14} className="mr-xxs" />

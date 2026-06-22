@@ -5,6 +5,7 @@ import App from "./App.js";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { SessionProvider } from "./components/auth/SessionProvider";
 import { persister, queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 const container = document.getElementById("root");
 
@@ -12,15 +13,23 @@ if (!container) {
   throw new Error("Root element not found");
 }
 
-createRoot(container).render(
+const app = (
   <StrictMode>
+    <SessionProvider>
+      <App />
+    </SessionProvider>
+  </StrictMode>
+);
+
+createRoot(container).render(
+  persister ? (
     <PersistQueryClientProvider
       client={queryClient}
       persistOptions={{ persister }}
     >
-      <SessionProvider>
-        <App />
-      </SessionProvider>
+      {app}
     </PersistQueryClientProvider>
-  </StrictMode>,
+  ) : (
+    <QueryClientProvider client={queryClient}>{app}</QueryClientProvider>
+  ),
 );

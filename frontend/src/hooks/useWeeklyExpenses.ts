@@ -1,14 +1,25 @@
 import { getCurrentWeek } from "@/lib/weeks-helpers";
 import { WeeklyExpensesParams } from "@/types";
+import { BaseEntryForm } from "@shared/schemas";
 import { useMemo, useState } from "react";
+import { useCurrentBudgetQuery } from "./queries";
 
 export const useWeeklyExpenses = ({
   expenses,
   weeklyBudget,
   edit,
 }: WeeklyExpensesParams) => {
-  const [weekIndex, setWeekIndex] = useState(edit ? getCurrentWeek() : 0);
+  const { data: monthlyBudget } = useCurrentBudgetQuery();
+  const [weekIndex, setWeekIndex] = useState(
+    edit && monthlyBudget ? getCurrentWeek(monthlyBudget.weeksInMonth) : 0,
+  );
+  const [newExpenses, setNewExpenses] = useState<BaseEntryForm[]>([]);
   const currentWeekNumber = weekIndex + 1;
+
+  const handleWeekChange = (newIndex: number) => {
+    setWeekIndex(newIndex);
+    setNewExpenses([]);
+  };
 
   const weeklyExpenses = useMemo(
     () =>
@@ -25,7 +36,9 @@ export const useWeeklyExpenses = ({
 
   return {
     weekIndex,
-    setWeekIndex,
+    newExpenses,
+    setNewExpenses,
+    handleWeekChange,
     weeklyExpenses,
     remainingWeeklyBudget,
     currentWeekNumber,

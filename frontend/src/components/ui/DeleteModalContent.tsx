@@ -1,19 +1,22 @@
 import { DeleteModalContentProps } from "@/types";
 import { Loader2 } from "lucide-react";
-import { ErrorMessage } from "./ErrorMessage";
 
 export const DeleteModalContent = ({
   onDelete,
   onClose,
   isPending,
-  isError,
+  reqError,
 }: DeleteModalContentProps) => {
   return (
     <div data-testid="delete-modal">
       <p className="req-info">
         Voulez-vous supprimer définitivement ce budget ?
       </p>
-      {isError && <ErrorMessage message="Une erreur est survenue" />}
+      {reqError && (
+        <p className="req-error" data-testid="error-message">
+          {reqError}
+        </p>
+      )}
       <div className="flex-end my-md">
         <button
           onClick={onDelete}
@@ -22,7 +25,11 @@ export const DeleteModalContent = ({
         >
           {isPending ? <Loader2 /> : "Supprimer"}
         </button>
-        <button onClick={onClose} className="secondary-btn">
+        <button
+          onClick={onClose}
+          className="secondary-btn"
+          data-testid="cancel-delete-btn"
+        >
           Annuler
         </button>
       </div>

@@ -7,10 +7,10 @@ import {
   ExpensesList,
 } from "@/components/ui";
 import { useSpecialExpensesAction } from "@/hooks/actions";
-import { useAppStore } from "@/stores/appStore";
+import { useSessionQuery } from "@/hooks/queries";
 import { ProjectExpensesProp, SpecialExpenseEntry } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 export const ProjectExpenses = ({
   budgetId,
@@ -23,18 +23,16 @@ export const ProjectExpenses = ({
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const { actions, state, status } = useSpecialExpensesAction({ budgetId });
-  const user = useAppStore((s) => s.user);
-
+  const { data: user } = useSessionQuery();
   const totalExpenses = useMemo(() => {
     return expenses.reduce((acc, curr) => acc + curr.amount, 0);
   }, [expenses]);
 
-  useEffect(() => {
-    if (selectedEntry) {
-      setSelectedCategory(selectedEntry.specialCategoryId ?? "");
-      actions.clearUpdateErrors();
-    }
-  }, [selectedEntry]);
+  const handleSelectEntry = (entry: SpecialExpenseEntry) => {
+    actions.clearModalErrors();
+    setSelectedEntry(entry);
+    setSelectedCategory(entry.specialCategoryId ?? "");
+  };
 
   const handleAddExpenses = () => {
     const expenses = categoryId
@@ -80,15 +78,15 @@ export const ProjectExpenses = ({
         data={expenses}
         enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
         validateExpense={handleExpenseValidation}
-        setSelectedEntry={setSelectedEntry}
+        setSelectedEntry={handleSelectEntry}
       />
 
       <AddEntriesForm
-        initialData={newExpenses}
-        errors={state.addValidationErrors}
+        entries={newExpenses}
+        validationErrors={state.addValidationErrors}
         onChange={setNewExpenses}
         onResetErrors={() => actions.clearAddValidationErrors()}
-        type="special-expense"
+        type="special-expenses"
       />
       {newExpenses.length > 0 && (
         <button
@@ -112,10 +110,10 @@ export const ProjectExpenses = ({
           <UpdateEntryForm
             initialData={selectedEntry}
             validationErrors={state.updateValidationError}
-            genericError={state.modalError}
+            reqError={state.modalError}
             onSubmit={handleUpdateExpense}
             onDelete={handleDeleteExpense}
-            onResetErrors={() => actions.clearUpdateErrors()}
+            onResetErrors={() => actions.clearUpdateValidationErrors()}
           >
             <CategorySelect
               budgetId={budgetId}

@@ -1,7 +1,9 @@
+import { useSessionQuery } from "@/hooks/queries";
 import { useAppStore } from "@/stores/appStore";
 
 export const Banner = () => {
-  const { user, pageTitle } = useAppStore();
+  const { pageTitle } = useAppStore();
+  const { data: user } = useSessionQuery();
 
   const avatarLetter = user?.name.split("")[0];
 

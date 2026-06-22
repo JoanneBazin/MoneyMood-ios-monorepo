@@ -4,19 +4,24 @@ import {
   getParamsId,
   getUserId,
   HttpError,
+  isPrismaForeignKeyConstraint,
   isPrismaRecordNotFound,
   isPrismaUniqueConstraint,
   monthlyBudgetSelect,
   normalizeDecimalFields,
   prisma,
 } from "../lib";
-import { calculateRemainingBudget, calculateWeeklyBudget } from "../services";
+import {
+  calculateRemainingBudget,
+  calculateWeeklyBudget,
+  updateMonthlyBudgetRemaining,
+} from "../services";
 import { Prisma } from "@prisma/client";
 
 export const addMonthlyBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -59,14 +64,14 @@ export const addMonthlyBudget = async (
         }
 
         return newBudget;
-      }
+      },
     );
 
     return res.status(201).json(normalizeDecimalFields(monthlyBudget));
   } catch (error) {
     if (isPrismaUniqueConstraint(error)) {
       return next(
-        new HttpError(400, "Un budget mensuel pour ce mois existe déjà")
+        new HttpError(409, "Un budget mensuel pour ce mois existe déjà"),
       );
     }
     return next(error);
@@ -76,7 +81,7 @@ export const addMonthlyBudget = async (
 export const getCurrentMonthlyBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -103,7 +108,7 @@ export const getCurrentMonthlyBudget = async (
 export const getMonthlyBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -140,7 +145,7 @@ export const getMonthlyBudget = async (
 export const getLastBudgets = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -174,7 +179,7 @@ export const getLastBudgets = async (
 export const getMonthlyBudgetById = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -187,12 +192,15 @@ export const getMonthlyBudgetById = async (
       where: {
         userId,
         id: monthlyBudgetId,
+        isCurrent: false,
       },
       select: monthlyBudgetSelect,
     });
 
     if (!monthlyBudget) {
-      return next(new HttpError(404, "Budget mensuel introuvable"));
+      return next(
+        new HttpError(404, "Budget mensuel introuvable dans l'historique"),
+      );
     }
 
     return res.status(200).json(normalizeDecimalFields(monthlyBudget));
@@ -204,7 +212,7 @@ export const getMonthlyBudgetById = async (
 export const updateMonthlyBudgetStatus = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -234,8 +242,8 @@ export const updateMonthlyBudgetStatus = async (
       return next(
         new HttpError(
           404,
-          "Budget non trouvé ou vous n'avez pas les droits d'accès."
-        )
+          "Budget non trouvé ou vous n'avez pas les droits d'accès.",
+        ),
       );
     }
     return next(error);
@@ -245,7 +253,7 @@ export const updateMonthlyBudgetStatus = async (
 export const deleteMonthlyBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -268,9 +276,63 @@ export const deleteMonthlyBudget = async (
       return next(
         new HttpError(
           404,
-          "Budget mensuel non trouvé ou vous n'avez pas les droits d'accès."
-        )
+          "Budget mensuel non trouvé ou vous n'avez pas les droits d'accès.",
+        ),
       );
+    }
+    return next(error);
+  }
+};
+
+export const seedTestBudgetData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (process.env.NODE_ENV === "production") {
+    return next(new HttpError(404, "Not Found"));
+  }
+
+  const authHeader = req.get("Authorization");
+  if (authHeader !== `Bearer ${process.env.E2E_TOKEN}`) {
+    return next(new HttpError(401, "Unauthorized"));
+  }
+
+  interface reqType {
+    model: keyof typeof prisma;
+    data: {
+      monthlyBudgetId: string;
+      name: string;
+      amount: number;
+      weeklyNumber?: number;
+    };
+  }
+
+  const reqBody: reqType = req.body;
+  const { data, model } = reqBody;
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dbModel = prisma[model] as any;
+
+    const createdItem = await dbModel.create({
+      data,
+      select: {
+        name: true,
+        amount: true,
+      },
+    });
+    const { remainingBudget } = await updateMonthlyBudgetRemaining(
+      data.monthlyBudgetId,
+    );
+
+    return res.status(201).json({
+      data: normalizeDecimalFields(createdItem),
+      remainingBudget: normalizeDecimalFields(remainingBudget),
+    });
+  } catch (error) {
+    if (isPrismaForeignKeyConstraint(error)) {
+      return next(new HttpError(404, "Référence à un budget inexistant"));
     }
     return next(error);
   }

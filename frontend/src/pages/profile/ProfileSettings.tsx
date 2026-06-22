@@ -1,9 +1,9 @@
 import { UpdateUserProfile } from "@/components/forms";
 import { ErrorMessage } from "@/components/ui";
-import { useAppStore } from "@/stores/appStore";
+import { useSessionQuery } from "@/hooks/queries";
 
 export const ProfileSettings = () => {
-  const user = useAppStore((s) => s.user);
+  const { data: user } = useSessionQuery();
   if (!user) return <ErrorMessage />;
   return (
     <section>

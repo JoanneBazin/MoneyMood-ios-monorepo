@@ -1,4 +1,4 @@
-import { CategoryEntryForm, SpecialBudgetForm } from "@shared/schemas";
+import { CategoryEntryForm, SpecialBudgetOutput } from "@shared/schemas";
 import { SpecialExpenseEntry } from "./entries";
 
 export interface SpecialBudget {
@@ -35,7 +35,7 @@ export interface ProjectCategorySectionProps {
 
 export interface SpecialBudgetOptionsProps {
   budgetId: string;
-  updatableData: SpecialBudgetForm;
+  updatableData: SpecialBudgetOutput;
 }
 
 export interface ProjectExpensesProp {
@@ -47,7 +47,7 @@ export interface ProjectExpensesProp {
 // Mutations
 
 export interface UpdateSpecialBudgetParams {
-  budget: SpecialBudgetForm;
+  budget: SpecialBudgetOutput;
   budgetId: string;
 }
 
@@ -65,8 +65,7 @@ export interface UpdateSpecialCategoryParams extends BaseSpecialCategoryParams {
   category: CategoryEntryForm;
 }
 
-export interface DeleteSpecialCategoryParams
-  extends BaseSpecialCategoryParams {}
+export interface DeleteSpecialCategoryParams extends BaseSpecialCategoryParams {}
 
 export interface DeleteSpecialCategoryResponse {
   id: string;

@@ -4,7 +4,10 @@ export const ErrorMessage = ({
   message = "Erreur lors de la récupération des données",
 }) => {
   return (
-    <div className="flex-center gap-sm red-error my-2xl">
+    <div
+      className="flex-center gap-sm red-error my-2xl"
+      data-testid="error-message"
+    >
       <AlertOctagon />
       <div>
         <p className="req-error">{message}</p>

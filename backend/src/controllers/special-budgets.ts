@@ -14,13 +14,24 @@ import { updateSpecialBudgetRemaining } from "../services";
 export const addSpecialBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = getUserId(req, next);
     if (!userId) return;
 
     const { name, totalBudget } = req.body;
+
+    const existantProject = await prisma.specialBudget.findFirst({
+      where: {
+        userId,
+        name,
+      },
+    });
+
+    if (existantProject) {
+      return next(new HttpError(409, "Ce projet existe déjà"));
+    }
 
     const newBudget = await prisma.specialBudget.create({
       data: {
@@ -41,7 +52,7 @@ export const addSpecialBudget = async (
 export const getSpecialBudgetDetails = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = getUserId(req, next);
@@ -71,7 +82,7 @@ export const getSpecialBudgetDetails = async (
 export const getAllSpecialBudgets = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -102,7 +113,7 @@ export const getAllSpecialBudgets = async (
 export const updateSpecialBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -112,6 +123,17 @@ export const updateSpecialBudget = async (
 
   try {
     const { name, totalBudget } = req.body;
+
+    const existantProject = await prisma.specialBudget.findFirst({
+      where: {
+        userId,
+        name,
+      },
+    });
+
+    if (existantProject) {
+      return next(new HttpError(409, "Ce nom de projet est déjà utilisé"));
+    }
 
     const budget = await prisma.specialBudget.update({
       where: {
@@ -133,8 +155,8 @@ export const updateSpecialBudget = async (
       return next(
         new HttpError(
           404,
-          "Budget non trouvé ou vous n'avez pas les droits d'accès."
-        )
+          "Budget non trouvé ou vous n'avez pas les droits d'accès.",
+        ),
       );
     }
     return next(error);
@@ -144,7 +166,7 @@ export const updateSpecialBudget = async (
 export const deleteSpecialBudget = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -167,8 +189,8 @@ export const deleteSpecialBudget = async (
       return next(
         new HttpError(
           404,
-          "Budget non trouvé ou vous n'avez pas les droits d'accès."
-        )
+          "Budget non trouvé ou vous n'avez pas les droits d'accès.",
+        ),
       );
     }
     return next(error);

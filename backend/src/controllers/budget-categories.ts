@@ -10,11 +10,12 @@ import {
   specialExpenseEntrySelect,
 } from "../lib";
 import { updateSpecialBudgetRemaining } from "../services";
+import { Prisma } from "@prisma/client";
 
 export const addSpecialCategory = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userId = getUserId(req, next);
   if (!userId) return;
@@ -25,19 +26,16 @@ export const addSpecialCategory = async (
   try {
     const { name } = req.body;
 
-    const specialBudget = await prisma.specialBudget.findUnique({
+    const existantCat = await prisma.specialBudgetCategory.findFirst({
       where: {
-        userId,
-        id: specialBudgetId,
+        specialBudgetId,
+        name,
       },
     });
 
-    if (!specialBudget) {
+    if (existantCat) {
       return next(
-        new HttpError(
-          404,
-          "Budget non trouvé ou vous n'avez pas les droits d'accès."
-        )
+        new HttpError(409, "La catégorie existe déjà pour ce projet"),
       );
     }
 
@@ -62,7 +60,7 @@ export const addSpecialCategory = async (
 export const updateSpecialCategoryName = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const params = getMultipleParamsIds(req, ["id", "categoryId"], next);
   if (!params) return;
@@ -72,6 +70,19 @@ export const updateSpecialCategoryName = async (
   const { name } = req.body;
 
   try {
+    const existantCat = await prisma.specialBudgetCategory.findFirst({
+      where: {
+        specialBudgetId,
+        name,
+      },
+    });
+
+    if (existantCat) {
+      return next(
+        new HttpError(409, "La catégorie existe déjà pour ce projet"),
+      );
+    }
+
     const updatedCategory = await prisma.specialBudgetCategory.update({
       where: { id: categoryId, specialBudgetId },
       data: { name },
@@ -84,8 +95,8 @@ export const updateSpecialCategoryName = async (
       return next(
         new HttpError(
           404,
-          "Budget non trouvé ou vous n'avez pas les droits d'accès."
-        )
+          "Budget non trouvé ou vous n'avez pas les droits d'accès.",
+        ),
       );
     }
     return next(error);
@@ -95,7 +106,7 @@ export const updateSpecialCategoryName = async (
 export const deleteSpecialCategory = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const params = getMultipleParamsIds(req, ["id", "categoryId"], next);
   if (!params) return;
@@ -114,8 +125,8 @@ export const deleteSpecialCategory = async (
       return next(
         new HttpError(
           404,
-          "Budget non trouvé ou vous n'avez pas les droits d'accès."
-        )
+          "Budget non trouvé ou vous n'avez pas les droits d'accès.",
+        ),
       );
     }
     return next(error);
@@ -125,7 +136,7 @@ export const deleteSpecialCategory = async (
 export const deleteSpecialCategoryOnCascade = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const params = getMultipleParamsIds(req, ["id", "categoryId"], next);
   if (!params) return;
@@ -133,7 +144,7 @@ export const deleteSpecialCategoryOnCascade = async (
   const { id: specialBudgetId, categoryId } = params;
 
   try {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.expense.deleteMany({
         where: { specialBudgetId, specialCategoryId: categoryId },
       });
@@ -143,9 +154,8 @@ export const deleteSpecialCategoryOnCascade = async (
       });
     });
 
-    const { remainingBudget } = await updateSpecialBudgetRemaining(
-      specialBudgetId
-    );
+    const { remainingBudget } =
+      await updateSpecialBudgetRemaining(specialBudgetId);
 
     return res
       .status(200)
@@ -155,8 +165,8 @@ export const deleteSpecialCategoryOnCascade = async (
       return next(
         new HttpError(
           404,
-          "Budget non trouvé ou vous n'avez pas les droits d'accès."
-        )
+          "Budget non trouvé ou vous n'avez pas les droits d'accès.",
+        ),
       );
     }
     return next(error);

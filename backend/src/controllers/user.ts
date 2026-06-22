@@ -11,6 +11,7 @@ export const updateCurrentUser = async (
   const allowedFields = ["name", "email", "enabledExpenseValidation"];
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updates: any = {};
     for (const key of Object.keys(req.body)) {
       if (allowedFields.includes(key)) {
@@ -23,7 +24,7 @@ export const updateCurrentUser = async (
         where: { email: updates.email },
       });
       if (existingUser && existingUser.id !== userId) {
-        return next(new HttpError(400, "Cet email est déjà utilisé"));
+        return next(new HttpError(409, "Cet email est déjà utilisé"));
       }
     }
 

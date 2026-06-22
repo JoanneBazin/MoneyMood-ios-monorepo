@@ -1,50 +1,38 @@
 import { prisma } from "../setup";
+import bcrypt from "bcrypt";
 
-const baseBudget = {
-  month: 9,
-  year: 2025,
-  isCurrent: true,
-  incomes: [{ name: "Income", amount: 100 }],
-  charges: [
-    { name: "Charges 1", amount: 10 },
-    { name: "Charges 2", amount: 10 },
-  ],
-  numberOfWeeks: 4,
-  remainingBudget: 80,
-  weeklyBudget: 20,
+export const createUserInDb = async (
+  email: string,
+  name = "Test User",
+  password = "Password1234",
+) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const userInDb = await prisma.user.create({
+    data: { name, email, password: hashedPassword },
+    select: { id: true, email: true },
+  });
+  return { ...userInDb, password };
 };
 
-export const createMonthlyBudget = async (
-  userId: string,
-  newBudget = baseBudget
-) => {
-  const {
-    month,
-    year,
-    isCurrent,
-    remainingBudget,
-    weeklyBudget,
-    incomes,
-    charges,
-    numberOfWeeks,
-  } = newBudget;
+export const deleteUserFromDb = async (email: string) => {
+  await prisma.user.deleteMany({
+    where: { email },
+  });
+};
+
+export const createMonthlyBudget = async (userId: string, isCurrent = true) => {
   const budget = await prisma.monthlyBudget.create({
     data: {
       userId,
-      month,
-      year,
+      month: 1,
+      year: 2025,
       isCurrent,
-      remainingBudget,
-      weeklyBudget,
-      numberOfWeeks,
-      incomes: {
-        create: incomes,
-      },
-      charges: {
-        create: charges,
-      },
+      remainingBudget: 0,
+      weeklyBudget: 0,
+      numberOfWeeks: 4,
     },
   });
+
   return {
     ...budget,
     remainingBudget: Number(budget.remainingBudget),

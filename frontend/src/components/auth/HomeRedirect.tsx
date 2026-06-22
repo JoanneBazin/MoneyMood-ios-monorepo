@@ -1,9 +1,19 @@
+import { useSessionQuery } from "@/hooks/queries";
 import { Home } from "@/pages/public/Home";
-import { useAppStore } from "@/stores/appStore";
 import { Navigate } from "react-router-dom";
+import { Loader } from "../ui";
+import { ErrorState } from "@/layouts/components";
 
 export const HomeRedirect = () => {
-  const user = useAppStore((s) => s.user);
+  const { data: user, isPending, error } = useSessionQuery();
+
+  if (isPending) {
+    return <Loader type="layout" />;
+  }
+
+  if (error) {
+    return <ErrorState />;
+  }
 
   if (!user) return <Home />;
 

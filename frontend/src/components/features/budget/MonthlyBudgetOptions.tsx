@@ -1,8 +1,5 @@
 import { AnimatedDropdown, DeleteModalContent, Modal } from "@/components/ui";
-import {
-  useDeleteMonthlyBudgetMutation,
-  useUpdateBudgetStatusMutation,
-} from "@/hooks/queries/mutations";
+import { useMonthlyBudgetAction } from "@/hooks/actions";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { MonthlyBudgetOptionsProps } from "@/types";
@@ -20,24 +17,25 @@ export const MonthlyBudgetOptions = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isOffline } = useOfflineStatus();
 
-  const updateBudgetStatus = useUpdateBudgetStatusMutation();
-  const deleteMonthlyBudget = useDeleteMonthlyBudgetMutation();
+  const { actions, state, status } = useMonthlyBudgetAction();
+
+  const handleOpenModal = () => {
+    actions.clearModalErrors();
+    setIsModalOpen(true);
+  };
 
   const handleUpdateBudget = () => {
-    updateBudgetStatus.mutate(
-      { budgetId, isCurrent: !isCurrent },
-      {
-        onError: () => {
-          setIsOptionsOpen(false);
-          onError();
-        },
-      },
-    );
+    actions.updateBudgetStatus(budgetId, !isCurrent);
+    setIsOptionsOpen(false);
   };
 
   const handleDeleteBudget = () => {
-    deleteMonthlyBudget.mutate(budgetId);
+    actions.deleteMonthlyBudget(budgetId);
   };
+
+  if (state.dashboardError) {
+    onError(state.dashboardError);
+  }
 
   return (
     <div className="budget-options" ref={dropdownRef}>
@@ -68,7 +66,7 @@ export const MonthlyBudgetOptions = ({
               <button
                 className="red-error"
                 data-testid="delete-budget-btn"
-                onClick={() => setIsModalOpen(true)}
+                onClick={handleOpenModal}
                 disabled={isOffline}
               >
                 <Trash size={14} className="mr-xxs" />
@@ -87,8 +85,8 @@ export const MonthlyBudgetOptions = ({
         <DeleteModalContent
           onDelete={handleDeleteBudget}
           onClose={() => setIsModalOpen(false)}
-          isPending={deleteMonthlyBudget.isPending}
-          isError={deleteMonthlyBudget.isError}
+          isPending={status.isDeleting}
+          reqError={state.modalError}
         />
       </Modal>
     </div>

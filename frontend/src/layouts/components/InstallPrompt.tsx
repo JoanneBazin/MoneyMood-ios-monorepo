@@ -1,21 +1,19 @@
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const InstallPrompt = () => {
   const { canPrompt, promptInstall } = useInstallPrompt();
-  const [visible, setVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
-  useEffect(() => {
-    const alreadyInstalled = localStorage.getItem("pwa-installed") === "true";
-    const disabledByUser = localStorage.getItem("pwa-disabled") === "true";
-    if (canPrompt && !alreadyInstalled && !disabledByUser) {
-      setVisible(true);
-    }
-  }, [canPrompt]);
+  const visible =
+    !dismissed &&
+    canPrompt &&
+    localStorage.getItem("pwa-installed") !== "true" &&
+    localStorage.getItem("pwa-disabled") !== "true";
 
   const handleDisable = () => {
     localStorage.setItem("pwa-disabled", "true");
-    setVisible(false);
+    setDismissed(true);
   };
 
   if (!visible) return null;
@@ -29,7 +27,7 @@ export const InstallPrompt = () => {
         <div className="prompt__actions">
           <button
             className="prompt__actions__later"
-            onClick={() => setVisible(false)}
+            onClick={() => setDismissed(true)}
           >
             Fermer
           </button>
@@ -40,7 +38,7 @@ export const InstallPrompt = () => {
             className="prompt__actions__add"
             onClick={() => {
               promptInstall();
-              setVisible(false);
+              setDismissed(true);
             }}
           >
             Ajouter

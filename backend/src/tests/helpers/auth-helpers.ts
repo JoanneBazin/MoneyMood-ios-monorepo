@@ -1,20 +1,20 @@
 import request from "supertest";
 import app from "../../app";
+import { createUserInDb } from "./db-helpers";
 
 export const createTestUser = async (email = "test@example.com") => {
-  const userData = {
-    email,
-    password: "Pass1234",
-    name: "Test User",
-  };
-  const signupRes = await request(app).post("/api/auth/signup").send(userData);
+  const user = await createUserInDb(email);
 
-  const cookies = signupRes.headers["set-cookie"];
+  const loginRes = await request(app)
+    .post("/api/auth/login")
+    .send({ email, password: user.password });
+
+  const cookies = loginRes.headers["set-cookie"];
   let authCookie = "";
 
   if (Array.isArray(cookies)) {
     const sessionCookie = cookies.find((cookie: string) =>
-      cookie.startsWith("session=")
+      cookie.startsWith("session="),
     );
     if (sessionCookie) {
       authCookie = sessionCookie.split(";")[0];
@@ -27,7 +27,7 @@ export const createTestUser = async (email = "test@example.com") => {
 
   return {
     cookie: authCookie,
-    response: signupRes,
+    userData: { id: user.id, email: user.email },
   };
 };
 

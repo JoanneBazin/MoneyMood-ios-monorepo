@@ -1,23 +1,19 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
 export const isPrismaRecordNotFound = (error: unknown): boolean => {
   return (
-    error instanceof Error &&
-    error.constructor.name === "PrismaClientKnownRequestError" &&
-    (error as any).code === "P2025"
+    error instanceof PrismaClientKnownRequestError && error.code === "P2025"
   );
 };
 
 export const isPrismaUniqueConstraint = (error: unknown): boolean => {
   return (
-    error instanceof Error &&
-    error.constructor.name === "PrismaClientKnownRequestError" &&
-    (error as any).code === "P2002"
+    error instanceof PrismaClientKnownRequestError && error.code === "P2002"
   );
 };
 
 export const isPrismaForeignKeyConstraint = (error: unknown): boolean => {
   return (
-    error instanceof Error &&
-    error.constructor.name === "PrismaClientKnownRequestError" &&
-    (error as any).code === "P2003"
+    error instanceof PrismaClientKnownRequestError && error.code === "P2003"
   );
 };

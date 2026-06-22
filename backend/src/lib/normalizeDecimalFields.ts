@@ -1,6 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/library";
 
-export const normalizeDecimalFields = (data: any): any => {
+export const normalizeDecimalFields = (data: unknown): unknown => {
   if (Decimal.isDecimal(data)) {
     return data.toNumber();
   }
@@ -14,7 +14,7 @@ export const normalizeDecimalFields = (data: any): any => {
   }
 
   if (typeof data === "object" && data !== null) {
-    const result: Record<string, any> = {};
+    const result: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(data)) {
       result[key] = normalizeDecimalFields(value);

@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signupSchema, validateWithSchema } from "@shared/schemas/index";
 import { useSignupMutation } from "@/hooks/queries/mutations";
+import { getErrorMessage } from "@/lib/error-helpers";
 
 export const SignupForm = () => {
   const [user, setUser] = useState({ name: "", email: "", password: "" });
   const [errorMessages, setErrorMessages] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const { mutate, isPending, error } = useSignupMutation();
   const navigate = useNavigate();
@@ -42,7 +43,9 @@ export const SignupForm = () => {
           aria-label="Nom"
         />
         {errorMessages.name && (
-          <p className="form-error">{errorMessages.name}</p>
+          <p className="form-error" data-testid="name-validation-error">
+            {errorMessages.name}
+          </p>
         )}
       </div>
 
@@ -56,7 +59,9 @@ export const SignupForm = () => {
           aria-label="Email"
         />
         {errorMessages.email && (
-          <p className="form-error">{errorMessages.email}</p>
+          <p className="form-error" data-testid="email-validation-error">
+            {errorMessages.email}
+          </p>
         )}
       </div>
 
@@ -70,14 +75,20 @@ export const SignupForm = () => {
           aria-label="Mot de passe"
         />
         {errorMessages.password && (
-          <p className="form-error">{errorMessages.password}</p>
+          <p className="form-error" data-testid="password-validation-error">
+            {errorMessages.password}
+          </p>
         )}
       </div>
 
       <button type="submit" disabled={isPending} className="primary-btn">
         S'inscrire
       </button>
-      {error && <p className="req-error">{error.message}</p>}
+      {error && (
+        <p className="req-error" data-testid="signup-error">
+          {getErrorMessage(error)}
+        </p>
+      )}
     </form>
   );
 };

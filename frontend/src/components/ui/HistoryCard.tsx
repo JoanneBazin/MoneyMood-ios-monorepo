@@ -10,7 +10,10 @@ export const HistoryCard = ({ data }: HistoryCardProps) => {
       <p className="history-card__title">{title}</p>
       <div className="history-card__sold">
         <p>Solde</p>
-        <p className="history-card__amount">
+        <p
+          className="history-card__amount"
+          data-testid="history-card-remaining-budget"
+        >
           <span>€</span>
           {data.remainingBudget}
         </p>

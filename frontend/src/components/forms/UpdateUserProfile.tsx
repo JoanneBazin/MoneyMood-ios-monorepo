@@ -42,7 +42,7 @@ export const UpdateUserProfile = ({ user }: { user: User }) => {
   return (
     <form className="update-user" onSubmit={handleUpdateUser}>
       {requestError && (
-        <p className="form-error my-md" data-testid="create-req-error">
+        <p className="form-error my-md" data-testid="update-req-error">
           {requestError}
         </p>
       )}

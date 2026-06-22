@@ -1,50 +1,19 @@
 import { apiFetch } from "@/lib/apiFetch";
-import { ApiError } from "@/lib/ApiError";
 import { LastMonthlyBudget, MonthlyBudget } from "@/types";
-import { MonthlyBudgetForm } from "@shared/schemas";
+import { MonthlyBudgetOutput } from "@shared/schemas";
 
 export const fetchCurrentBudget = async (): Promise<MonthlyBudget | null> => {
-  const response = await fetch(`/api/monthly-budgets/current`, {
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(
-      response.status,
-      data.error || "Budget mensuel non disponible",
-    );
-  }
-  return response.json();
+  return apiFetch(`/api/monthly-budgets/current`);
 };
 
 export const getBudgetById = async (
   budgetId: string,
 ): Promise<MonthlyBudget> => {
-  const response = await fetch(`/api/monthly-budgets/${budgetId}`, {
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(response.status, data.error || "Budget non disponible");
-  }
-  return response.json();
+  return apiFetch(`/api/monthly-budgets/${budgetId}`);
 };
 
 export const fetchLastBudgets = async (): Promise<LastMonthlyBudget[]> => {
-  const response = await fetch(`/api/monthly-budgets/history`, {
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    const data = await response.json();
-    throw new ApiError(
-      response.status,
-      data.error || "Budgets non disponibles",
-    );
-  }
-  return response.json();
+  return apiFetch(`/api/monthly-budgets/history`);
 };
 
 export const updateMonthlyBudgetStatus = async (
@@ -58,7 +27,7 @@ export const updateMonthlyBudgetStatus = async (
 };
 
 export const createMonthlyBudget = async (
-  budget: MonthlyBudgetForm,
+  budget: MonthlyBudgetOutput,
 ): Promise<MonthlyBudget> => {
   return apiFetch(`/api/monthly-budgets`, {
     method: "POST",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BaseEntryForm } from "@shared/schemas";
 import {
   BudgetDataCard,
@@ -29,11 +29,10 @@ export const MonthlyEntries = ({
     type,
   });
 
-  useEffect(() => {
-    if (selectedEntry) {
-      actions.clearUpdateErrors();
-    }
-  }, [selectedEntry]);
+  const handleSelectEntry = (entry: Entry) => {
+    actions.clearModalErrors();
+    setSelectedEntry(entry);
+  };
 
   const handleAddEntries = () => {
     actions.addEntries(newEntries, () => setNewEntries([]));
@@ -66,13 +65,13 @@ export const MonthlyEntries = ({
 
       <div className="my-2xl">
         <BudgetDataCard title={title} color="black">
-          <EntriesList data={data} setSelectedEntry={setSelectedEntry} />
+          <EntriesList data={data} setSelectedEntry={handleSelectEntry} />
 
           <AddEntriesForm
-            initialData={newEntries}
-            errors={state.addValidationErrors}
+            entries={newEntries}
+            validationErrors={state.addValidationErrors}
             onChange={setNewEntries}
-            onResetErrors={() => actions.clearAddValidationErrors}
+            onResetErrors={() => actions.clearAddValidationErrors()}
             type={type}
           />
           {newEntries.length > 0 && (
@@ -99,10 +98,10 @@ export const MonthlyEntries = ({
           <UpdateEntryForm
             initialData={selectedEntry}
             validationErrors={state.updateValidationError}
-            genericError={state.modalError}
+            reqError={state.modalError}
             onSubmit={handleUpdateEntry}
             onDelete={handleDeleteEntry}
-            onResetErrors={() => actions.clearUpdateErrors()}
+            onResetErrors={() => actions.clearUpdateValidationErrors()}
           />
         </Modal>
       )}

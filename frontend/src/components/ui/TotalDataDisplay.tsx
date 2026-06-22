@@ -9,7 +9,7 @@ export const TotalDataDisplay = ({
       <p>{title}</p>
       <p className="total-data__amount">
         <span>€</span>
-        {total.toFixed(2)}
+        <span data-testid="total-data-amount">{total.toFixed(2)}</span>
       </p>
     </div>
   );

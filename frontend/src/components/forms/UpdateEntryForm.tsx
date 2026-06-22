@@ -1,13 +1,12 @@
 import { Check, X } from "lucide-react";
 import { useState } from "react";
 import { UpdateEntryFormProps } from "@/types";
-import { ErrorMessage } from "../ui";
 import { BaseEntryForm } from "@shared/schemas";
 
 export const UpdateEntryForm = ({
   initialData,
   validationErrors,
-  genericError,
+  reqError,
   onSubmit,
   onDelete,
   onResetErrors,
@@ -27,7 +26,6 @@ export const UpdateEntryForm = ({
 
   return (
     <form data-testid="update-item-form">
-      {genericError && <ErrorMessage message={genericError} />}
       <div className="input-item">
         <div>
           <input
@@ -59,11 +57,19 @@ export const UpdateEntryForm = ({
             </div>
           </div>
           {validationErrors && validationErrors.amount ? (
-            <p className="form-error">Montant invalide</p>
+            <p className="form-error" data-testid="amount-input-error">
+              Montant invalide
+            </p>
           ) : null}
         </div>
       </div>
       {children}
+
+      {reqError && (
+        <p className="req-error" data-testid="error-message">
+          {reqError}
+        </p>
+      )}
 
       <div className="flex-end">
         <button
@@ -98,6 +104,7 @@ export const UpdateEntryForm = ({
             type="button"
             onClick={() => setConfirmDelete(false)}
             className="delete-item__button cancel"
+            data-testid="cancel-delete-btn"
           >
             <X size={16} />
           </button>

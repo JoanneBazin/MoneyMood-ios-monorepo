@@ -58,7 +58,6 @@ export const useUpdateExpenseValidationMutation = () => {
       cashed,
       expenseId,
       budgetId,
-      isCurrentBudget,
     }: UpdateExpenseValidationParams) =>
       updateMonthlyExpenseValidation(cashed, expenseId, budgetId),
     onSuccess: (expense, variables) => {

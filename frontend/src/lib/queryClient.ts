@@ -1,4 +1,4 @@
-import { QueryCache, QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { resetAppState } from "./resetAppState";
 import { ApiError } from "./ApiError";
@@ -10,8 +10,20 @@ const isTest =
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       if (error instanceof ApiError && error.status === 401) {
+        resetAppState(queryClient);
+        window.location.href = "/login";
+      }
+    },
+  }),
+  mutationCache: new MutationCache({
+    onError: (error: unknown, _variables, _context, mutation) => {
+      if (
+        error instanceof ApiError &&
+        error.status === 401 &&
+        mutation.options.mutationKey?.[0] !== "login"
+      ) {
         resetAppState(queryClient);
         window.location.href = "/login";
       }
@@ -24,7 +36,7 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
       networkMode: isTest ? "online" : "offlineFirst",
-      retry: (failureCount, error) => {
+      retry: (failureCount) => {
         if (!navigator.onLine) return false;
         return failureCount < 1;
       },

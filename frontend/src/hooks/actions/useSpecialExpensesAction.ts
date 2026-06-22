@@ -1,28 +1,20 @@
 import {
   BaseEntryForm,
-  baseEntrySchema,
-  ExpenseInput,
-  expenseSchema,
   SpecialExpenseInput,
   specialExpenseSchema,
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
-import {
-  useAddExpensesMutation,
-  useDeleteExpenseMutation,
-  useUpdateExpenseMutation,
-  useUpdateExpenseValidationMutation,
-  useUpdateSpecialBudgetMutation,
-} from "../queries/mutations";
+
 import { useState } from "react";
-import { MonthlyExpenseEntry, SpecialExpenseEntry } from "@/types";
+import { SpecialExpenseEntry } from "@/types";
 import {
   useAddSpecialExpenseMutation,
   useDeleteSpecialExpenseMutation,
   useUpdateSpecialExpenseMutation,
   useUpdateSpecialExpenseValidationMutation,
-} from "../queries/mutations/useSpecialExpenses";
+} from "../queries/mutations";
+import { getErrorMessage } from "@/lib/error-helpers";
 
 export const useSpecialExpensesAction = ({
   budgetId,
@@ -67,6 +59,7 @@ export const useSpecialExpensesAction = ({
         onSuccess: () => {
           onSuccess?.();
         },
+        onError: (error) => setDashboardError(getErrorMessage(error)),
       },
     );
   };
@@ -95,8 +88,7 @@ export const useSpecialExpensesAction = ({
         onSuccess: () => {
           onSuccess?.();
         },
-        onError: () =>
-          setModalError("Une erreur est survenue lors de la mise à jour"),
+        onError: (error) => setModalError(getErrorMessage(error)),
       },
     );
   };
@@ -119,8 +111,7 @@ export const useSpecialExpensesAction = ({
         onSuccess: () => {
           onSuccess?.();
         },
-        onError: () =>
-          setModalError("Une erreur est survenue lors de la suppression"),
+        onError: (error) => setModalError(getErrorMessage(error)),
       },
     );
   };
@@ -132,7 +123,8 @@ export const useSpecialExpensesAction = ({
       updateExpenseValidation,
       deleteExpense,
       clearAddValidationErrors: () => setAddValidationErrors(null),
-      clearUpdateErrors: () => {
+      clearUpdateValidationErrors: () => setUpdateValidationError(null),
+      clearModalErrors: () => {
         setUpdateValidationError(null);
         setModalError(null);
       },

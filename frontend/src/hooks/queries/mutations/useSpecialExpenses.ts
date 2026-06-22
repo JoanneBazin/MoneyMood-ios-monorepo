@@ -17,11 +17,8 @@ export const useAddSpecialExpenseMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      expenses,
-      budgetId,
-      categoryId,
-    }: AddSpecialExpensesParams) => addSpecialExpenses(expenses, budgetId),
+    mutationFn: ({ expenses, budgetId }: AddSpecialExpensesParams) =>
+      addSpecialExpenses(expenses, budgetId),
     onSuccess: ({ data, remainingBudget }, variables) => {
       if (variables.categoryId) {
         queryClient.setQueryData(

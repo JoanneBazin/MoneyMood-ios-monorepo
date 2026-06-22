@@ -1,23 +1,27 @@
 import app from "../../app";
 import { prisma } from "../../lib/prismaClient";
 import { authenticatedRequest, createTestUser } from "../helpers/auth-helpers";
-import { addFixedIncome } from "../helpers/db-helpers";
+import { addFixedIncome, deleteUserFromDb } from "../helpers/db-helpers";
 import request from "supertest";
 
 describe("Fixed Entries Routes", () => {
   let authCookie: string;
-  let userId: string;
+  let user: { id: string; email: string };
   const entry = {
     name: "Fixed entry",
     amount: 20,
   };
 
   beforeAll(async () => {
-    const { response, cookie } = await createTestUser("fixed-entries@test.com");
+    const { userData, cookie } = await createTestUser("fixed-entries@test.com");
     authCookie = cookie;
-    userId = response.body.id;
+    user = userData;
 
     expect(cookie).toBeTruthy();
+  });
+
+  afterAll(async () => {
+    await deleteUserFromDb(user.email);
   });
 
   beforeEach(async () => {
@@ -92,7 +96,7 @@ describe("Fixed Entries Routes", () => {
   });
 
   it("should update fixed income", async () => {
-    const { id: incomeId } = await addFixedIncome(userId);
+    const { id: incomeId } = await addFixedIncome(user.id);
     const updatedIncome = { name: "Updated", amount: 20 };
 
     const authReq = authenticatedRequest(authCookie);
@@ -116,7 +120,7 @@ describe("Fixed Entries Routes", () => {
   });
 
   it("should delete fixed income", async () => {
-    const { id: incomeId } = await addFixedIncome(userId);
+    const { id: incomeId } = await addFixedIncome(user.id);
     const authReq = authenticatedRequest(authCookie);
     const res = await authReq.delete(`/api/fixed-incomes/${incomeId}`).send();
 

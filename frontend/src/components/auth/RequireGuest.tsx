@@ -1,8 +1,18 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAppStore } from "@/stores/appStore";
+import { Loader } from "../ui";
+import { ErrorState } from "@/layouts/components";
+import { useSessionQuery } from "@/hooks/queries";
 
 export const RequireGuest = () => {
-  const user = useAppStore((s) => s.user);
+  const { data: user, isPending, error } = useSessionQuery();
+
+  if (isPending) {
+    return <Loader type="layout" />;
+  }
+
+  if (error) {
+    return <ErrorState />;
+  }
 
   return user ? <Navigate to="/app" replace /> : <Outlet />;
 };

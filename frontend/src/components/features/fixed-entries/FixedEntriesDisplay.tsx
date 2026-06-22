@@ -9,7 +9,7 @@ import {
 import { useFixedEntriesAction } from "@/hooks/actions";
 import { Entry, FixedEntriesDisplayProps } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const FixedEntriesDisplay = ({
   entries,
@@ -22,11 +22,10 @@ export const FixedEntriesDisplay = ({
 
   const { actions, state, status } = useFixedEntriesAction({ type });
 
-  useEffect(() => {
-    if (selectedEntry) {
-      actions.clearUpdateErrors();
-    }
-  }, [selectedEntry]);
+  const handleSelectEntry = (entry: Entry) => {
+    actions.clearModalErrors();
+    setSelectedEntry(entry);
+  };
 
   const handleAddEntries = () => {
     actions.addEntries(newEntries, () => setNewEntries([]));
@@ -54,12 +53,12 @@ export const FixedEntriesDisplay = ({
       <BudgetDataCard
         title={type === "incomes" ? "Mes revenus fixes" : "Mes charges fixes"}
       >
-        <EntriesList data={entries} setSelectedEntry={setSelectedEntry} />
+        <EntriesList data={entries} setSelectedEntry={handleSelectEntry} />
 
         <AddEntriesForm
-          initialData={newEntries}
-          errors={state.addValidationErrors}
-          onResetErrors={() => actions.clearAddValidationErrors}
+          entries={newEntries}
+          validationErrors={state.addValidationErrors}
+          onResetErrors={() => actions.clearAddValidationErrors()}
           onChange={setNewEntries}
           type={type}
         />
@@ -85,10 +84,10 @@ export const FixedEntriesDisplay = ({
             <UpdateEntryForm
               initialData={selectedEntry}
               validationErrors={state.updateValidationError}
-              genericError={state.modalError}
+              reqError={state.modalError}
               onSubmit={handleUpdateEntry}
               onDelete={handleDeleteEntry}
-              onResetErrors={() => actions.clearUpdateErrors()}
+              onResetErrors={() => actions.clearUpdateValidationErrors()}
             />
           </Modal>
         )}

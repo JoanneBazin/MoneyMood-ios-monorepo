@@ -1,6 +1,8 @@
+import { ApiError } from "./ApiError";
+
 export const extractArrayErrors = (
   errors: Record<string, string>,
-  prefix: string
+  prefix: string,
 ): Record<string, string>[] => {
   const result: Record<string, string>[] = [{}];
 
@@ -13,4 +15,12 @@ export const extractArrayErrors = (
     }
   });
   return result;
+};
+
+export const getErrorMessage = (error: unknown) => {
+  if (error instanceof ApiError) {
+    return error.message;
+  }
+
+  return "Une erreur est survenue";
 };

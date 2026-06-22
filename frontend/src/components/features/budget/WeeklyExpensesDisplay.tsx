@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BaseEntryForm } from "@shared/schemas";
 import {
   BudgetDataCard,
@@ -12,7 +12,7 @@ import { AddEntriesForm, UpdateEntryForm } from "@/components/forms";
 import { MonthlyExpenseEntry, WeeklyExpensesDisplayProps } from "@/types";
 import { useWeeklyExpenses } from "@/hooks/useWeeklyExpenses";
 import { useWeeklyExpensesAction } from "@/hooks/actions";
-import { useAppStore } from "@/stores/appStore";
+import { useSessionQuery } from "@/hooks/queries";
 
 export const WeeklyExpensesDisplay = ({
   budgetId,
@@ -21,30 +21,26 @@ export const WeeklyExpensesDisplay = ({
   edit = true,
   oldDate,
 }: WeeklyExpensesDisplayProps) => {
-  const [newExpenses, setNewExpenses] = useState<BaseEntryForm[]>([]);
   const [selectedEntry, setSelectedEntry] =
     useState<MonthlyExpenseEntry | null>(null);
 
   const {
     weekIndex,
-    setWeekIndex,
+    newExpenses,
+    setNewExpenses,
+    handleWeekChange,
     weeklyExpenses,
     remainingWeeklyBudget,
     currentWeekNumber,
   } = useWeeklyExpenses({ expenses, weeklyBudget, edit });
 
   const { actions, state, status } = useWeeklyExpensesAction({ budgetId });
-  const user = useAppStore((s) => s.user);
+  const { data: user } = useSessionQuery();
 
-  useEffect(() => {
-    setNewExpenses([]);
-  }, [weekIndex]);
-
-  useEffect(() => {
-    if (selectedEntry) {
-      actions.clearUpdateErrors();
-    }
-  }, [selectedEntry]);
+  const handleSelectEntry = (entry: MonthlyExpenseEntry) => {
+    actions.clearModalErrors();
+    setSelectedEntry(entry);
+  };
 
   const handleAddExpenses = () => {
     const newWeeklyExpenses = newExpenses.map((exp) => ({
@@ -87,13 +83,13 @@ export const WeeklyExpensesDisplay = ({
         {edit ? (
           <DateDisplay
             weekIndex={weekIndex}
-            setIndex={setWeekIndex}
+            setIndex={handleWeekChange}
             isCurrentBudget={true}
           />
         ) : (
           <DateDisplay
             weekIndex={weekIndex}
-            setIndex={setWeekIndex}
+            setIndex={handleWeekChange}
             isCurrentBudget={false}
             oldMonth={oldDate?.month}
             oldYear={oldDate?.year}
@@ -106,20 +102,20 @@ export const WeeklyExpensesDisplay = ({
               data={weeklyExpenses}
               enabledExpenseValidation={user?.enabledExpenseValidation ?? false}
               validateExpense={handleExpenseValidation}
-              setSelectedEntry={setSelectedEntry}
+              setSelectedEntry={handleSelectEntry}
             />
             <AddEntriesForm
-              initialData={newExpenses}
-              errors={state.addValidationErrors}
+              entries={newExpenses}
+              validationErrors={state.addValidationErrors}
               onResetErrors={() => actions.clearAddValidationErrors()}
               onChange={setNewExpenses}
-              type="expense"
+              type="expenses"
             />
             {newExpenses.length > 0 && (
               <button
                 onClick={handleAddExpenses}
                 className="primary-btn"
-                data-testid="submit-form-entry"
+                data-testid="add-expenses-btn"
                 disabled={status.isAdding}
               >
                 Enregistrer
@@ -148,10 +144,10 @@ export const WeeklyExpensesDisplay = ({
             <UpdateEntryForm
               initialData={selectedEntry}
               validationErrors={state.updateValidationError}
-              genericError={state.modalError}
+              reqError={state.modalError}
               onSubmit={handleUpdateExpense}
               onDelete={handleDeleteExpense}
-              onResetErrors={() => actions.clearUpdateErrors()}
+              onResetErrors={() => actions.clearUpdateValidationErrors()}
             />
           </Modal>
         )}

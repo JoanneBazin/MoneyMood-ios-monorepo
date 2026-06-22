@@ -1,31 +1,28 @@
-import app from "../../app";
-import { prisma } from "../../lib/prismaClient";
 import { authenticatedRequest, createTestUser } from "../helpers/auth-helpers";
-import {
-  createMonthlyBudget,
-  createSpecialBudget,
-  createSpecialCategory,
-} from "../helpers/db-helpers";
-import request from "supertest";
+import { createMonthlyBudget, deleteUserFromDb } from "../helpers/db-helpers";
 
 describe("Budget History Routes", () => {
   let authCookie: string;
-  let userId: string;
-  let budget: any;
+  let user: { id: string; email: string };
+  let budget: Awaited<ReturnType<typeof createMonthlyBudget>>;
 
   beforeAll(async () => {
-    const { response, cookie } = await createTestUser("history@test.com");
+    const { userData, cookie } = await createTestUser("history@test.com");
     authCookie = cookie;
-    userId = response.body.id;
+    user = userData;
 
     expect(cookie).toBeTruthy();
-    budget = await createMonthlyBudget(userId);
+    budget = await createMonthlyBudget(user.id, false);
+  });
+
+  afterAll(async () => {
+    await deleteUserFromDb(user.email);
   });
 
   it("should return budget by date", async () => {
     const authReq = authenticatedRequest(authCookie);
     const res = await authReq.get(
-      `/api/monthly-budgets?month=${budget.month}&year=${budget.year}`
+      `/api/monthly-budgets?month=${budget.month}&year=${budget.year}`,
     );
 
     expect(res.status).toBe(200);
@@ -65,10 +62,11 @@ describe("Budget History Routes", () => {
     });
   });
 
-  it("should return 401 if budget by id not found", async () => {
-    const res = await request(app).get(`/api/monthly-budgets/123`);
+  it("should return 404 if budget by id not found", async () => {
+    const authReq = authenticatedRequest(authCookie);
+    const res = await authReq.get(`/api/monthly-budgets/123`);
 
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(404);
     expect(res.body).toHaveProperty("error");
   });
 });

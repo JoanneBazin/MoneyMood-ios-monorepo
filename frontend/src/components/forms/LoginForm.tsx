@@ -1,4 +1,5 @@
 import { useLoginMutation } from "@/hooks/queries/mutations";
+import { getErrorMessage } from "@/lib/error-helpers";
 import { loginSchema, validateWithSchema } from "@shared/schemas";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 export const LoginForm = () => {
   const [user, setUser] = useState({ email: "", password: "" });
   const [errorMessages, setErrorMessages] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const { mutate, isPending, error } = useLoginMutation();
   const navigate = useNavigate();
@@ -41,7 +42,9 @@ export const LoginForm = () => {
           aria-label="Email"
         />
         {errorMessages.email && (
-          <p className="form-error">{errorMessages.email}</p>
+          <p className="form-error" data-testid="email-validation-error">
+            {errorMessages.email}
+          </p>
         )}
       </div>
 
@@ -55,14 +58,20 @@ export const LoginForm = () => {
           aria-label="Mot de passe"
         />
         {errorMessages.password && (
-          <p className="form-error">{errorMessages.password}</p>
+          <p className="form-error" data-testid="password-validation-error">
+            {errorMessages.password}
+          </p>
         )}
       </div>
 
       <button type="submit" disabled={isPending} className="primary-btn">
         Se connecter
       </button>
-      {error && <p className="req-error">{error.message}</p>}
+      {error && (
+        <p className="req-error" data-testid="login-error">
+          {getErrorMessage(error)}
+        </p>
+      )}
     </form>
   );
 };

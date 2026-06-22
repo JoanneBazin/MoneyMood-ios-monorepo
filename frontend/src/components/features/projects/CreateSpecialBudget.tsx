@@ -1,25 +1,21 @@
 import { ProjectForm } from "@/components/forms";
-import { useAddSpecialBudgetMutation } from "@/hooks/queries/mutations";
+import { useSpecialBudgetAction } from "@/hooks/actions";
 import { SpecialBudgetForm } from "@shared/schemas";
-import { useNavigate } from "react-router-dom";
 
 export const CreateSpecialBudget = () => {
-  const { mutate, isPending, isError } = useAddSpecialBudgetMutation();
-  const navigate = useNavigate();
+  const { actions, state, status } = useSpecialBudgetAction();
 
   const handleCreate = (data: SpecialBudgetForm) => {
-    mutate(data, {
-      onSuccess: (newProject) => {
-        navigate(`/app/projects/${newProject.id}`);
-      },
-    });
+    actions.addSpecialBudget(data);
   };
   return (
     <div>
       <ProjectForm
         onSubmit={handleCreate}
-        isPending={isPending}
-        isError={isError}
+        isPending={status.isAdding}
+        validationErrors={state.addValidationErrors}
+        reqError={state.modalError}
+        onResetErrors={() => actions.clearAddValidationErrors()}
         edit={false}
       />
     </div>

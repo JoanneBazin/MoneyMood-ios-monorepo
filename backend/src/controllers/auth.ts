@@ -39,7 +39,7 @@ export const signup = async (
     res.status(201).json(user);
   } catch (error) {
     if (isPrismaUniqueConstraint(error)) {
-      return next(new HttpError(400, "Email déjà utilisé"));
+      return next(new HttpError(409, "Email déjà utilisé"));
     }
     return next(error);
   }

@@ -18,10 +18,9 @@ export const DateDisplay = ({
       ? getWeeksInMonth(oldYear, oldMonth)
       : undefined;
 
-  if (!weeks) return;
   const formattedWeeks = useMemo(
     () =>
-      weeks.map((w) => ({
+      weeks?.map((w) => ({
         start: w.start.toLocaleDateString("fr-FR", {
           day: "2-digit",
           month: "2-digit",
@@ -34,11 +33,14 @@ export const DateDisplay = ({
     [weeks],
   );
 
+  if (!weeks || !formattedWeeks) return null;
+
   return (
     <div className="week-selector">
       <button
         onClick={() => setIndex(Math.max(weekIndex - 1, 0))}
         disabled={weekIndex === 0}
+        data-testid="week-nav-left"
         aria-label="Afficher la semaine précédente"
       >
         <ChevronLeft className="week-selector__icon" />
@@ -47,6 +49,7 @@ export const DateDisplay = ({
       <button
         onClick={() => setIndex(Math.min(weekIndex + 1, weeks.length - 1))}
         disabled={weekIndex === weeks.length - 1}
+        data-testid="week-nav-right"
         aria-label="Afficher la semaine suivante"
       >
         <ChevronRight className="week-selector__icon" />

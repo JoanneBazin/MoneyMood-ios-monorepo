@@ -21,7 +21,7 @@ export interface MonthlyBudgetWithWeeks extends MonthlyBudget {
 export interface MonthlyBudgetOptionsProps {
   isCurrent: boolean;
   budgetId: string;
-  onError: () => void;
+  onError: (reqError: string) => void;
 }
 
 // Mutations

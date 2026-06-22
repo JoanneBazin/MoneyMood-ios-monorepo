@@ -10,7 +10,9 @@
     "test:setup": "dotenv -e .env.test -- npx prisma db push --force-reset",
     "test:setup:ci": "npx prisma db push --force-reset",
     "test:ci": "npm run test:setup && jest --ci",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
   },
   "author": "Joanne Bazin",
   "license": "ISC",

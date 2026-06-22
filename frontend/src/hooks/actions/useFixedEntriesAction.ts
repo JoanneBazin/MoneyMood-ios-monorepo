@@ -11,6 +11,7 @@ import {
   validateArrayWithSchema,
   validateWithSchema,
 } from "@shared/schemas";
+import { getErrorMessage } from "@/lib/error-helpers";
 
 export const useFixedEntriesAction = ({ type }: { type: MonthlyEntryType }) => {
   const addMutation = useAddFixedEntriesMutation();
@@ -46,6 +47,7 @@ export const useFixedEntriesAction = ({ type }: { type: MonthlyEntryType }) => {
         onSuccess: () => {
           onSuccess?.();
         },
+        onError: (error) => setDashboardError(getErrorMessage(error)),
       },
     );
   };
@@ -74,8 +76,7 @@ export const useFixedEntriesAction = ({ type }: { type: MonthlyEntryType }) => {
         onSuccess: () => {
           onSuccess?.();
         },
-        onError: () =>
-          setModalError("Une erreur est survenue lors de la mise à jour"),
+        onError: (error) => setModalError(getErrorMessage(error)),
       },
     );
   };
@@ -90,8 +91,7 @@ export const useFixedEntriesAction = ({ type }: { type: MonthlyEntryType }) => {
         onSuccess: () => {
           onSuccess?.();
         },
-        onError: () =>
-          setModalError("Une erreur est survenue lors de la suppression"),
+        onError: (error) => setModalError(getErrorMessage(error)),
       },
     );
   };
@@ -102,7 +102,8 @@ export const useFixedEntriesAction = ({ type }: { type: MonthlyEntryType }) => {
       updateEntry,
       deleteEntry,
       clearAddValidationErrors: () => setAddValidationErrors(null),
-      clearUpdateErrors: () => {
+      clearUpdateValidationErrors: () => setUpdateValidationError(null),
+      clearModalErrors: () => {
         setUpdateValidationError(null);
         setModalError(null);
       },

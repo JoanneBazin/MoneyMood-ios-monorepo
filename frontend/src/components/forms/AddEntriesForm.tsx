@@ -1,27 +1,22 @@
-import { useEffect, useState } from "react";
 import { AddEntriesFormProps } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 
 export const AddEntriesForm = ({
-  initialData,
-  errors,
+  entries,
+  validationErrors,
   onChange,
   onResetErrors,
   type,
 }: AddEntriesFormProps) => {
-  const [entries, setEntries] = useState<BaseEntryForm[]>(initialData || []);
   const { isOffline } = useOfflineStatus();
-
-  useEffect(() => {
-    setEntries([...(initialData || [])]);
-  }, [initialData]);
 
   const handleUpdate = (
     index: number,
     field: keyof BaseEntryForm,
     value: string,
   ) => {
+    onResetErrors();
     const updatedEntries = entries.map((entry, i) =>
       i === index
         ? {
@@ -30,22 +25,18 @@ export const AddEntriesForm = ({
           }
         : entry,
     );
-    onResetErrors();
-    setEntries(updatedEntries);
     onChange(updatedEntries);
   };
 
   const addEntry = () => {
     const updatedEntries = [...entries, { name: "", amount: "" }];
     onResetErrors();
-    setEntries(updatedEntries);
     onChange(updatedEntries);
   };
 
   const removeEntry = (entryIndex: number) => {
     const updatedEntries = entries.filter((_, index) => index !== entryIndex);
     onResetErrors();
-    setEntries(updatedEntries);
     onChange(updatedEntries);
   };
 
@@ -65,9 +56,11 @@ export const AddEntriesForm = ({
                 value={entry.name}
                 onChange={(e) => handleUpdate(index, "name", e.target.value)}
               />
-              {errors && errors[index] && errors[index].name ? (
+              {validationErrors &&
+              validationErrors[index] &&
+              validationErrors[index].name ? (
                 <p className="form-error" data-testid="name-input-error">
-                  {errors[index].name}
+                  {validationErrors[index].name}
                 </p>
               ) : null}
             </div>
@@ -98,7 +91,9 @@ export const AddEntriesForm = ({
                   x
                 </button>
               </div>
-              {errors && errors[index] && errors[index].amount ? (
+              {validationErrors &&
+              validationErrors[index] &&
+              validationErrors[index].amount ? (
                 <p className="form-error" data-testid="amount-input-error">
                   Montant invalide
                 </p>

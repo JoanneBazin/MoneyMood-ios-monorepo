@@ -7,16 +7,19 @@
   "type": "commonjs",
   "exports": {
     ".": {
+      "types@require": "./dist/index.d.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
     "./schemas": {
+      "types@require": "./dist/index.d.ts",
       "types": "./dist/schemas/index.d.ts",
       "import": "./dist/schemas/index.mjs",
       "require": "./dist/schemas/index.js"
     },
     "./types": {
+      "types@require": "./dist/index.d.ts",
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.mjs",
       "require": "./dist/types/index.js"
@@ -24,7 +27,8 @@
   },
   "scripts": {
     "build": "tsup --config tsup.config.ts",
-    "dev": "tsup --config tsup.config.ts --watch"
+    "dev": "tsup --config tsup.config.ts --watch",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",

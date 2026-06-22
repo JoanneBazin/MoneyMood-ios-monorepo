@@ -7,21 +7,26 @@ import {
   addMonthlyExpense,
   addMonthlyIncome,
   createMonthlyBudget,
+  deleteUserFromDb,
 } from "../helpers/db-helpers";
 import request from "supertest";
 
 describe("Monthly Budget Routes", () => {
   let authCookie: string;
-  let userId: string;
+  let user: { id: string; email: string };
 
   beforeAll(async () => {
-    const { response, cookie } = await createTestUser(
+    const { userData, cookie } = await createTestUser(
       "monthly-budget@test.com",
     );
     authCookie = cookie;
-    userId = response.body.id;
+    user = userData;
 
     expect(cookie).toBeTruthy();
+  });
+
+  afterAll(async () => {
+    await deleteUserFromDb(user.email);
   });
 
   beforeEach(async () => {
@@ -61,7 +66,7 @@ describe("Monthly Budget Routes", () => {
       });
 
       const budgetInDb = await prisma.monthlyBudget.findUnique({
-        where: { id: res.body.id, userId },
+        where: { id: res.body.id, userId: user.id },
         select: {
           month: true,
           isCurrent: true,
@@ -82,7 +87,7 @@ describe("Monthly Budget Routes", () => {
     });
 
     it("should return 401 if deleting budget without auth", async () => {
-      const budget = await createMonthlyBudget(userId);
+      const budget = await createMonthlyBudget(user.id);
       const res = await request(app).delete(
         `/api/monthly-budgets/${budget.id}`,
       );
@@ -111,7 +116,7 @@ describe("Monthly Budget Routes", () => {
     }
 
     it("should return current budget", async () => {
-      await createMonthlyBudget(userId);
+      await createMonthlyBudget(user.id);
       const authReq = authenticatedRequest(authCookie);
       const res = await authReq.get("/api/monthly-budgets/current");
 
@@ -138,7 +143,7 @@ describe("Monthly Budget Routes", () => {
       weekNumber: 1,
     };
     it("should create new monthly expenses and update remaining budget", async () => {
-      const budget = await createMonthlyBudget(userId);
+      const budget = await createMonthlyBudget(user.id);
 
       const authReq = authenticatedRequest(authCookie);
       const res = await authReq
@@ -160,7 +165,7 @@ describe("Monthly Budget Routes", () => {
     });
 
     it("should return 401 if adding expense without auth", async () => {
-      const budget = await createMonthlyBudget(userId);
+      const budget = await createMonthlyBudget(user.id);
       const res = await request(app)
         .post(`/api/monthly-budgets/${budget.id}/expenses`)
         .send(newExpense);
@@ -170,7 +175,7 @@ describe("Monthly Budget Routes", () => {
     });
 
     it("should return 400 if adding expense with invalid body", async () => {
-      const budget = await createMonthlyBudget(userId);
+      const budget = await createMonthlyBudget(user.id);
       const wrongExpense = { ...newExpense, weekNumber: 0 };
 
       const authReq = authenticatedRequest(authCookie);
@@ -183,7 +188,7 @@ describe("Monthly Budget Routes", () => {
     });
 
     it("should return 400 if adding expense without weekNumber", async () => {
-      const budget = await createMonthlyBudget(userId);
+      const budget = await createMonthlyBudget(user.id);
       const reqBody = { name: newExpense.name, amount: newExpense.amount };
 
       const authReq = authenticatedRequest(authCookie);
@@ -195,18 +200,18 @@ describe("Monthly Budget Routes", () => {
       expect(res.body).toHaveProperty("error");
     });
 
-    it("should return 403 if adding expense with invalid budgetId", async () => {
+    it("should return 404 if adding expense with invalid budgetId", async () => {
       const authReq = authenticatedRequest(authCookie);
       const res = await authReq
         .post(`/api/monthly-budgets/123/expenses`)
         .send(newExpense);
 
-      expect(res.status).toBe(403);
+      expect(res.status).toBe(404);
       expect(res.body).toHaveProperty("error");
     });
 
     it("should update monthly expense", async () => {
-      const budget = await createMonthlyBudget(userId);
+      const budget = await createMonthlyBudget(user.id);
       const { id: expenseId } = await addMonthlyExpense(budget.id);
       const updatedExpense = { name: "Updated", amount: 5 };
 
@@ -229,7 +234,7 @@ describe("Monthly Budget Routes", () => {
     });
 
     it("should delete monthly expense", async () => {
-      const budget = await createMonthlyBudget(userId);
+      const budget = await createMonthlyBudget(user.id);
       const { id: expenseId } = await addMonthlyExpense(budget.id);
 
       const authReq = authenticatedRequest(authCookie);
@@ -279,7 +284,7 @@ describe("Monthly Budget Routes", () => {
       };
 
       it(`should create new monthly ${entryType} and update remaining budget`, async () => {
-        const budget = await createMonthlyBudget(userId);
+        const budget = await createMonthlyBudget(user.id);
 
         const authReq = authenticatedRequest(authCookie);
         const res = await authReq
@@ -303,7 +308,7 @@ describe("Monthly Budget Routes", () => {
       });
 
       it("should update monthly income", async () => {
-        const budget = await createMonthlyBudget(userId);
+        const budget = await createMonthlyBudget(user.id);
         const { id: incomeId } = await addMonthlyIncome(budget.id);
         const updatedIncome = { name: "Updated", amount: 20 };
 
@@ -328,7 +333,7 @@ describe("Monthly Budget Routes", () => {
       });
 
       it("should delete monthly income", async () => {
-        const budget = await createMonthlyBudget(userId);
+        const budget = await createMonthlyBudget(user.id);
         const { id: incomeId } = await addMonthlyIncome(budget.id);
 
         const authReq = authenticatedRequest(authCookie);

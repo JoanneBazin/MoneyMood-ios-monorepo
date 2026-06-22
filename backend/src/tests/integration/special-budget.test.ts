@@ -4,21 +4,26 @@ import { authenticatedRequest, createTestUser } from "../helpers/auth-helpers";
 import {
   createSpecialBudget,
   createSpecialCategory,
+  deleteUserFromDb,
 } from "../helpers/db-helpers";
 import request from "supertest";
 
 describe("Special Budget Routes", () => {
   let authCookie: string;
-  let userId: string;
+  let user: { id: string; email: string };
 
   beforeAll(async () => {
-    const { response, cookie } = await createTestUser(
-      "special-budget@test.com"
+    const { userData, cookie } = await createTestUser(
+      "special-budget@test.com",
     );
     authCookie = cookie;
-    userId = response.body.id;
+    user = userData;
 
     expect(cookie).toBeTruthy();
+  });
+
+  afterAll(async () => {
+    await deleteUserFromDb(user.email);
   });
 
   beforeEach(async () => {
@@ -44,7 +49,7 @@ describe("Special Budget Routes", () => {
       });
 
       const budgetInDb = await prisma.specialBudget.findUnique({
-        where: { id: res.body.id, userId },
+        where: { id: res.body.id, userId: user.id },
         select: {
           name: true,
         },
@@ -73,7 +78,7 @@ describe("Special Budget Routes", () => {
     });
 
     it("should update special budget", async () => {
-      const specialBudget = await createSpecialBudget(userId);
+      const specialBudget = await createSpecialBudget(user.id);
 
       const updatedBudget = { name: "Project", totalBudget: 400 };
 
@@ -86,7 +91,7 @@ describe("Special Budget Routes", () => {
       expect(res.body.remainingBudget).toBe(updatedBudget.totalBudget);
 
       const budgetInDb = await prisma.specialBudget.findUnique({
-        where: { id: specialBudget.id, userId },
+        where: { id: specialBudget.id, userId: user.id },
         select: { name: true, totalBudget: true },
       });
       expect(budgetInDb?.name).toBe(updatedBudget.name);
@@ -94,7 +99,7 @@ describe("Special Budget Routes", () => {
     });
 
     it("should delete special budget", async () => {
-      const specialBudget = await createSpecialBudget(userId);
+      const specialBudget = await createSpecialBudget(user.id);
 
       const authReq = authenticatedRequest(authCookie);
       const res = await authReq
@@ -105,7 +110,7 @@ describe("Special Budget Routes", () => {
       expect(res.body).toHaveProperty("id");
 
       const budgetInDb = await prisma.specialBudget.findUnique({
-        where: { id: specialBudget.id, userId },
+        where: { id: specialBudget.id, userId: user.id },
       });
       expect(budgetInDb).toBeNull();
     });
@@ -116,7 +121,7 @@ describe("Special Budget Routes", () => {
       name: "Expenses",
     };
     it("should create new category in budget", async () => {
-      const budget = await createSpecialBudget(userId);
+      const budget = await createSpecialBudget(user.id);
 
       const authReq = authenticatedRequest(authCookie);
       const res = await authReq
@@ -155,7 +160,7 @@ describe("Special Budget Routes", () => {
     };
 
     it("should create new expense and update remaining budget", async () => {
-      const budget = await createSpecialBudget(userId);
+      const budget = await createSpecialBudget(user.id);
 
       const authReq = authenticatedRequest(authCookie);
       const res = await authReq
@@ -166,7 +171,7 @@ describe("Special Budget Routes", () => {
       expect(res.body).toHaveProperty("data");
       expect(res.body).toHaveProperty("remainingBudget");
       expect(res.body.remainingBudget).toBe(
-        budget.remainingBudget - newEntry.amount
+        budget.remainingBudget - newEntry.amount,
       );
 
       const expenseInDb = await prisma.expense.findFirst({
@@ -177,7 +182,7 @@ describe("Special Budget Routes", () => {
     });
 
     it("should create new expense with category and update remaining budget", async () => {
-      const budget = await createSpecialBudget(userId);
+      const budget = await createSpecialBudget(user.id);
       const { id: catId } = await createSpecialCategory(budget.id);
       const entryWithCat = { ...newEntry, specialCategoryId: catId };
 
@@ -190,7 +195,7 @@ describe("Special Budget Routes", () => {
       expect(res.body).toHaveProperty("data");
       expect(res.body).toHaveProperty("remainingBudget");
       expect(res.body.remainingBudget).toBe(
-        budget.remainingBudget - entryWithCat.amount
+        budget.remainingBudget - entryWithCat.amount,
       );
 
       const expenseInDb = await prisma.expense.findFirst({

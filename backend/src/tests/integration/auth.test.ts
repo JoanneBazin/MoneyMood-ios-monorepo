@@ -43,11 +43,11 @@ describe("Auth Routes", () => {
   });
 
   it("should login and return user", async () => {
-    await createUserInDb(user.name, user.email, user.password);
+    const loginUser = await createUserInDb(user.email);
 
     const res = await request(app).post("/api/auth/login").send({
-      email: user.email,
-      password: user.password,
+      email: loginUser.email,
+      password: loginUser.password,
     });
 
     expect(res.status).toBe(200);
@@ -67,10 +67,10 @@ describe("Auth Routes", () => {
   });
 
   it("should return 401 if password is wrong", async () => {
-    await createUserInDb(user.name, user.email, user.password);
+    const loginUser = await createUserInDb(user.email);
 
     const res = await request(app).post("/api/auth/login").send({
-      email: user.email,
+      email: loginUser.email,
       password: "wrongPassword1234",
     });
 

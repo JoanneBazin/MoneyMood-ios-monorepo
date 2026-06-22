@@ -56,7 +56,7 @@ export const AddMonthlyBudgetForm = ({
       )}
       <BudgetDataCard title="Revenus">
         <AddEntriesForm
-          initialData={monthlyIncomes}
+          entries={monthlyIncomes}
           validationErrors={state.addIncomesValidationErrors}
           onChange={setMonthlyIncomes}
           onResetErrors={() => actions.clearAddIncomesValidationErrors()}
@@ -65,7 +65,7 @@ export const AddMonthlyBudgetForm = ({
       </BudgetDataCard>
       <BudgetDataCard title="Charges">
         <AddEntriesForm
-          initialData={monthlyCharges}
+          entries={monthlyCharges}
           validationErrors={state.addChargesValidationErrors}
           onChange={setMonthlyCharges}
           onResetErrors={() => actions.clearAddChargesValidationErrors()}

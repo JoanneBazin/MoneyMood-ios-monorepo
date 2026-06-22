@@ -82,7 +82,7 @@ export const ProjectExpenses = ({
       />
 
       <AddEntriesForm
-        initialData={newExpenses}
+        entries={newExpenses}
         validationErrors={state.addValidationErrors}
         onChange={setNewExpenses}
         onResetErrors={() => actions.clearAddValidationErrors()}

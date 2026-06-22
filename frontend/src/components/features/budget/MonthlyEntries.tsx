@@ -68,7 +68,7 @@ export const MonthlyEntries = ({
           <EntriesList data={data} setSelectedEntry={handleSelectEntry} />
 
           <AddEntriesForm
-            initialData={newEntries}
+            entries={newEntries}
             validationErrors={state.addValidationErrors}
             onChange={setNewEntries}
             onResetErrors={() => actions.clearAddValidationErrors()}

@@ -17,7 +17,7 @@ export interface MonthYearPickerProps {
 }
 
 export interface AddEntriesFormProps {
-  initialData?: BaseEntryForm[];
+  entries: BaseEntryForm[];
   validationErrors: Record<string, string>[] | null;
   onChange: (entries: BaseEntryForm[]) => void;
   onResetErrors: () => void;

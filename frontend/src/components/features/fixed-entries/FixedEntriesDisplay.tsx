@@ -56,7 +56,7 @@ export const FixedEntriesDisplay = ({
         <EntriesList data={entries} setSelectedEntry={handleSelectEntry} />
 
         <AddEntriesForm
-          initialData={newEntries}
+          entries={newEntries}
           validationErrors={state.addValidationErrors}
           onResetErrors={() => actions.clearAddValidationErrors()}
           onChange={setNewEntries}

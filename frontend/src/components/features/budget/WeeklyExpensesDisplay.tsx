@@ -105,7 +105,7 @@ export const WeeklyExpensesDisplay = ({
               setSelectedEntry={handleSelectEntry}
             />
             <AddEntriesForm
-              initialData={newExpenses}
+              entries={newExpenses}
               validationErrors={state.addValidationErrors}
               onResetErrors={() => actions.clearAddValidationErrors()}
               onChange={setNewExpenses}

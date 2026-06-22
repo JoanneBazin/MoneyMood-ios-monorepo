@@ -1,16 +1,14 @@
-import { useState } from "react";
 import { AddEntriesFormProps } from "@/types";
 import { BaseEntryForm } from "@shared/schemas";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 
 export const AddEntriesForm = ({
-  initialData,
+  entries,
   validationErrors,
   onChange,
   onResetErrors,
   type,
 }: AddEntriesFormProps) => {
-  const [entries, setEntries] = useState<BaseEntryForm[]>(initialData ?? []);
   const { isOffline } = useOfflineStatus();
 
   const handleUpdate = (
@@ -27,21 +25,18 @@ export const AddEntriesForm = ({
           }
         : entry,
     );
-    setEntries(updatedEntries);
     onChange(updatedEntries);
   };
 
   const addEntry = () => {
     const updatedEntries = [...entries, { name: "", amount: "" }];
     onResetErrors();
-    setEntries(updatedEntries);
     onChange(updatedEntries);
   };
 
   const removeEntry = (entryIndex: number) => {
     const updatedEntries = entries.filter((_, index) => index !== entryIndex);
     onResetErrors();
-    setEntries(updatedEntries);
     onChange(updatedEntries);
   };
 

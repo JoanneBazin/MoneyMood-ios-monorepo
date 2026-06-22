@@ -21,7 +21,7 @@ export const HistoryDetail = () => {
   return (
     <section>
       <BackArrow />
-      {error && <ErrorMessage message={getErrorMessage(error.message)} />}
+      {error && <ErrorMessage message={getErrorMessage(error)} />}
       {budget && <HistoryBudgetLayout budget={budget} />}
     </section>
   );

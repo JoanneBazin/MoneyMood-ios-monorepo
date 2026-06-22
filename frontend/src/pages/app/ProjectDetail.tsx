@@ -21,7 +21,7 @@ export const ProjectDetail = () => {
   return (
     <section>
       <BackArrow />
-      {error && <ErrorMessage message={getErrorMessage(error.message)} />}
+      {error && <ErrorMessage message={getErrorMessage(error)} />}
       {budget && <ProjectLayout budget={budget} />}
     </section>
   );

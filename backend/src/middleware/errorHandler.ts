@@ -1,7 +1,12 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { HttpError } from "../lib";
 
-export const errorHandler = (err: Error, req: Request, res: Response) => {
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+) => {
   if (process.env.NODE_ENV === "development") {
     console.log(err);
   }

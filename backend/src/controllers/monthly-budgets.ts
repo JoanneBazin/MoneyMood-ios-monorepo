@@ -71,7 +71,7 @@ export const addMonthlyBudget = async (
   } catch (error) {
     if (isPrismaUniqueConstraint(error)) {
       return next(
-        new HttpError(400, "Un budget mensuel pour ce mois existe déjà"),
+        new HttpError(409, "Un budget mensuel pour ce mois existe déjà"),
       );
     }
     return next(error);

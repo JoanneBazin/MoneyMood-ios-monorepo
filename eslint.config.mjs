@@ -43,7 +43,7 @@ export default [
   },
 
   {
-    files: ["backend/**/*.ts"],
+    files: ["backend/src/**/*.ts"],
     languageOptions: {
       globals: globals.node,
       parserOptions: {

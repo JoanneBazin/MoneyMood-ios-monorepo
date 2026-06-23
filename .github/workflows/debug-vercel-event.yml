@@ -8,5 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print event
-        run: echo '${{ toJson(github.event) }}'
+      - name: Branch
+        run: |
+          echo "REF=${{ github.event.deployment.ref }}"
+          echo "ENV=${{ github.event.deployment.environment }}"
+          echo "URL=${{ github.event.deployment_status.environment_url }}"

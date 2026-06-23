@@ -99,13 +99,6 @@ Créer les fichiers `.env` dans les worspaces :
 DATABASE_URL="postgresql://..."
 ```
 
-`frontend/.env` :
-
-```bash
-VITE_API_URL=http://localhost:4000
-VITE_BASE_URL=http://localhost:5173
-```
-
 **3. Builder le package partagé**
 
 ```bash

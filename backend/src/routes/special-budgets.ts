@@ -37,14 +37,25 @@ router.post(
   addSpecialBudget,
 );
 router.get("/", requireAuth, getAllSpecialBudgets);
-router.get("/:id", requireAuth, getSpecialBudgetDetails);
+router.get(
+  "/:id",
+  requireAuth,
+  checkSpecialBudgetAccess,
+  getSpecialBudgetDetails,
+);
 router.put(
   "/:id",
   requireAuth,
+  checkSpecialBudgetAccess,
   validateBody(specialBudgetSchema),
   updateSpecialBudget,
 );
-router.delete("/:id", requireAuth, deleteSpecialBudget);
+router.delete(
+  "/:id",
+  requireAuth,
+  checkSpecialBudgetAccess,
+  deleteSpecialBudget,
+);
 
 // Special Categories
 router.post(

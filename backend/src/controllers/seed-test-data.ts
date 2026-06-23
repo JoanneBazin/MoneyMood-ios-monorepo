@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  getUserId,
   hashPassword,
   HttpError,
   isPrismaForeignKeyConstraint,
@@ -135,6 +136,60 @@ export const cleanStagingDb = async (
   } catch (error) {
     console.error(error);
     return next(new HttpError(500, "Failed to clean database"));
+  }
+};
+
+export const seedTestProjectData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = getUserId(req, next);
+    if (!userId) {
+      return next(new HttpError(401, "Pas d'utilisateur connecté'"));
+    }
+
+    const newProject = await prisma.specialBudget.create({
+      data: {
+        userId,
+        name: "Project 2",
+        totalBudget: "100",
+        remainingBudget: "90",
+        categories: {
+          create: {
+            name: "Category 2",
+          },
+        },
+        expenses: {
+          create: {
+            name: "Project expense 2",
+            amount: 10,
+          },
+        },
+      },
+      select: {
+        id: true,
+        categories: {
+          select: { id: true },
+        },
+        expenses: {
+          select: { id: true },
+        },
+      },
+    });
+
+    return res.status(201).json({
+      message: "Staging Project 2 seeded !",
+      projectData: {
+        projectId: newProject.id,
+        projectCategory: newProject.categories[0].id,
+        projectExpense: newProject.expenses[0].id,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return next(new HttpError(500, "Failed to seed Project"));
   }
 };
 

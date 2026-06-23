@@ -4,18 +4,13 @@ import {
   getParamsId,
   getUserId,
   HttpError,
-  isPrismaForeignKeyConstraint,
   isPrismaRecordNotFound,
   isPrismaUniqueConstraint,
   monthlyBudgetSelect,
   normalizeDecimalFields,
   prisma,
 } from "../lib";
-import {
-  calculateRemainingBudget,
-  calculateWeeklyBudget,
-  updateMonthlyBudgetRemaining,
-} from "../services";
+import { calculateRemainingBudget, calculateWeeklyBudget } from "../services";
 import { Prisma } from "@prisma/client";
 
 export const addMonthlyBudget = async (
@@ -279,63 +274,6 @@ export const deleteMonthlyBudget = async (
           "Budget mensuel non trouvé ou vous n'avez pas les droits d'accès.",
         ),
       );
-    }
-    return next(error);
-  }
-};
-
-export const seedTestBudgetData = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  if (
-    process.env.NODE_ENV === "production" &&
-    process.env.VERCEL_ENV !== "preview"
-  ) {
-    return next(new HttpError(403, "Forbidden action in production"));
-  }
-
-  const authHeader = req.get("Authorization");
-  if (authHeader !== `Bearer ${process.env.E2E_TOKEN}`) {
-    return next(new HttpError(401, "Unauthorized"));
-  }
-
-  interface reqType {
-    model: keyof typeof prisma;
-    data: {
-      monthlyBudgetId: string;
-      name: string;
-      amount: number;
-      weeklyNumber?: number;
-    };
-  }
-
-  const reqBody: reqType = req.body;
-  const { data, model } = reqBody;
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dbModel = prisma[model] as any;
-
-    const createdItem = await dbModel.create({
-      data,
-      select: {
-        name: true,
-        amount: true,
-      },
-    });
-    const { remainingBudget } = await updateMonthlyBudgetRemaining(
-      data.monthlyBudgetId,
-    );
-
-    return res.status(201).json({
-      data: normalizeDecimalFields(createdItem),
-      remainingBudget: normalizeDecimalFields(remainingBudget),
-    });
-  } catch (error) {
-    if (isPrismaForeignKeyConstraint(error)) {
-      return next(new HttpError(404, "Référence à un budget inexistant"));
     }
     return next(error);
   }

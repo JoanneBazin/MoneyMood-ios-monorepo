@@ -20,7 +20,6 @@ import {
   getLastBudgets,
   getMonthlyBudget,
   getMonthlyBudgetById,
-  seedTestBudgetData,
   updateExpense,
   updateExpenseValidation,
   updateMonthlyBudgetStatus,
@@ -131,7 +130,5 @@ router.delete(
   resolveBudgetType,
   deleteExpense,
 );
-
-router.post("/test/seed", seedTestBudgetData);
 
 export default router;

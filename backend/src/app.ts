@@ -5,6 +5,7 @@ import fixedIncomes from "./routes/fixed-incomes";
 import fixedCharges from "./routes/fixed-charges";
 import monthlyBudgets from "./routes/monthly-budgets";
 import specialBudgets from "./routes/special-budgets";
+import tests from "./routes/tests";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/errorHandler";
 import {
@@ -38,6 +39,7 @@ app.use("/api/fixed-incomes", fixedIncomes);
 app.use("/api/fixed-charges", fixedCharges);
 app.use("/api/monthly-budgets", monthlyBudgets);
 app.use("/api/special-budgets", specialBudgets);
+app.use("/api/tests", tests);
 
 app.use(errorHandler);
 

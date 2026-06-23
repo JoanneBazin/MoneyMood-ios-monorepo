@@ -289,8 +289,11 @@ export const seedTestBudgetData = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (process.env.NODE_ENV === "production") {
-    return next(new HttpError(404, "Not Found"));
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.VERCEL_ENV !== "preview"
+  ) {
+    return next(new HttpError(403, "Forbidden action in production"));
   }
 
   const authHeader = req.get("Authorization");

@@ -34,42 +34,42 @@ jobs:
           DEPLOYMENT_URL=${DEPLOYMENT_URL%/}
           echo "preview_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
 
-  # postman-api-tests:
-  #   name: Postman API Tests
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 15
-  #   needs: deploy-preview
-  #   env:
-  #     POSTMAN_COLLECTION_ID: "33983325-97c6965e-5deb-45d3-8a61-9c24affb44d4"
-  #     POSTMAN_ENV_ID: "33983325-c396d3cf-120b-402d-b16b-4b5c8ce63825"
-  #   steps:
-  #     - name: Setup Node 20
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20
+  postman-api-tests:
+    name: Postman API Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: deploy-preview
+    env:
+      POSTMAN_COLLECTION_ID: "33983325-97c6965e-5deb-45d3-8a61-9c24affb44d4"
+      POSTMAN_ENV_ID: "33983325-c396d3cf-120b-402d-b16b-4b5c8ce63825"
+    steps:
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  #     - name: Install Postman CLI
-  #       run: |
-  #         curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
 
-  #     - name: Login to Postman CLI
-  #       run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+      - name: Login to Postman CLI
+        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
-  #     - name: Run API tests
-  #       run: |
-  #         postman collection run "$POSTMAN_COLLECTION_ID" \
-  #         -e "$POSTMAN_ENV_ID" \
-  #         --env-var "baseUrl=${{ needs.deploy-preview.outputs.preview_url }}" \
-  #         --env-var "e2e_token=${{ secrets.E2E_TOKEN }}" \
-  #         --env-var "env_email=${{ secrets.STAGING_TEST_EMAIL }}" \
-  #         --env-var "env_password=${{ secrets.STAGING_TEST_PASSWORD }}" \
-  #         --env-var "vercelBypass=${{ secrets.VERCEL_BYPASS_TOKEN }}"
+      - name: Run API tests
+        run: |
+          postman collection run "$POSTMAN_COLLECTION_ID" \
+          -e "$POSTMAN_ENV_ID" \
+          --env-var "baseUrl=${{ needs.deploy-preview.outputs.preview_url }}" \
+          --env-var "e2e_token=${{ secrets.E2E_TOKEN }}" \
+          --env-var "env_email=${{ secrets.STAGING_TEST_EMAIL }}" \
+          --env-var "env_password=${{ secrets.STAGING_TEST_PASSWORD }}" \
+          --env-var "vercelBypass=${{ secrets.VERCEL_BYPASS_TOKEN }}"
 
   playwright-tests:
     name: E2E Regression Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [deploy-preview]
+    timeout-minutes: 30
+    needs: [deploy-preview, postman-api-tests]
 
     steps:
       - name: Checkout repo
@@ -102,10 +102,10 @@ jobs:
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           E2E_TOKEN: ${{ secrets.E2E_TOKEN }}
           VERCEL_BYPASS_TOKEN: ${{ secrets.VERCEL_BYPASS_TOKEN }}
-        run: npx playwright test --grep @smoke
+        run: npx playwright test --grep @regression
 
       - name: Upload Playwright Report
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-report

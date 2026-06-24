@@ -5,7 +5,7 @@ env:
 
 on:
   push:
-    branches: [qa/staging-validation]
+    branches: [dev]
 
 jobs:
   deploy-preview:

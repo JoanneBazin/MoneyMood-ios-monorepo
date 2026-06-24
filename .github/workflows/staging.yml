@@ -5,7 +5,7 @@ env:
 
 on:
   push:
-    branches: [dev]
+    branches: [qa/staging-validation]
 
 jobs:
   deploy-preview:
@@ -43,7 +43,10 @@ jobs:
       POSTMAN_COLLECTION_ID: "33983325-97c6965e-5deb-45d3-8a61-9c24affb44d4"
       POSTMAN_ENV_ID: "33983325-c396d3cf-120b-402d-b16b-4b5c8ce63825"
     steps:
-      - uses: actions/checkout@v4
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Install Postman CLI
         run: |

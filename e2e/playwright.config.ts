@@ -48,6 +48,9 @@ export default defineConfig({
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:5173",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+    extraHTTPHeaders: {
+      "x-vercel-protection-bypass": process.env.VERCEL_BYPASS_TOKEN ?? "",
+    },
   },
 
   projects: [

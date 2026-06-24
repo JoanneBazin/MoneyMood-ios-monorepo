@@ -1,0 +1,22 @@
+{
+  "mode": "testops",
+  "fallback": "report",
+  "debug": false,
+  "testops": {
+    "project": "MONEYMOOD",
+    "run": {
+      "title": "Automated Run",
+      "complete": true
+    },
+    "defect": true
+  },
+  "report": {
+    "driver": "local",
+    "connection": {
+      "local": {
+        "path": "./build/qase-report",
+        "format": "json"
+      }
+    }
+  }
+}

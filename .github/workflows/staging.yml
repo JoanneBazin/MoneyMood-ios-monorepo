@@ -1,0 +1,102 @@
+name: CI - Staging Tests
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      preview_url: ${{ steps.deploy.outputs.preview_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          DEPLOYMENT_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          DEPLOYMENT_URL=${DEPLOYMENT_URL%/}
+          echo "preview_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+
+  postman-api-tests:
+    name: Postman API Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: deploy-preview
+    env:
+      POSTMAN_COLLECTION_ID: "33983325-97c6965e-5deb-45d3-8a61-9c24affb44d4"
+      POSTMAN_ENV_ID: "33983325-c396d3cf-120b-402d-b16b-4b5c8ce63825"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+      - name: Login to Postman CLI
+        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+
+      - name: Run API tests
+        run: |
+          postman collection run "$POSTMAN_COLLECTION_ID" \
+          -e "$POSTMAN_ENV_ID" \
+          --env-var "baseUrl=${{ needs.deploy-preview.outputs.preview_url }}" \
+          --env-var "e2e_token=${{ secrets.E2E_TOKEN }}" \
+          --env-var "env_email=${{ secrets.STAGING_TEST_EMAIL }}" \
+          --env-var "env_password=${{ secrets.STAGING_TEST_PASSWORD }}"
+
+  playwright-tests:
+    name: E2E Regression Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [deploy-preview, postman-api-tests]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: ./e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        working-directory: ./e2e
+        env:
+          CI: true
+          PLAYWRIGHT_BASE_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+          API_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          E2E_TOKEN: ${{ secrets.E2E_TOKEN }}
+        run: npx playwright test --grep @regression
+
+      - name: Upload Playwright Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-html-report
+          path: e2e/playwright-report/
+          retention-days: 7

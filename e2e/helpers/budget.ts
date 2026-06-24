@@ -102,7 +102,7 @@ export const seedMonthlyEntryInDb = async (
   monthlyBudgetId: string,
   table: PrismaModelSheets,
 ) => {
-  const createReq = await request.post("/api/monthly-budgets/test/seed", {
+  const createReq = await request.post("/api/tests/seed-budget-data", {
     headers: {
       Authorization: `Bearer ${process.env.E2E_TOKEN}`,
     },
@@ -122,7 +122,7 @@ export const seedMonthlyExpenseInDB = async (
   monthlyBudgetId: string,
   weekNumber = 1,
 ) => {
-  const createReq = await request.post("/api/monthly-budgets/test/seed", {
+  const createReq = await request.post("/api/tests/seed-budget-data", {
     headers: {
       Authorization: `Bearer ${process.env.E2E_TOKEN}`,
     },

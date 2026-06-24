@@ -9,7 +9,7 @@ export const ProfileLayout = () => {
   const { data: user } = useSessionQuery();
   const { isOffline } = useOfflineStatus();
 
-  usePageTitle(user!.name!);
+  usePageTitle(user!.email!);
 
   return (
     <div className="app-container">

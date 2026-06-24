@@ -56,7 +56,8 @@ MoneyMood offre une approche simplifiée de la gestion de budget : définissez v
 
 - **Tests E2E**: Playwright
 - **Tests intégration**: Jest
-- **CI/CD**: Intégration continue avec tests automatisés
+- **Tests API**: Postman
+- **CI/CD**: Intégration continue avec tests automatisés - Github Actions
 
 ### Infrastructure
 
@@ -68,8 +69,10 @@ MoneyMood offre une approche simplifiée de la gestion de budget : définissez v
 
 - **Architecture monorepo** : Configuration de workspaces npm avec package `shared` pour partager types et validations Zod entre frontend/backend
 - **Système d'authentification custom** : Implémentation de sessions sécurisées avec tokens cryptographiques (crypto.randomBytes), expiration glissante (rolling sessions) et nettoyage automatique
-- **Tests E2E isolés** : Configuration Playwright avec base de données Docker dédiée pour des tests reproductibles sans conflit
 - **PWA et mode offline** : Accès en lecture seule aux données mises en cache pour une consultation hors ligne
+- **Stratégie de Validation & CI/CD Multi-niveaux** :
+  - **Pipeline de PR (Validation)** : Exécution automatisée des linters, type-checking, tests d'intégration (Jest) et tests E2E ciblés (**Playwright Smoke Tests**) sur une base de données isolée via container Docker
+  - **Pipeline de Staging (Déploiement Continu)** : Déploiement automatique sur un environnement _Vercel Preview_ à chaque push sur `dev`, suivi d'une suite de tests d'API (**Postman CLI**) et d'interface (**Playwright E2E Regression Tests**) avec isolation et nettoyage automatisé de la base de données.
 
 ---
 
@@ -138,10 +141,11 @@ npm run test
 
 ```bash
 cd ./e2e/
-./test-ci-e2e.sh
+npm run test
 ```
 
-> Les tests E2E utilisent une base de données PostgreSQL isolée lancée via Docker. Le script démarre automatiquement le container de base de données, puis lance le backend et le frontend localement via la configuration `webServer` de Playwright. Cette approche garantit un environnement de test propre sans polluer la base de développement.
+> Les tests backend utilisent une base de données dédiée. Créez un fichier `.env.test` dans `/e2e/` avec un `DATABASE_URL` pointant vers votre base de test.
+> Le script lance le backend et le frontend localement via la configuration `webServer` de Playwright.
 
 ---
 

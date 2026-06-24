@@ -43,7 +43,10 @@ jobs:
       POSTMAN_COLLECTION_ID: "33983325-97c6965e-5deb-45d3-8a61-9c24affb44d4"
       POSTMAN_ENV_ID: "33983325-c396d3cf-120b-402d-b16b-4b5c8ce63825"
     steps:
-      - uses: actions/checkout@v4
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Install Postman CLI
         run: |
@@ -59,7 +62,8 @@ jobs:
           --env-var "baseUrl=${{ needs.deploy-preview.outputs.preview_url }}" \
           --env-var "e2e_token=${{ secrets.E2E_TOKEN }}" \
           --env-var "env_email=${{ secrets.STAGING_TEST_EMAIL }}" \
-          --env-var "env_password=${{ secrets.STAGING_TEST_PASSWORD }}"
+          --env-var "env_password=${{ secrets.STAGING_TEST_PASSWORD }}" \
+          --env-var "vercelBypass=${{ secrets.VERCEL_BYPASS_TOKEN }}"
 
   playwright-tests:
     name: E2E Regression Tests
@@ -80,6 +84,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma Client
+        working-directory: ./backend
+        run: npx prisma generate
+
       - name: Install Playwright browsers
         working-directory: ./e2e
         run: npx playwright install --with-deps chromium
@@ -93,6 +101,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           E2E_TOKEN: ${{ secrets.E2E_TOKEN }}
+          VERCEL_BYPASS_TOKEN: ${{ secrets.VERCEL_BYPASS_TOKEN }}
         run: npx playwright test --grep @regression
 
       - name: Upload Playwright Report

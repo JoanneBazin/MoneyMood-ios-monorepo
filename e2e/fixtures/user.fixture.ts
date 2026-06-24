@@ -24,14 +24,17 @@ export const test = baseTest.extend<
         testUser.password,
       );
 
-      await use({ ...testUser, id: user.id });
-
-      console.log(`🧹 Suppression user: ${testUser.email}`);
-      await deleteUserFromDB(testUser.email);
+      try {
+        await use({ ...testUser, id: user.id });
+      } finally {
+        console.log(`🧹 Suppression user: ${testUser.email}`);
+        await deleteUserFromDB(testUser.email);
+      }
     },
     { scope: "worker" },
   ],
   page: async ({ page }, use) => {
+    await page.context().clearCookies();
     await page.addInitScript(() => {
       localStorage.clear();
       sessionStorage.clear();

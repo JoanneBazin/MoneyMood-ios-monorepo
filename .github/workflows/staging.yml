@@ -62,7 +62,8 @@ jobs:
           --env-var "baseUrl=${{ needs.deploy-preview.outputs.preview_url }}" \
           --env-var "e2e_token=${{ secrets.E2E_TOKEN }}" \
           --env-var "env_email=${{ secrets.STAGING_TEST_EMAIL }}" \
-          --env-var "env_password=${{ secrets.STAGING_TEST_PASSWORD }}"
+          --env-var "env_password=${{ secrets.STAGING_TEST_PASSWORD }}" \
+          --env-var "vercelBypass=${{ secrets.VERCEL_BYPASS_TOKEN }}"
 
   playwright-tests:
     name: E2E Regression Tests

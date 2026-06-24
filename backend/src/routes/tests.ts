@@ -4,8 +4,8 @@ import {
   seedTestBudgetData,
   seedTestProjectData,
   seedUserB,
-} from "src/controllers";
-import { protectTestRoutes, requireAuth } from "src/middleware";
+} from "../controllers";
+import { protectTestRoutes, requireAuth } from "../middleware";
 
 const router = express.Router();
 

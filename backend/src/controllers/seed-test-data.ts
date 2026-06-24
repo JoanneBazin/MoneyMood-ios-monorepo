@@ -6,8 +6,8 @@ import {
   isPrismaForeignKeyConstraint,
   normalizeDecimalFields,
   prisma,
-} from "src/lib";
-import { updateMonthlyBudgetRemaining } from "src/services";
+} from "../lib";
+import { updateMonthlyBudgetRemaining } from "../services";
 
 export const seedUserB = async (
   req: Request,

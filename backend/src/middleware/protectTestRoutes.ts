@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpError } from "src/lib";
+import { HttpError } from "../lib";
 
 export const protectTestRoutes = (
   req: Request,

@@ -49,8 +49,8 @@ test.describe("Budget history", () => {
 
       await firstBudgetCard.getByTestId("history-details-btn").click();
 
-      const remaining = page.getByTestId("remaining-budget");
-      await expect(remaining).toContainText(new RegExp(budgetDate, "i"));
+      const banner = page.getByTestId("app-banner");
+      await expect(banner).toContainText(new RegExp(budgetDate, "i"));
 
       const entriesCollapses = page.getByTestId("entries-collapse");
       await expect(entriesCollapses).toHaveCount(2);

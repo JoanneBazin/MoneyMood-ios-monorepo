@@ -89,8 +89,7 @@ for (const { label, entryType, name, table, qaseIds } of resources) {
         const updatedTotal = await getTotalEntries(entriesContainer);
         expect(updatedTotal).toBe(previousTotal + Number(newEntry.amount));
 
-        await page.goto("/app");
-        await page.getByTestId("create-nav").click();
+        await page.goto("/app/create");
         await expect(page.getByTestId(`${entryType}-name-input-0`)).toHaveValue(
           newEntry.name,
         );
